@@ -1,2 +1,2 @@
-# tesis-victor
+# tesis-lujano
 Libro de tesis (LaTeX)
