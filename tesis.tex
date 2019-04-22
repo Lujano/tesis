@@ -1,38 +1,3 @@
-@mvcollection{ID,
-	editor = {editor},
-	title = {title},
-	date = {date},
-	OPTeditora = {editora},
-	OPTeditorb = {editorb},
-	OPTeditorc = {editorc},
-	OPTtranslator = {translator},
-	OPTannotator = {annotator},
-	OPTcommentator = {commentator},
-	OPTintroduction = {introduction},
-	OPTforeword = {foreword},
-	OPTafterword = {afterword},
-	OPTsubtitle = {subtitle},
-	OPTtitleaddon = {titleaddon},
-	OPTlanguage = {language},
-	OPToriglanguage = {origlanguage},
-	OPTedition = {edition},
-	OPTvolumes = {volumes},
-	OPTseries = {series},
-	OPTnumber = {number},
-	OPTnote = {note},
-	OPTpublisher = {publisher},
-	OPTlocation = {location},
-	OPTisbn = {isbn},
-	OPTpagetotal = {pagetotal},
-	OPTaddendum = {addendum},
-	OPTpubstate = {pubstate},
-	OPTdoi = {doi},
-	OPTeprint = {eprint},
-	OPTeprintclass = {eprintclass},
-	OPTeprinttype = {eprinttype},
-	OPTurl = {url},
-	OPTurldate = {urldate},
-}
 \documentclass[hidelinks, letterpaper, 12pt, oneside]{tesis}
 
 % Paquetes para idioma
@@ -125,203 +90,203 @@
 \newcommand\listsymbolname{Acrónimos y Símbolos}
 
 \begin{titlepage}
-    \title{\vspace{-2cm} \includegraphics[width=1.2in]{./usb.png} \\[.2cm]
-        \large {UNIVERSIDAD SIMÓN BOLÍVAR} \\
-        \textbf{DECANATO DE ESTUDIOS PROFESIONALES \\
-        COORDINACIÓN DE INGENIERIA ELECTRÓNICA}
-        \vfill \large {\textbf{SISTEMA DE GENERACIÓN DE MOSAICOS 2D PARA ROBOTS MÓVILES A PARTIR DE VIDEO MONOCULAR}}  \vfill}
-    \author{Por: \\
-        Victor Yovanni Garcia Carmona \\[1.2cm]
-        \textbf{PROYECTO DE GRADO} \\
-        Presentado ante la Ilustre Universidad Simón Bolívar \\
-        como requisito parcial para optar al título de \\
-        Ingeniero Electrónico}
-    \date{Sartenejas, Marzo de 2018}
+	\title{\vspace{-2cm} \includegraphics[width=1.2in]{./usb.png} \\[.2cm]
+		\large {UNIVERSIDAD SIMÓN BOLÍVAR} \\
+		\textbf{DECANATO DE ESTUDIOS PROFESIONALES \\
+			COORDINACIÓN DE INGENIERIA ELECTRÓNICA}
+		\vfill \large {\textbf{SISTEMA DE GENERACIÓN DE MOSAICOS 2D PARA ROBOTS MÓVILES A PARTIR DE VIDEO MONOCULAR}}  \vfill}
+	\author{Por: \\
+		Victor Yovanni Garcia Carmona \\[1.2cm]
+		\textbf{PROYECTO DE GRADO} \\
+		Presentado ante la Ilustre Universidad Simón Bolívar \\
+		como requisito parcial para optar al título de \\
+		Ingeniero Electrónico}
+	\date{Sartenejas, Marzo de 2018}
 \end{titlepage}
 \clearpage
 \newpage
 \begin{titlepage}
-    \title{\vspace{-2cm} \includegraphics[width=1.2in]{./usb.png} \\[.2cm]
-        \large UNIVERSIDAD SIMÓN BOLÍVAR \\
-        \textbf{DECANATO DE ESTUDIOS PROFESIONALES \\
-        COORDINACIÓN DE INGENIERIA ELECTRÓNICA}
-        \vfill \large {\textbf{SISTEMA DE GENERACIÓN DE MOSAICOS 2D PARA ROBOTS MÓVILES A PARTIR DE VIDEO MONOCULAR}}  \vfill}
-    \author{Por: \\
-        Victor Yovanni Garcia Carmona \\[1.2cm]
-        Realizado con la asesoría de: \\
-        José de la Cruz Cappelletto Fuentes \\
-        \textbf{PROYECTO DE GRADO} \\
-        Presentado ante la Ilustre Universidad Simón Bolívar \\
-        como requisito parcial para optar al título de \\
-        Ingeniero Electrónico}
-    \date{Sartenejas, Mayo de 2018}
-    
+	\title{\vspace{-2cm} \includegraphics[width=1.2in]{./usb.png} \\[.2cm]
+		\large UNIVERSIDAD SIMÓN BOLÍVAR \\
+		\textbf{DECANATO DE ESTUDIOS PROFESIONALES \\
+			COORDINACIÓN DE INGENIERIA ELECTRÓNICA}
+		\vfill \large {\textbf{SISTEMA DE GENERACIÓN DE MOSAICOS 2D PARA ROBOTS MÓVILES A PARTIR DE VIDEO MONOCULAR}}  \vfill}
+	\author{Por: \\
+		Victor Yovanni Garcia Carmona \\[1.2cm]
+		Realizado con la asesoría de: \\
+		José de la Cruz Cappelletto Fuentes \\
+		\textbf{PROYECTO DE GRADO} \\
+		Presentado ante la Ilustre Universidad Simón Bolívar \\
+		como requisito parcial para optar al título de \\
+		Ingeniero Electrónico}
+	\date{Sartenejas, Mayo de 2018}
+	
 \end{titlepage}
 
 
 \begin{document}
-\frontmatter
-\maketitle
-\setstretch{1.3}
-
-% Se incluye el acta de evaluación, verificar que se corresponda
-% con el formato aceptado actualmente por el Decanato.
-\input{./partes/acta} 
-\input{./partes/resumen} 
+	\frontmatter
+	\maketitle
+	\setstretch{1.3}
 	
-% Agradecimientos
-\acknowledgements{
-	\addtocontents{toc}{\vspace{1em}}
+	% Se incluye el acta de evaluación, verificar que se corresponda
+	% con el formato aceptado actualmente por el Decanato.
+	\input{./partes/acta} 
+	\input{./partes/resumen} 
 	
-	En primer lugar me gustaria agrader a Dios, por brindarme la salud y sabiduría para superar los obstaculos que he afrontado en mi carrera. También a la Universidad Simón Bolivar, que ha sido sin duda la mejor casa de estudios que pude haber tenido.
-	
-	Un agradecimiento muy especial a mis padres Evelyn y Yovanni por el apoyo incondicional, no solo en mi carrera sino desde que tengo uso de razón, y quienes me convirtieron en la persona que soy hoy en dia. Mas apoyo es imposible recibir.
-	
-	A mi tutor y quien considero como amigo José Cappelletto, de quien recibí mas que una guia a lo largo del desarrollo de este trabajo. Gracias por confiar en mi, por el apoyo, los consejps y la dedicación a lo largo de este provechoso camino. 
-	
-	Al profesor y tambien amigo Gerardo Fernandez por incursionarme en esta área de mi carrera, y quien me ha brindado conocimientos y experiencias muy valiosas.
-	
-	Gracias al laboratorio de Mecatrónica, donde recibí mucho apoyo, aliento y valiosos consejos de todos sus miembros. Gracias por hacerme sentir como uno mas de este gran grupo de investigación.
-	
-	Le doy las gracias a \textit{CITE}, la agrupación en la que compartí muchos buenos momentos, sin duda el lugar donde tuve la oportunidad de crecer profesionalmente y conocer a personas increíbles.
-	
-	Le agradezco a Andrés, Diego, Tomás, Gabriel Lesti, Nievsabel, Julio, Walter, Maria Gabriela, Carlos, Charlie, Andrea, Fabio, Ricardo y Gabiel Noya; un grupo especial de amigos que hicieron de mi experiencia universitaria la mejor de todas. Mas que unos compañeros, personas con los cuales tuve la dicha de compartir materias y los mejores momentos. Gracias por el aliento y apoyo en este duro camino muchachos, son los mejores.
-	
-	
-}
-\clearpage
-	
-\pagestyle{fancy}
-	
-% Tabla de contenidos o índice
-\lhead{\emph{Índice General}}
-\tableofcontents
-	
-% Estos índices solamente se usan si el libro contiene figuras, tablas y
-% algoritmos. Si alguno de estos no se utiliza, comentar o eliminar las líneas
-% pertinentes.
-\lhead{\emph{Índice de Figuras}}
-\listoffigures
-	
-\lhead{\emph{Índice de Tablas}}
-\renewcommand*\listtablename{Índice de Tablas}
-\listoftables
-	
-%\lhead{\emph{Índice de Algoritmos}}
-%\renewcommand*\listalgorithmname{Índice de algoritmos}
-%\listofalgorithms
-	
-\setstretch{1.5}
-\clearpage
-\lhead{\emph{Acrónimos y símbolos}}
-
-\listofsymbols{}
-{
-%\begin{longtable}{lp{0.8\textwidth}}
-	
-	\textbf{2D} & Dos Dimensiones\\
-	
-	\textbf{GIDM} & Grupo de Investigación y Desarrollo en Mecatrónica\\
-	
-	\textbf{ROV} & Vehículo Operado Remotamente (del inglés: Remotely Operated Vehicle)\\
-	
-	\textbf{AUV} & Vehículo Submarino Autónomo (del inglés: Automated Underwater Vehicle)\\
+	% Agradecimientos
+	\acknowledgements{
+		\addtocontents{toc}{\vspace{1em}}
 		
-	\textbf{UAV} & Vehículo aéreo no tripulado (del inglés: Unmanned Aereal Vehicle)\\
+		En primer lugar me gustaria agrader a Dios, por brindarme la salud y sabiduría para superar los obstaculos que he afrontado en mi carrera. También a la Universidad Simón Bolivar, que ha sido sin duda la mejor casa de estudios que pude haber tenido.
+		
+		Un agradecimiento muy especial a mis padres Evelyn y Yovanni por el apoyo incondicional, no solo en mi carrera sino desde que tengo uso de razón, y quienes me convirtieron en la persona que soy hoy en dia. Mas apoyo es imposible recibir.
+		
+		A mi tutor y quien considero como amigo José Cappelletto, de quien recibí mas que una guia a lo largo del desarrollo de este trabajo. Gracias por confiar en mi, por el apoyo, los consejps y la dedicación a lo largo de este provechoso camino. 
+		
+		Al profesor y tambien amigo Gerardo Fernandez por incursionarme en esta área de mi carrera, y quien me ha brindado conocimientos y experiencias muy valiosas.
+		
+		Gracias al laboratorio de Mecatrónica, donde recibí mucho apoyo, aliento y valiosos consejos de todos sus miembros. Gracias por hacerme sentir como uno mas de este gran grupo de investigación.
+		
+		Le doy las gracias a \textit{CITE}, la agrupación en la que compartí muchos buenos momentos, sin duda el lugar donde tuve la oportunidad de crecer profesionalmente y conocer a personas increíbles.
+		
+		Le agradezco a Andrés, Diego, Tomás, Gabriel Lesti, Nievsabel, Julio, Walter, Maria Gabriela, Carlos, Charlie, Andrea, Fabio, Ricardo y Gabiel Noya; un grupo especial de amigos que hicieron de mi experiencia universitaria la mejor de todas. Mas que unos compañeros, personas con los cuales tuve la dicha de compartir materias y los mejores momentos. Gracias por el aliento y apoyo en este duro camino muchachos, son los mejores.
+		
+		
+	}
+	\clearpage
 	
-	\textbf{SLAM} & Localización y Mapeo Simultaneo (del inglés: Simultaneous Localization and Mapping)\\
+	\pagestyle{fancy}
 	
-	\textbf{GPS} & Sistema de Posicionamiento Global (del inglés: Global Positioning System)\\
+	% Tabla de contenidos o índice
+	\lhead{\emph{Índice General}}
+	\tableofcontents
 	
-	\textbf{IMU} & Unidad de Medición Inercial (del inglés: Inertial Measurement Unit)\\
+	% Estos índices solamente se usan si el libro contiene figuras, tablas y
+	% algoritmos. Si alguno de estos no se utiliza, comentar o eliminar las líneas
+	% pertinentes.
+	\lhead{\emph{Índice de Figuras}}
+	\listoffigures
 	
-	\textbf{OpenCV} & Librería Abierta de Visión por Computadora (del inglés: Open Source Computer Vision)\\
+	\lhead{\emph{Índice de Tablas}}
+	\renewcommand*\listtablename{Índice de Tablas}
+	\listoftables
 	
-	\textbf{CUDA} &  Arquitectura de Computo de Dispositivos unificados (del inglés: Compute Unified Device Architecture)\\	
+	%\lhead{\emph{Índice de Algoritmos}}
+	%\renewcommand*\listalgorithmname{Índice de algoritmos}
+	%\listofalgorithms
 	
-	\textbf{SIFT} & Transformación de características invariante a la escala (del inglés: Scale Invariant Feature Transform)\\
+	\setstretch{1.5}
+	\clearpage
+	\lhead{\emph{Acrónimos y símbolos}}
 	
-	\textbf{SURF} & Transformación de caracteristicas Robusto y acelerado (del inglés: Speed-Uup Robust Features)\\
+	\listofsymbols{}
+	{
+		%\begin{longtable}{lp{0.8\textwidth}}
+		
+		\textbf{2D} & Dos Dimensiones\\
+		
+		\textbf{GIDM} & Grupo de Investigación y Desarrollo en Mecatrónica\\
+		
+		\textbf{ROV} & Vehículo Operado Remotamente (del inglés: Remotely Operated Vehicle)\\
+		
+		\textbf{AUV} & Vehículo Submarino Autónomo (del inglés: Automated Underwater Vehicle)\\
+		
+		\textbf{UAV} & Vehículo aéreo no tripulado (del inglés: Unmanned Aereal Vehicle)\\
+		
+		\textbf{SLAM} & Localización y Mapeo Simultaneo (del inglés: Simultaneous Localization and Mapping)\\
+		
+		\textbf{GPS} & Sistema de Posicionamiento Global (del inglés: Global Positioning System)\\
+		
+		\textbf{IMU} & Unidad de Medición Inercial (del inglés: Inertial Measurement Unit)\\
+		
+		\textbf{OpenCV} & Librería Abierta de Visión por Computadora (del inglés: Open Source Computer Vision)\\
+		
+		\textbf{CUDA} &  Arquitectura de Computo de Dispositivos unificados (del inglés: Compute Unified Device Architecture)\\	
+		
+		\textbf{SIFT} & Transformación de características invariante a la escala (del inglés: Scale Invariant Feature Transform)\\
+		
+		\textbf{SURF} & Transformación de caracteristicas Robusto y acelerado (del inglés: Speed-Uup Robust Features)\\
+		
+		\textbf{FAST} & Características de pruebas de segmentos aceleradas (del inglés: Features from Accelerated Segment Test)\\
+		
+		\textbf{BRIEF} & Características elementales independientes robustas binarias (del inglés: Binary Bobust Independent Elementary) Features) \\
+		
+		\textbf{ORB} & FAST orientado y BRIEF rotado (del inglés: Oriented for FAST and Rotated BRIEF)\\
+		
+		\textbf{DoG} & Diferencia de Gausianas (del inglés: Difference of Gaussians)\\
+		
+		\textbf{LoG} & Laplaciano de Gausianas (del inglés: Laplacian of Gaussians)\\
+		
+		\textbf{DoF} & Grados de Libertad (del inglés: Degrees of Freedom)\\
+		
+		\textbf{FLANN} & Librería de Aproximación por Vecinos mas Cercanos (del inglés: Fast Library for Aproximate Nearest Neighbors)\\
+		
+		\textbf{RANSAC} & Consenso de muestras aleatorias (del inglés: Random Sample Consensus)\\
+		
+		\textbf{RGB} & Rojo, Verde y Azul (del inglés: Red, Green and Blue)\\
+		
+		&\\
+		\hline
+		&\\	
+		
+		% Aquí van los símbolos
+		${\rm I\!P}$ & Espacio proyectivo\\
+		${\rm I\!R}$ & Espacio real\\
+		
+		%$\Rightarrow$ & implicación lógica\\
+		%$[u:=v]$ & sustitución textual de $u$ por $v$
+		%\end{longtable}
+	}
 	
-	\textbf{FAST} & Características de pruebas de segmentos aceleradas (del inglés: Features from Accelerated Segment Test)\\
 	
-	\textbf{BRIEF} & Características elementales independientes robustas binarias (del inglés: Binary Bobust Independent Elementary) Features) \\
+	%% ----------------------------------------------------------------
+	% End of the pre-able, contents and lists of things
+	% Begin the Dedication page
 	
-	\textbf{ORB} & FAST orientado y BRIEF rotado (del inglés: Oriented for FAST and Rotated BRIEF)\\
+	\setstretch{1.3}  % Return the line spacing back to 1.3
 	
-	\textbf{DoG} & Diferencia de Gausianas (del inglés: Difference of Gaussians)\\
+	\pagestyle{empty}  % Page style needs to be empty for this page
 	
-	\textbf{LoG} & Laplaciano de Gausianas (del inglés: Laplacian of Gaussians)\\
+	\dedicatory{
+		\textbf{Dedicatoria} \bigskip
+		
+		\begin{flushright}
+			Para Yovanni y Evelyn.\\
+			Sin ustedes no hubese podido.
+		\end{flushright}
+	}
 	
-	\textbf{DoF} & Grados de Libertad (del inglés: Degrees of Freedom)\\
+	\addtocontents{toc}{\vspace{2em}}
 	
-	\textbf{FLANN} & Librería de Aproximación por Vecinos mas Cercanos (del inglés: Fast Library for Aproximate Nearest Neighbors)\\
+	\mainmatter
+	\pagestyle{fancy}
 	
-	\textbf{RANSAC} & Consenso de muestras aleatorias (del inglés: Random Sample Consensus)\\
-
-	\textbf{RGB} & Rojo, Verde y Azul (del inglés: Red, Green and Blue)\\
+	% Se incluye el cuerpo de la tesis en este documento.
 	
-	&\\
-	\hline
-	&\\	
-			
-	% Aquí van los símbolos
-	${\rm I\!P}$ & Espacio proyectivo\\
-	${\rm I\!R}$ & Espacio real\\
+	% \input{./partes/introduccion}
 	
-	%$\Rightarrow$ & implicación lógica\\
-	%$[u:=v]$ & sustitución textual de $u$ por $v$
-%\end{longtable}
-}
-
-
-%% ----------------------------------------------------------------
-% End of the pre-able, contents and lists of things
-% Begin the Dedication page
+	% El número de capítulos varía. En mi libro fueron cuatro (sin contar
+	% introducción y conclusión).
+	\input{./partes/capitulo1}
+	\input{./partes/capitulo2}
+	\input{./partes/capitulo3}
+	\input{./partes/capitulo4}
+	\input{./partes/capitulo5}
+	\input{./partes/capitulo6}
 	
-\setstretch{1.3}  % Return the line spacing back to 1.3
+	% El estilo de la bibliografía es AAAI, definido en el archivo aaai.bst.
+	\label{Bibliography}
+	\bibliographystyle{unsrt}
+	\bibliography{bibliografia}
+	\lhead{\emph{Bibliografía}}
+	\addtocontents{toc}{\vspace{2em}}
 	
-\pagestyle{empty}  % Page style needs to be empty for this page
+	% Apéndices
+	\appendix
+	\input{./partes/apendiceA}
+	\addtocontents{toc}{\vspace{2em}}
 	
-\dedicatory{
-	\textbf{Dedicatoria} \bigskip
-				
-	\begin{flushright}
-		Para Yovanni y Evelyn.\\
-		Sin ustedes no hubese podido.
-	\end{flushright}
-}
-	
-\addtocontents{toc}{\vspace{2em}}
-	
-\mainmatter
-\pagestyle{fancy}
-	
-% Se incluye el cuerpo de la tesis en este documento.
-	
-% \input{./partes/introduccion}
-	
-% El número de capítulos varía. En mi libro fueron cuatro (sin contar
-% introducción y conclusión).
-\input{./partes/capitulo1}
-\input{./partes/capitulo2}
-\input{./partes/capitulo3}
-\input{./partes/capitulo4}
-\input{./partes/capitulo5}
-\input{./partes/capitulo6}
-	
-% El estilo de la bibliografía es AAAI, definido en el archivo aaai.bst.
-\label{Bibliography}
-\bibliographystyle{unsrt}
-\bibliography{bibliografia}
-\lhead{\emph{Bibliografía}}
-\addtocontents{toc}{\vspace{2em}}
-	
-% Apéndices
-\appendix
-\input{./partes/apendiceA}
-\addtocontents{toc}{\vspace{2em}}
-	
-\backmatter
+	\backmatter
 	
 \end{document}
