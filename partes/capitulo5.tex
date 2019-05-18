@@ -1,58 +1,136 @@
-\chapter{Unión de imágenes}
+\chapter{Implementación}
 \label{capitulo5}
-\lhead{Capítulo 5. \emph{Unión de imágenes}}
+\lhead{Capítulo 5. \emph{Implementación}}
 
 
 \section{Introducción}
-El objetivo final de la creación de un mosaico es lograr un mapa que represente de la mejor forma la superficie recorrida. Esto es, que sea visualmente congruente y que no presente ningún tipo de discontinuidades de modo que todo parezca una misma imagen. De las primeras etapas se manifiestan muchos errores producto de los problemas ya planteados, que aunque a lo largo del proceso éstos se intentan reducir lo mas posible, siempre es necesaria la etapa final de fusión para lograr los objetivos propuestos.
-
-En esta sección se describen los algoritmos utilizados para lograr fusionar las imágenes del mosaico. Como ya se especificó, fueron seleccionados aquellos que presentaron resultados importantes en diversos estudios externos, y se implementaron en conjunto para lograr resultados mucho mas robustos. Estos se detallan a continuación en el orden de aplicación sobre el mosaico: linea de corte, ajuste de color y finalmente la fusión ponderada.
-
-Por ultimo, al final del capítulo se muestran los resultados con su respectivo análisis de aplicar cada uno de los algoritmos aquí descritos.
+El objetivo de este capítulo es explicar detalladamente la implementación realizada en este trabajo.
 \clearpage
 
 
-\section{Linea de costura}\label{seccion-corte}
 
-Este es el primer algoritmo aplicado al mosaico luego de todas las correcciones geométricas, ya que el resto de métodos requieren conocer de antemano los límites de cada imagen. A diferencia de los anteriores, este tipo de algoritmos es el único que toma en cuenta la información que comparten las imágenes en el área que tienen en común, con lo cual su implementación logra corregir la mayor cantidad de imperfecciones. 
+\section{Descripción general}\label{seccion-corte}
 
-\subsection{Modelo por grafo}
+La estimación de odometría por medio de la fusión visual inercial fue desarrollada utilizando C++ como lenguaje de programación y ROS para la aplicación de los filtros inerciales y la visualización del movimiento del robot. Este programa utiliza un sólo hilo de ejecución, de forma que la odometría se estima de forma secuencial, pasando primero por estimar la orientación del robot utilizando el filtro inercial, y luego a estimar la traslación a partir de los residuales inerciales y la cámara. El formato de entrada de las imágenes y de los datos de la IMU fueron tomados de acuerdo al formato empleado en el EUROC Mav dataset.
 
-Es un método derivado de la teoría de grafos, donde la idea es separar un grafo con conexiones simples en dos grafos separados con un mínimo costo de separación. Se define un grafo $\mathcal{G} = \langle \mathcal{N}, \mathcal{E} \rangle$ como un conjunto de nodos $\mathcal{N}$, conectados por enlaces $\mathcal{E}$. Cada enlace conecta dos nodos y tiene asociado un costo o peso $\mathcal{W}(p, q) \,\, p,q \in \mathcal{N}$ --- cuando se habla de conexión simple, se refiere a que el costo en los enlaces está asociado para ambas direcciones $\mathcal{W}(p, q) = \mathcal{W}(p, q)$ ---. Se dice que dos grafos están separados si no se tiene ningún enlace que conecte dos nodos entre los grafos. Definimos $\mathcal{S}$ y $\mathcal{T}$ como los grafos separados que se tienen luego de aplicar el corte en $\mathcal{G}$. El método para determinar el mejor corte, se basa en encontrar el camino entre los enlaces que logra separa un grafo en dos, con el mínimo costo de corte \cite{graph-cut}, donde el costo del corte es la suma de los pesos de todos los enlaces del camino seleccionado.
+En cuanto al dataset local realizado, también fue implementado utilizando C++ como lenguaje de programación, y utilizando una raspberry pi 3 para la adquisición de los datos de la imu y de la cámara, y utilizando 4 hilos de ejecución.
 
-En el conjunto de nodos presentes en el grafo se cuentan con dos especiales llamados nodos terminales, el inicio ($\mathtt{I}$) y el final ($\mathtt{F}$), donde el resto de píxeles en la imagen corresponden con un nodo no terminal. En aplicaciones de visión por computadora, cuando se desea unir dos imágenes en una región de intersección, lo que se busca es lograr un etiquetado de píxeles que permita distinguir que nodos corresponden a cada imagen en el área de intersección.
 
-Se presenta en la ecuación \ref{funcion-corte} la función de costo que etiqueta los nodos, y minimiza el costo del corte.
+\section{Estimación de los residuales rotacionales}
+
+Con el empleo de la IMU es posible obtener los cambios de orientación de la cámara y de su aceleración, siempre y cuando se encuentren sincronizadas las mediciones. Bajo esta restricción se tiene el residual de orientación de la IMU (${R}_{RES/IMU}$) , el cual representa el cambio de orientación de la IMU entre el frame actual y el anterior, tal como se presenta en la ecuación \ref{eq:residualIMU}.
+
+
 \begin{equation}
-C(f) = \sum_{_p\in \mathcal{N}}^{} D_p(f_p) + \sum_{_p,_q \in \mathcal{N} - \{\mathtt{I},\mathtt{F}\}}^{} \mathcal{W}_p,_q (f_p, f_q)
-\label{funcion-corte}
+{ R }_{ IMU2 }\quad =\quad { R }_{ IMU1 }*{ R }_{ RES/IMU }\quad \rightarrow \quad { R }_{ RES/IMU }\quad =\quad { { { R }_{ IMU1 } }^{ T }*\quad R }_{ IMU2 }
+\label{eq:residualIMU} 
 \end{equation}
-Donde $p$ es un nodo que pertenece al conjunto de nodos no terminales $\mathcal{N} - \{\mathtt{I},\mathtt{F}\}$. El término $D_p(f_p)$ es el costo de asignar una etiqueta $f_p$ ($f_p \in \{0,\,1\}$) al nodo $p$ --- en este caso una etiqueta binaria, asociando el píxel a una imagen u otra ---. El término $\mathcal{W}_{p,q} (f_p, f_q)$ es el costo de asociar una etiqueta al nodo $p$ y una distinta al nodo $q$.
 
-Una gran diferencia de intensidades entre píxeles adyacentes representa un fuerte indicador de la existencia de un borde o contorno entre dos objetos, es decir, que el costo de un enlace se puede definir como el inverso de la diferencia entre la intensidad de los píxeles que conecta. Siendo $I(p)$ la intensidad de un píxel $p$, se defina el costo de cada enlace como:
+De forma análoga, el residual de la cámara viene dado por:
+
 \begin{equation}
-\mathcal{W}_p,_q = 255 - |I(p) - I (q)|
-\label{costo-corte}
+{ R }_{ RES/CAM }\quad =\quad \quad { { R }_{ CAM1 } }^{ T }\quad .\quad { R }_{ CAM2 }
+\label{eq:residualCAM} 
 \end{equation}
-A pesar de que se consideran los parámetros necesarios con esa función, se obtienen resultados mucho mas robustos usando una función exponencial \cite{graph-opencv}:
+
+Utilizando la ecuación \ref{eq:rotacionIMUCAM} en \ref{eq:residualCAM}, y las propiedades de la transpuesta del producto de matrices se tiene:
+
+\begin{align}
+{ R }_{ RES/CAM }\quad =\quad { { R }_{ CAM1 } }^{ T }.{ R }_{ CAM2 }\quad =\quad ({ R }_{ IMU1 }.{ R }_{ IMU-CAM })\quad ^{ T }.{ R }_{ IMU2 }.{ R }_{ IMU-CAM }\\ \quad \quad \quad \quad \quad \quad \quad \quad \quad =\quad ({ { R }_{ IMU-CAM } }^{ T }.{ { R }_{ IMU1 } }^{ T\quad  })\quad { R }_{ IMU2 }.{ R }_{ IMU-CAM }\\ \qquad \qquad \qquad ={ { \quad R }_{ IMU-CAM } }^{ T }.({ { R }_{ IMU1 } }^{ T\quad  }.{ R }_{ IMU2 }).{ R }_{ IMU-CAM }\\ \qquad \qquad \qquad =\quad { { R }_{ IMU-CAM } }^{ T }.({ { R }_{ IMU1 } }^{ T\quad  }.{ R }_{ IMU2 }).{ R }_{ IMU-CAM }
+\label{eq:residualCAMProcedimiento} 
+\end{align}
+
+Y finalmente se obtiene:
+
 \begin{equation}
-\mathcal{W}_p,_q = e^{\left(\frac{255-|I(p) - I (q)|}{2 \sigma}  \right) }
-\label{costo-corte}
+{ R }_{ RES/CAM }\quad =\quad { { \quad R }_{ IMU-CAM } }^{ T }. { R }_{ RES/IMU } . { R }_{ IMU-CAM\\  }
+\label{eq:residualCAMDeIMU} 
 \end{equation}
-Donde $\sigma$ es la desviación estándar de la imagen, y siendo válido para los casos en los que $f_p \neq f_q$. Esto indica que dos nodos continuos pertenecen a distintos grafos ($\mathcal{S,T}$) y a su vez que son separados por la linea de corte.
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=1\linewidth]{grafo-completo.pdf}
-	\caption[Corte por grafo]{De izquierda a derecha: imagen original, creación de nodos y enlaces, se asignan los pesos y se halla la linea de corte, finalmente se binariza la imagen según las etiquetas para crear una máscara.}
-	\label{imagen:grafo}
-\end{figure}
-
-Refiriéndonos a la figura \ref{imagen:grafo}, se observa el proceso de modelar una imagen mediante un grafo con conexiones simples y usando un esquema de 4 vecindad --- solo se consideran a los píxeles superior, inferior y laterales como vecinos ---, donde cada cuadro está compuesto por el inverso de la diferencia de intensidades entre dos imágenes, representado en escala de grises. Al final se tiene una imagen compuesta por dos grafos separados, donde $\mathtt{I} \in \mathcal{S}$ y $\mathtt{F} \in \mathcal{T}$ donde a cada nodo del grafo se le asigna un valor binario dependiendo de la etiqueta resultante el algoritmo de minimización del costo de corte.
+De esta forma, utilizando la ecuación \ref{eq:residualCAMDeIMU}, es posible obtener el residual de orientación de la cámara directamente del residual de orientación de la imu.
 
 
-\section{Corrección de color}\label{seccion-color}
-Cuando se tienen imágenes capturadas desde distintos puntos de vista, se suelen tener en la composición final cambios de intensidades, debido a cambios de exposición de luz en la escena. Por ellos es necesario implementar algoritmos que logran reducir la diferencia de intensidades y color entre los bordes de las imágenes. Para esto se implementa un algoritmo de mapeo de color llamado método de \textit{Reinhard} \cite{reinhard} que trabaja en el espacio de color CIELAB, descrito a continuación. 
+\section{Estimación de los residuales traslacionales}
+
+
+En general, en base a las transformaciones de cuerpo rígido se tiene:
+
+\begin{equation}
+\left[ \begin{matrix} { X }_{ 1 } \\ { Y }_{ 1 } \\ { Z }_{ 1 } \end{matrix} \right] \quad =\quad { R }_{ 1 }^{ 2 }.\left[ \begin{matrix} { X }_{ 2 } \\ { Y }_{ 2 } \\ { Z }_{ 2 } \end{matrix} \right] +{ P }_{ 1 }^{ 2 } 
+\label{eq:TransformacionCAM1CAM2} 
+\end{equation}
+
+
+Donde $(X1, Y1, Z1)$ y $(X2, Y2, Z2)$ representan la ubicación en el espacio del punto característico detectado en la primera y segunda imagen, respectivamente, referidos a cada uno de los sistemas de referencia de la cámara cuando fue tomada la imagen. Utilizando la ecuación \ref{eq:ReproyeccionCAM} se obtiene:
+
+
+\begin{equation}
+{ Z }_{ 1 }\left[ \begin{matrix} \frac { u_{ 1 }-{ c }_{ x } }{ { f }_{ x } }  \\ \frac { { v }_{ 1 }-{ c }_{ y } }{ { f }_{ y } }  \\ 1 \end{matrix} \right] =\quad { R }_{ 1 }^{ 2 }.{ Z }_{ 2 }\left[ \begin{matrix} \frac { u_{ 2 }-{ c }_{ x } }{ { f }_{ x } }  \\ \frac { { v }_{ 2 }-{ c }_{ y } }{ { f }_{ y } }  \\ 1 \end{matrix} \right] +{ P }_{ 1 }^{ 2 }
+\label{eq:TransformacionCAM1CAM2Reproyeccion} 
+\end{equation}
+
+Debemos recordar que a los puntos de la forma $s (X, Y, Z)$, donde $s$ es un factor de escala, le corresponden el mismo pixel de $(u,v)$ de proyección en la imagen de la cámara. Por tanto, la ecuación \ref{eq:TransformacionCAM1CAM2Reproyeccion} implica que incluso teniendo como medidas los valores de la ubicación  $(u1,v1)$ y $(u2,v2)$ de la ubicación de la pareja de puntos característicos, y conociendo la matriz de rotación ${ R }_{ 1 }^{ 2 }$, que representa el cambio de orientación de la cámara de la imagen 1 a la imagen 2, no es posible determinar la traslación real de la cámara ${ P }_{ 1 }^{ 2 }$, excepto por un factor de escala, sin conocer la profundidad $Z1$ o $Z2$ de la ubicación en el espacio de la característica.
+
+
+\section{Selección de keyframes}
+
+La implementación de keyframes se hace debido a que la estimación de movimiento es más precisa cuando se tiene disparidad entre las imagenes, y debido a que la carga computacional es menor en procesar un numero selecto de imágenes que la totalidad de ellas.
+
+En este trabajo, los keyframes son seleccionados cuando la disparidad entre las imágenes excede un valor fijo (threshold). Debido a que se cuenta con la información rotacional proveniente del filtro de la IMU, la disparidad es dividida en dos tipos de disparidad: La disparidad traslacional, y la disparidad rotacional.
+
+
+\subsection{Disparidad rotacional}
+La disparidad rotacional es obtenida directamente de los residuales rotacionales entre dos imágenes provenientes del filtro de la IMU, y denotados en la representación RPY, de la siguiente forma:
+
+\begin{equation}
+{ D }_{ rot }\quad =\quad \sqrt { { \Delta \phi  }^{ 2 }+{ \Delta \theta  }^{ 2 }+{ \Delta \psi  }^{ 2 }\quad  }
+\label{eq:disparidadRotacional}
+\end{equation}
+
+Donde ${\Delta \psi}$ es el residual en Yaw, ${\Delta \phi}$ es el residual en Roll, y ${\Delta \theta}$ es el residual en Pitch.
+
+Por tanto, la disparidad rotacional tiene unidades de rad/s ó DPS.
+
+
+\subsection{Disparidad traslacional}
+
+Por su parte, la disparidad traslacional corresponde al promedio de la distancia euclidiana entre las parejas de las imágenes , expresada en pixeles, resultantes del movimiento traslacional. 
+
+
+Para obtener la disparidad traslacional es necesario realizar una reproyección de las parejas utilizando sólo la información del residual rotacional. Esto implica que si determinamos la matriz de rotación entre las poses de la cámara en la imagen 1 y 2, y reproyectamos la ubicación de la característica en la imagen 2, hacia la imagen 1, utilizando solo la transformación rotacional, la distancia euclidiana entre la ubicación de la reproyección y la ubicación real del punto característico en la imagen 1, estará vinculada al cambio de traslación de la cámara y la profundidad de las puntos característicos respecto al sistema de referencia de la cámara.
+Además, los puntos que se encuentran a mayor distancia de la cámara tendrán mayor distancia euclidiana que los puntos que se encuentren cercanos, para una mismo movimiento de traslación. Esto implica que es posible utilizar esta distancia euclidiana como una medida de la disparidad entre las imágenes producto del movimiento rotacional siempre y cuando se tome alguna forma de restar peso a la profundidad de las características. Es por esto, que tomamos el promedio de la distancia euclidianas entre la reproyección y la ubicación de las características como medida de disparidad entre las imágenes:
+
+\begin{equation}
+{ D }_{ tras }\quad =\quad \frac { \sum { \sqrt { ({ u }_{ 1 },\quad { v }_{ 1 })\quad -\quad { rep }_{ { R }_{ 1 }^{ 2 }\quad  }({ u }_{ 2 },\quad { v }_{ 2 }) }  }  }{ N } 
+\label{eq:DisparidadTraslacional}
+\end{equation}
+
+Donde N es el número de parejas entre las dos imágenes y ${ rep }_{ { R }_{ 1 }^{ 2 }\quad  }({ u }_{ 2 },\quad { v }_{ 2 })$ es la función que reproyecta el punto característico de la imagen 2 en la imagen 1 utilizando la información rotacional ${ R }_{ 1 }^{ 2}$. 
+%Por lo tanto el procedimiento es el siguiente
+Por tanto, la disparidad traslacional tiene unidades de píxeles.
+
+
+
+\section{Estimación de la traslación}
+
+El método para estimar la traslación está basado en una modificación del esquema RANSAC de dos puntos implementado en [].
+ 
+Este método aprovecha la información rotacional y la geometría epipolar para hallar el vector de traslación entre las dos imágenes.
+
+En primer lugar se desea estimar el vector de traslación entre la imagen 1 y la imagen 2.
+
+Se definen los vectores unitarios como:
+\begin{equation}
+\overset { \rightarrow  }{ { f }_{ i } } =\quad \left[ \begin{matrix} \frac { u_{ i }-{ c }_{ x } }{ { f }_{ x } }  \\ \frac { { v }_{ i }-{ c }_{ y } }{ { f }_{ y } }  \\ 1 \end{matrix} \right] 
+\end{equation}
+
+
+
+
+
+%Robust Real-Time Visual Odometry
+%with a Single Camera and an IMU
+
 
 \subsubsection*{Espacio de color CIELAB}
 
@@ -112,15 +190,10 @@ Este tipo de algoritmos realiza una fusión que consiste en realizar un suma pon
 \begin{displaymath}
 	F = (1-\alpha)\cdot \mathtt{I}_1 + \alpha\cdot \mathtt{I}_2
 \end{displaymath} 
-Donde el parámetro $\alpha$ varia en el rango $0\to 1$, en este caso en función a la distancia, tal y como se ilustra en la figura \ref{imagen:blend-simple}.
+Donde el parámetro $\alpha$ varia en el rango $0\to 1$, en este caso en función a la distancia, tal y como se ilustra en la figura.
 
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=.6\linewidth]{blend1.pdf}
-	\caption[Fusión ponderada simple]{Fusión ponderada simple, donde $\alpha_1$ y $\alpha_2$ corresponden con el factor multiplicativo de las imágenes 1 y 2 respectivamente ($\alpha_1 = 1 - \alpha_2$).}
-	\label{imagen:blend-simple}
-\end{figure}
+
 
 El algoritmo de fusión ponderada bajo el esquema de transición presenta ciertas desventajas, entre estas el efecto fantasma, en el que se observan duplicados de los objetos en la escena pero con cierto grado de desvanecimiento. Aunque no será implementado, el estudio de su funcionamiento es necesario para comprender el algoritmo de fusión que trabaja bajo un esquema piramidal.
 
@@ -152,220 +225,17 @@ La pirámide gaussiana que se elaboró en un principio para cada imagen a fusion
 
 Éste proceso consiste en expandir el último nivel de la pirámide --- con su respectiva máscara---, una vez expandido se le suma el laplaciano correspondiente, devolviéndole la componente en alta frecuencia que le fue removida. En este punto se tiene el par de imágenes expandidas un nivel, además de la máscara aun afectada por el efecto del filtro gaussiano, con lo cual se efectúa una suma ponderada entre las dos imágenes similar que en la sección \ref{feathering}, pero en este caso se utiliza la máscara difuminada para determinar el peso de la suma, y donde el inverso de la máscara determina la ponderación de la segunda imagen.
 
-En la figura \ref{imagen:blend-apple} se puede observar el resultado de aplicar una fusión bajo el esquema piramidal.
+En la figurase puede observar el resultado de aplicar una fusión bajo el esquema piramidal.
 
-\begin{figure}[H]
-	\centering     %%% not \center
-	\subfigure[]{\label{fig:apple}\includegraphics[width=.30\textwidth]{apple.jpg}}
-	\subfigure[]{\label{fig:orange}\includegraphics[width=.30\textwidth]{orange.jpg}}
-	
-	\subfigure[]{\label{fig:orange-mask}\includegraphics[width=.30\textwidth]{mask.pdf}}
-	\subfigure[]{\label{fig:apple-orange}\includegraphics[width=.30\textwidth]{apple-orange.jpg}}
-	
-	\caption[Ejemplo de fusión pirámidal]{Fusión piramidal. Donde (a) y (b) representan las imágenes que se desean unir, (c) es la máscara para la fusión y (d) es el resultado final utilizando 9 bandas\protect\footnotemark.}
-	\label{imagen:blend-apple}
-\end{figure}
-\footnotetext{ \url{https://compvisionlab.wordpress.com/2013/05/13/image-blending-using-pyramid/}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Resultados}
 
-En esta sección se presentan los resultados de los algoritmos descritos en este capítulo, los cuales buscan reducir las discontinuidades y el error fotométrico en el mosaico final. Puesto que con este capítulo culmina la exposición de los módulos implementados, se presenta en la ultima parte resultados de los mosaicos obtenidos al emplear todo el sistema general para la generación de mosaicos. De esta forma se puede estudiar el rendimiento del sistema para distintos tipos de condiciones, y bajo distintas combinaciones de algoritmos.
-
-\subsection*{Linea de corte}
-
-A continuación se presentan los resultados del algoritmo descrito en la sección \ref{seccion-corte}. En primer lugar estudiamos el caso en el que se tienen objetos en movimiento en el transcurso de la captura de imágenes. En la figura \ref{fig:corte:0233-a} se observa un par de imágenes alineadas según el esquema simple, en el cual se muestra completamente la ultima imagen añadida y ésta determina el borde entre las imágenes. Por otro lado en la figura \ref{fig:corte:0233-d} se muestra el mismo par unidas por la linea de corte que minimiza la diferencia entre dichas imágenes. Se aprecia también en las figuras \ref{fig:corte:0233-b} y \ref{fig:corte:0233-c} el etiquetado de píxeles (máscara) y la linea de corte respectivamente.
-
-\begin{figure}[H]
-	\centering     %%% not \center
-	\subfigure[]{\label{fig:corte:0233-a}\includegraphics[width=.45\textwidth]{resultados/cut/0233-simple.jpg}}\hspace{0.005\textwidth}%
-	\subfigure[]{\label{fig:corte:0233-b}\includegraphics[width=.45\textwidth]{resultados/cut/0233-mask.jpg}}
-	
-	\subfigure[]{\label{fig:corte:0233-c}\includegraphics[width=.45\textwidth]{resultados/cut/0233-redline.jpg}}
-	\subfigure[]{\label{fig:corte:0233-d}\includegraphics[width=.45\textwidth]{resultados/cut/0233-cutline.jpg}}
-
-	\caption[Resultado de linea de corte: \textit{Chuspa}]{Resultado de linea de corte. (a) superposición de imágenes, (b) máscara para la imagen inferior, (c) línea de corte identificada en rojo, (d) imagen unida por la mejor linea de corte}
-	\label{imagen:cut:0233}
-\end{figure}
-
-Una mejora importante que presenta este algoritmo es que logra reducir y hasta eliminar el error producido por el efecto paralaje. En la figura \ref{fig:corte:0234-a} se observa un par de imágenes con un error de alineación producto de un objeto a distinta altura. Por otro lado en la figura \ref{fig:corte:0233-d} se puede ver como la mejor linea de corte logra eliminar el error anterior.
-
-\begin{figure}[H]
-	\centering     %%% not \center
-	\subfigure[]{\label{fig:corte:0234-a}\includegraphics[width=.49\textwidth]{resultados/cut/0234-simple.jpg}}\hspace{0.05\textwidth}%
-	\subfigure[]{\label{fig:corte:0234-b}\includegraphics[width=.44\textwidth]{resultados/cut/0234-mask.jpg}}
-	
-	\subfigure[]{\label{fig:corte:0234-c}\includegraphics[width=.49\textwidth]{resultados/cut/0234-redline.jpg}}
-	\subfigure[]{\label{fig:corte:0234-d}\includegraphics[width=.49\textwidth]{resultados/cut/0234-cutline.jpg}}
-	
-	\caption[Resultado de linea de corte: \textit{Chuspa}]{Resultado de linea de corte. (a) superposición de imágenes, (b) máscara para la imagen inferior, (c) línea de corte identificada en rojo, (d) imagen unida por la mejor linea de corte}
-	\label{imagen:cut:0234}
-\end{figure}
-
-Ya hemos comentado sobre los posibles errores de alineación cuando se cuenta con distintos planos en una misma imagen. En la figura \ref{fig:corte:geo-a} se observa un par de imágenes que presentan un importante error de alineación sobre el plano en la parte inferior, mientras que en la parte superior, la sección elevada logra coincidir con el modelo hallado. En la figura \ref{fig:corte:geo-d} se aprecia el par de imágenes luego de unirse por la mejor linea de corte. Si bien se tiene un pequeño error en el costado izquierdo, se logra un par de imágenes sin discontinuidades entre ellas.
-
-\begin{figure}[H]
-	\centering     %%% not \center
-	\subfigure[]{\label{fig:corte:geo-a}\includegraphics[width=.42\textwidth]{resultados/cut/geo-simple.jpg}}\hspace{0.1\textwidth}%
-	\subfigure[]{\label{fig:corte:geo-b}\includegraphics[width=.32\textwidth]{resultados/cut/geo-mask.jpg}}
-	
-	\subfigure[]{\label{fig:corte:geo-c}\includegraphics[width=.42\textwidth]{resultados/cut/geo-redline.jpg}}
-	\subfigure[]{\label{fig:corte:geo-d}\includegraphics[width=.42\textwidth]{resultados/cut/geo-cutline.jpg}}
-	
-	\caption[Resultado de linea de corte: \textit{Grava}]{Resultado de linea de corte. (a) superposición de imágenes, (b) máscara para la imagen inferior, (c) línea de corte identificada en rojo, (d) imagen unida por la mejor linea de corte}
-	\label{imagen:cut:geo}
-\end{figure}
 
 Hasta ahora se han presentado casos en los que se lidia con un par de imágenes. Por lo tanto se presenta un mosaico compuesto por tres imágenes del conjunto \textit{Espenky}, adicionalmente se tiene un error producido por el efecto paralaje. En este caso el algoritmo busca por la mejor linea de corte para cada par de imágenes por separado, pero logrando un mosaico final sin errores de discontinuidades.
 
 En este ejemplo en particular se logra evidenciar una debilidad que tiene este algoritmo. A pesar de ser muy robusto al evadir objetos por la diferencia de texturas y bordes, es común que se cuente con discontinuidades visuales producto de cambios de iluminación.
 
-\begin{figure}[H]
-	\centering     %%% not \center
-	\subfigure[]{\label{fig:corte:espenky-a}\includegraphics[width=.40\textwidth]{resultados/cut/Espenky-simple.jpg}}
-	\subfigure[]{\label{fig:corte:espenky-b}\includegraphics[width=.40\textwidth]{resultados/cut/Espenky-redline.jpg}}
-	
-	\subfigure[]{\label{fig:corte:espenky-c}\includegraphics[width=.47\textwidth]{resultados/cut/Espenky-cutline.jpg}}
-	
-	\caption[Resultado de linea de corte: \textit{Espenky}]{Resultado de linea de corte. (a) superposición de imágenes, (c) línea de corte identificada en rojo, (d) imagen unida por la mejor linea de corte}
-	\label{imagen:cut:espenky}
-\end{figure}
-
-
-\subsection*{Corrección de color}
-
-A continuación se presentan los resultados de aplicar el algoritmo descrito en la sección \ref{seccion-color}. De los resultados de la búsqueda de la mejor linea de corte, se tiene que es susceptible a errores de discontinuidad producto de cambios en la exposición de luz entre imágenes, con lo cual es necesario equilibrar tal diferencia para lograr mejor continuidad en el mosaico final.
-
-En la figura \ref{fig:color:geo-a} se observa un mosaico compuesto por tres imágenes, donde una de ellas presenta un cambio importante en la intensidad de luz. Aplicando el método descrito es posible reducir este error, tal y como se muestra en la figura \ref{fig:color:geo-b}.
-
-\begin{figure}[H]
-	\centering     %%% not \center
-	\subfigure[]{\label{fig:color:geo-a}\includegraphics[width=.49\textwidth]{resultados/color/geo-no.jpg}}
-	\subfigure[]{\label{fig:color:geo-b}\includegraphics[width=.49\textwidth]{resultados/color/geo-si.jpg}}
-	
-	\caption[Resultados de corrección de color: \textit{Grava}]{Corrección de color para imagen con poca iluminación}
-	\label{imagen:color:geo}
-\end{figure}
-
-Del ejemplo anterior se tiene que la imagen irregular presenta poca iluminación con respecto al resto. Caso distinto se tiene para el siguiente conjunto presentado en la figura \ref{imagen:color:0233}, donde la imagen atípica presenta iluminación elevada, también se muestra en \ref{fig:color:0233-a} y \ref{fig:color:0233-b} el mosaico sin y con corrección de color respectivamente. 
-
-\begin{figure}[h]
-	\centering     %%% not \center
-	\subfigure[]{\label{fig:color:0233-a}\includegraphics[width=0.42\textwidth]{resultados/color/0233-no.jpg}}
-	\subfigure[]{\label{fig:color:0233-b}\includegraphics[width=0.42\textwidth]{resultados/color/0233-si.jpg}}
-	
-	\caption[Resultado de corrección de color]{Corrección de color para imagen con mucha iluminación}
-	\label{imagen:color:0233}
-\end{figure}
-
-Para los mosaicos anteriores se estudiaron casos en los que se tenia un cambio de iluminación uniformemente distribuido a lo largo de toda la imagen, con lo cual el se lograba un resultado deseado al utilizar un método de corrección de color lineal.
-
-\begin{figure}[H]
-	\centering     %%% not \center
-	\subfigure[]{\label{fig:color:espenky-a}\includegraphics[width=0.7\textwidth]{resultados/color/espenky-no.jpg}}
-	\subfigure[]{\label{fig:color:espenky-b}\includegraphics[width=0.7\textwidth]{resultados/color/espenky-si.jpg}}
-	
-	\caption[Resultado de corrección de color: \textit{Espenky}]{Corrección de color de un conjunto de imágenes con iluminación no uniforme}
-	\label{imagen:color:espenky}
-\end{figure}
-
-A continuación se presenta el caso en el cual este cambio de iluminación se produce en secciones de una imagen. En la figura \ref{fig:color:espenky-a} se observa un mosaico que presenta diversas variaciones de iluminación, tanto entre imágenes como también entre secciones de algunas de estas. Luego de aplicar la corrección de color se logra el mosaico de la figura \ref{fig:color:espenky-b}. Si bien se obtiene una mejora global en la intensidad de iluminación, se tienen regiones en las cuales esta diferencia se acentúa.
-
-
-
-\subsection*{Fusión ponderada}
-
-En esta subsección se presentan los resultados del algoritmo descrito en la sección \ref{seccion-fusion}. Ya se ha observado como los algoritmos presentados anteriormente logran solventar la mayoría de inconvenientes y errores de alineación en las imágenes. \begin{figure}[H]
-	\centering
-	\includegraphics[width=0.65\linewidth]{/resultados/blend/blend-espenky3.pdf}
-	\caption[Resultado de fusión pirámidal: \textit{Espenky}]{Fusión piramidal para distintos niveles de escala, donde $n$ representa el número de escalas.}
-	\label{imagen:blend:espenky}
-\end{figure}
-Pero también se observó como se presentan casos ante los cuales los resultados no se corresponden con una completa fusión entre imágenes, teniendo aún bordes perceptibles.
-
-
-
-El siguiente ejemplo ilustra un conjunto de imágenes estudiadas anteriormente, y como se logra resolver a través de este algoritmo los errores de discontinuidad que no pudieron ser corregidos en dichas secciones. En la figura \ref{imagen:blend:espenky} se observa como se logra reducir la discontinuidad producida por un cambio de iluminación, aplicando la fusión piramidal para distintos niveles de escalas.
-
-
-
-Es posible evaluar la calidad de la fusión de las imágenes utilizando la derivada de la imagen final, con la cual se puede identificar bordes debido a cambios o discontinuidades entre estas. En la figura \ref{imagen:blend:laplacian} se ilustra el cambio producido en la derivada de la imagen antes de aplicar el algoritmo de fusión, por otro lado en la figura \ref{fig:blend:laplacian-b} se observa como el borde es difuminado completamente, logrando una transición suavizada y una línea de corte indetectable en la imagen final. 
-
-\begin{figure}[H]
-	\centering     %%% not \center
-	\subfigure[]{\label{fig:blend:laplacian-a}\includegraphics[width=0.40\textwidth]{resultados/blend/canny00.jpg}}
-	\subfigure[]{\label{fig:blend:laplacian-b}\includegraphics[width=0.40\textwidth]{resultados/blend/canny09.jpg}}
-	
-	\caption[Resultado de fusión pirámidal: \textit{Espenky}]{Derivada en $x$ e $y$ de la imagen antes (a) y después (b) de aplicar la fusión piramidal}
-	\label{imagen:blend:laplacian}
-\end{figure}
-
-\subsection*{Mosaicos completos}
-
-En las figuras \ref{imagen:full:geo2}-\ref{imagen:full:SR-original} se ilustran los resultados para un grupo mayor de imágenes, aplicando en conjunto los algoritmos descritos en el presente trabajo. Para algunos casos se emplean todos los módulos, mientras que en otros se excluyen algunos no necesarios, estos se encuentran debidamente indicados en cada resultado.
-
-\begin{figure}[H]
-	\centering     %%% not \center
-	\subfigure[]{\label{fig:apple}\includegraphics[width=0.9\textwidth]{resultados/full/geo2-00.jpg}}
-	\subfigure[]{\label{fig:orange}\includegraphics[width=0.9\textwidth]{resultados/full/geo2-1.jpg}}
-	\subfigure[]{\label{fig:orange}\includegraphics[width=0.8\textwidth]{resultados/full/geo2-map.jpg}}
-		
-	\caption[Mosaico del conjunto \textit{Grava}]{Mosaico con 19 imágenes del conjunto \textit{Grava}, con resolución de $1280\times 720$ por imagen. (a) mosaico sin corrección geométrica ni de color, (b) mosaico final corregido, (c) mapa del mosaico con las unidades en píxeles}
-	\label{imagen:full:geo2}
-\end{figure}
-
-\begin{figure}[H]
-	\centering     %%% not \center
-	\subfigure[]{\label{fig:apple}\includegraphics[width=0.50\textwidth]{resultados/full/0234-blend.jpg}}
-	\subfigure[]{\label{fig:apple}\includegraphics[width=0.41\textwidth]{resultados/full/0234-hugin.png}}
-	\subfigure[]{\label{fig:orange}\includegraphics[width=0.45\textwidth]{resultados/full/0234-map.jpg}}
-	
-	\caption[Mosaico del conjunto \textit{Chuspa}]{En (a) mosaico producido con el sistema propuesto, en (b) mosaico obtenido mediante selección y alineación manual usando el software \textit{Hugin} para una sección del mosaico en (a). En (c) mapa del mosaico en (a) con las unidades en píxeles}
-	\label{imagen:full:0234-map}
-\end{figure}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=1\linewidth]{resultados/full/0234-1.jpg}
-	\caption[Mosaico mejorado visualmente del conjunto \textit{Chuspa}]{Mismo mosaico anterior (figura \ref{imagen:full:0234-map}) pero aplicado un algoritmo de ecualización adaptativa de histograma para obtener una mejora visual.}
-	\label{imagen:full:0234-1}
-\end{figure}
-
-\begin{figure}[H]
-	\centering     %%% not \center
-	\subfigure[]{\label{fig:apple}\includegraphics[width=0.49\textwidth]{resultados/full/SR-1.pdf}}
-	\subfigure[]{\label{fig:apple}\includegraphics[width=0.50\textwidth]{resultados/full/SR-map.jpg}}
-	\subfigure[]{\label{fig:orange}\includegraphics[width=01\textwidth]{resultados/full/SR-crop2.jpg}}
-	
-	\caption[Mosaico del conjunto \textit{ScottReef 25}]{En (a) mosaico compuesto por 56 imágenes, en (b) mapa del mosaico con las unidades en píxeles, en (c) sección del mosaico en (a) marcada con el rectángulo negro sin corrección de color ni linea de corte.}
-	\label{imagen:full:SR}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering     
-	
-	\subfigure[]{\label{fig:espenky-a}\includegraphics[width=0.49\textwidth]{resultados/full/espenky-map.jpg}}\hspace{10mm}%
-	\subfigure[]{\label{fig:espenky-b}\includegraphics[width=0.34\textwidth]{resultados/full/espenky-1.jpg}}
-	\caption[Mosaico del conjunto \textit{Espenky}]{Mosaico compuesto por 19 imágenes utilizando el sistema con todas las correcciones. En (a) mapa del mosaico, en (b) mosaico final.}
-	\label{imagen:full:espenky}
-\end{figure}
-
-\begin{figure}[H]
-	\centering     
-	
-	\subfigure[]{\label{fig:apple}\includegraphics[width=0.50\textwidth]{resultados/full/SR2-map.jpg}}\hspace{10mm}%
-	\subfigure[]{\label{fig:apple}\includegraphics[width=0.38\textwidth]{resultados/full/SR2-1.jpg}}
-	
-	\caption[Mosaico del conjunto \textit{ScottReef 25}]{Mosaico compuesto por 177 imágenes utilizando únicamente matrices de isometría.}
-	\label{imagen:full:SR2}
-\end{figure}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.69\linewidth]{resultados/sr-original.pdf}
-	\caption[Mosaico del conjunto \textit{ScottReef 25} por el \textit{ACFR}]{Recorrido del mosaico en la figura sobre la solución del \textit{ACFR}, el recorrido se muestra con la linea punteada de color rojo.}
-	\label{imagen:full:SR-original}
-\end{figure}
 
 \section{Resumen}
 

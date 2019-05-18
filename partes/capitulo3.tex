@@ -9,15 +9,15 @@ En esta sección se presentarán las bases teóricas que sustentan la implementa
 
 
 \section{Modelo pinhole de la cámara}
-El modelo pinhole de la cámara es una aproximación proyectiva en la que la medición tomada por la cámara (imagen) es el resultado de una transformación del espacio en tres dimensiones del mundo  al espacio en dos dimensiones de una imagen (${\rm I\!R}^3 \to {\rm I\!R}^2$). Este modelo es el modelo más simple y utilizado en las aplicaciones de odometría y SLAM visual.
+El modelo pinhole o de pequeña apertura de la cámara es una aproximación proyectiva en la que la medición tomada por la cámara (imagen) es el resultado de una transformación del espacio en tres dimensiones del mundo  al espacio en dos dimensiones de una imagen (${\rm I\!R}^3 \to {\rm I\!R}^2$). Este modelo de cámara es el modelo más simple y utilizado en las aplicaciones de odometría y SLAM visual.
 
-En la imagen  \ref{imagen:modelo_pinhole} se presenta esta aproximación. En primer lugar se observa el sistema de referencia de la cámara el cual es presentado por los ejes $X_{c}$ $Y_{c}$ y $Z_{c}$. El eje $Z_{c}$ también es conocido como el eje óptico o principal de la cámara. Además, se presenta el plano de la imagen en la figuras \ref{imagen:modelo_pinhole} y \ref{imagen:modelo_pinhole2}, el cual es un plano que se encuentra ubicado en $z= f$, donde $f$ es la distancia focal de la cámara en unidades de píxeles. En dicho plano se puede observar el sistema de referencia de la imagen, el cual se representa con los ejes punteados $u$ y $v$. En la figura \ref{imagen:coordenadas_imagen} se puede apreciar este sistema de referencia y su correspondencia con la imágen. Cabe destacar que el sistema de coordenadas de la imagen tiene como unidad el píxel, al igual que los ejes $x$ y $y$ del plano de la imagen, los cuales tienen la misma dirección que los ejes $X_{c}$ y $Y_{c}$ .
+En la imagen  \ref{imagen:modelo_pinhole} se presenta esta aproximación. En primer lugar se observa el sistema de referencia de la cámara el cual es presentado por los ejes $X_{c}$, $Y_{c}$ y $Z_{c}$. El eje $Z_{c}$ también es conocido como el eje óptico o principal de la cámara. Además, se presenta el plano de la imagen en la figuras \ref{imagen:modelo_pinhole} y \ref{imagen:modelo_pinhole2}, el cual es un plano que se encuentra ubicado en $z= f$, donde $f$ es la distancia focal de la cámara en unidades de píxeles. En dicho plano se puede observar el sistema de referencia de la imagen, el cual se representa con los ejes punteados $u$ y $v$. En la figura \ref{imagen:coordenadas_imagen} se puede apreciar este sistema de referencia y su correspondencia con la imagen. Cabe destacar que el sistema de coordenadas de la imagen tiene como unidad el píxel, al igual que los ejes $x$ y $y$ del plano de la imagen, los cuales tienen la misma dirección que los ejes $X_{c}$ y $Y_{c}$ .
 
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\textwidth]{modelo_pinhole}
-	\caption[Modelo de apertura pequeña de la cámara]{Modelo de apertura pequeña de la cámara\protect\footnotemark.}
+	\caption[Modelo de apertura pequeña de la cámara]{Modelo de  pequeña apertura de la cámara\protect\footnotemark.}
 	\label{imagen:modelo_pinhole}
 \end{figure}
 \footnotetext{\url{https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html}}
@@ -68,11 +68,19 @@ De la misma forma, la reproyección del píxel al punto , que resulta en una tra
 \label{eq:ReproyeccionCAM} 
 \end{equation}
 
-Cabe destacar que el conjunto de puntos de la forma $s*(X, Y, Z)$, donde $s$ es un factor de escala o de profundidad, forman la recta visualizada en la figura \ref{imagen:modelo_pinhole}. A estos puntos de ${\rm I\!R}^3$ le corresponde el mismo píxel de proyección sobre la imagen $(u, v)$. Esto implica que de una única imagen no es posible extraer la información de la profundidad del punto proyectado. Para ello es necesario más de una imagen y emplear métodos como los de triangulación.
+Cabe destacar que el conjunto de puntos de la forma $s*(X, Y, Z)$, donde $s$ es un factor de escala o de profundidad, forman la recta de color rojo visualizada en la figura \ref{imagen:modelo_pinhole}. A estos puntos de ${\rm I\!R}^3$ le corresponde el mismo píxel de proyección sobre la imagen $(u, v)$. Esto implica que de una única imagen no es posible extraer la información de la profundidad del punto proyectado. Para ello es necesario más de una imagen y emplear métodos como los de triangulación.
 
+\subsection{Geometría epipolar}
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{epipolar}
+	\caption[Geometría epipolar]{Geometría epipolar. Adaptado \protect\footnotemark.}
+	\label{imagen:epipolar}
+\end{figure}
+\footnotetext{\url{https://docs.opencv.org/3.1.0/da/de9/tutorial_py_epipolar_geometry.html}}
 
-
+%
 \section{Detectores y descriptores de características}
 
 Los puntos de interés, puntos clave, o \textit{"features"} (en español: características) como son comúnmente llamados, son regiones en una imagen que contienen patrones específicos, lo que hace que puedan ser fácilmente seguidos o ubicados en otra imagen. Tuytelaars y Mikolajczyk \cite{Tuytelaars} definen un punto característico local como \textit{``un patrón en la imagen que difiere de su vecindario directo''}. De esta forma, se considera que los puntos característicos deben proporcionar la posibilidad de ser identificados en diferentes imágenes con el objetivo de emparejarlos.
@@ -256,12 +264,38 @@ Adicionalmente, se propone aplicar algunos métodos que permiten aumentar el ren
 
 \section{ Orientación de un cuerpo en el espacio}
 
-La representación de la orientación de un cuerpo en el espacio puede ser expresada mediante diferentes representaciones, entre las cuáles se destacan la representación mediante ángulos de Euler,  la representación en ángulos de Roll, Pitch y Yaw, la representación en cuaterniones, y la representación  matricial mediante matrices de rotación de 3x3. Las dos primeras son más utilizadas con fines de visualización de la orientación ya que es posible gráficar cada uno de los ángulos del robot y observar su variación en el tiempo, mientras que la representación en cuaterniones y matricial son formas compactas que permiten obtener la orientación final del robot mediante la concatenación de operaciones matemáticas. En particular, la representación de cuaterniones se considera más eficiente que la matricial por poseer un numero menor de operaciones mátematicas para obtener una  orientación determinada.
+La representación de la orientación de un cuerpo en el espacio puede ser expresada mediante diferentes representaciones, entre las cuáles se destacan la representación mediante ángulos de Euler,  la representación en ángulos de Roll, Pitch y Yaw (RPY), la representación en cuaterniones, y la representación  matricial mediante matrices de rotación de 3x3. Las dos primeras son más utilizadas con fines de visualización de la orientación ya que es posible graficar cada uno de los ángulos del robot para observar la variación de la orientación del robot en el tiempo, mientras que la representación en cuaterniones y matricial son formas compactas que permiten obtener la orientación final del robot mediante la concatenación de operaciones matemáticas. En particular, la representación de cuaterniones se considera más eficiente que la matricial por poseer un numero menor de operaciones mátematicas para obtener una  orientación determinada. Todas estas representaciones poseen transformaciones equivalentes para pasar de una representación a otra. En la figura \ref{imagen:rpy} se presenta el sistema de representación en RPY, el cual es utilizado en este trabajo para la visualización de la orientación y su error de estimación.
 
-\subsection{ Representación Matricial }
-La representación matricial es la representación matemática más simple que se puede utilizar y todos las demás representaciones de la orientación pueden ser convertidas en esta representación.
 
-Una matriz de rotación es una matriz de 3x3 ortogonal de determinante uno:
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{RPY}
+	\caption[Representación de la rotación como ángulos  RPY]{Representación de la rotación como ángulos RPY. La orientación del cuerpo se obtiene mediante la rotación de forma secuencial de los ejes de Roll, Pitch y Yaw en el sentido que se presenta en la figura.}
+	\label{imagen:rpy}
+\end{figure} 
+
+En la representación RPY se puede definir cualquier rotación como la operación consecutiva de 3 rotaciones elementales:
+
+
+
+\begin{itemize}
+	\item Una rotación alrededor del eje X, definido entre ${-180}^{\circ }$ y ${180}^{\circ }$, a la que se le denomina roll o cabeceo $ \phi$. 
+	\item Una rotación alrededor del eje Y, definido entre ${-90}^{\circ }$ y  ${90}^{\circ }$, a la que se le denomina pitch o alabeo $\theta$.
+	\item Una rotación alrededor del eje Z, definido entre ${-180}^{\circ }$ y ${180}^{\circ }$, a la que se le denomina yaw o guiñada $\psi$.
+	
+	
+\end{itemize}
+
+\subsection{ Representación Matricial de la orientación }
+
+En la representación matricial, la rotación de un cuerpo puede ser representada una matriz de 3x3:
+
+\begin{equation}
+\begin{matrix} R\quad =\quad \quad \begin{bmatrix} { r }_{ 11 } & { \quad r }_{ 12 } & { \quad r }_{ 13 } \\ { r }_{ 21 } & { \quad r }_{ 22 } & { \quad r }_{ 23 } \\ { r }_{ 31 } & { \quad r }_{ 32 } & { \quad r }_{ 33 } \end{bmatrix}\quad  \end{matrix}
+\label{eq:MatrizRotacion}
+\end{equation}
+
+Esta matriz debe ser ortogonal de determinante uno:
 
 \begin{equation}
 { R }^{ T }\quad =\quad { R }^{ -1 }
@@ -280,18 +314,118 @@ det(R)\quad =\quad 1
  \label{eq:Propiedad3MatrizRotacion}
  \end{equation}
  
+ 
+ También es posible obtener la orientación final de un cuerpo mediante la concatenación de matrices de rotación:
+ 
+ 
+  \begin{equation}
+ { R }_{ 3 }\quad =\quad { R }_{ 1 }{ R }_{ 2 }
+ \label{eq:Propiedad4MatrizRotacion}
+ \end{equation}
+ 
+ Donde ${ R }_{ 1 }$ representa la orientación inicial, ${ R }_{ 2 }$ el cambio de orientación, y ${ R }_{ 3 }$ la orientación final.
+ 
+ En la figura \ref{imagen:rpy2matriz} se presenta la forma en la que es posible obtener la matriz rotacional a partir de los ángulos RPY.
+ 
+ \begin{figure}[H]
+ 	\centering
+ 	\includegraphics[scale=0.4]{RPY2Matriz}
+ 	\caption[Relación entre RPY y la matriz rotacional]{Relación entre RPY y la matriz rotacional. }
+ 	\label{imagen:rpy2matriz}
+ \end{figure} 
+ 
+ Y de forma equivalente:
+ 
 
+\begin{align}
+ \psi \quad =\quad \arctan { (\frac { { r }_{ 21 } }{ { r }_{ 11 } }) } 
+ \\ \theta \quad =\quad \arctan { (\frac { -{ r }_{ 31 } }{ \sqrt { { { r }_{ 32 } }^{ 2 }\quad +\quad { { r }_{ 33 } }^{ 2 } }  } ) } \quad 
+ \\ \phi \quad =\quad \arctan { (\frac { { r }_{ 32 } }{ { r }_{ 33 } } ) } \quad 
+ \label{eq:Matriz2RPY}
+ \end{align}
 
 \section{ Transformaciones de cuerpo rígido }
 
-El movimiento de un robot en el espacio puede ser descrito mediante un movimiento rotacional y un movimiento traslacional. Una transformación de cuerpo rigido representa el cambio de movimiento rotacional y traslacional de un cuerpo respecto a otro sistema de referencia.
+El movimiento de un robot en el espacio puede ser descrito mediante un movimiento rotacional y un movimiento traslacional. Una transformación de cuerpo rígido representa el cambio de movimiento rotacional y traslacional de un cuerpo respecto a otro sistema de referencia.
 
+En aplicaciones de odometría y SLAM, las transformaciones de cuerpo rígido son utilizadas debido a que se asume que el entorno del robot se encuentra fijo, y por lo tanto, la posición y orientación del robot puede estar vinculada a un sistema de referencia fijo. Esto permite que el robot se pueda localizar respecto a su entorno y que se pueda obtener la trayectoria del robot como una concatenación de transformaciones de cuerpo rígido.
+
+Considerar que partes del entorno se pueden movilizar aumenta en gran medida la complejidad de la estimación del movimiento del robot.
+
+En síntesis, una transformación de cuerpo rígido $T$  es una matriz de 4x4 constituida por una matriz de rotación $R$ y un vector de traslación $t = {(tx, ty, tz)}^{T}$:
+
+\begin{equation}
+\begin{matrix} { { T } }\quad =\quad \begin{bmatrix} R & \quad { { t } } \\ { 0 }^{ T } & \quad 1 \end{bmatrix}\quad  \end{matrix}\quad =\quad \begin{bmatrix} { r }_{ 11 } & { \quad r }_{ 12 } & { \quad r }_{ 13 } & \quad t_{ x } \\ { r }_{ 21 } & { \quad r }_{ 22 } & { \quad r }_{ 23 } & { \quad t }_{ y } \\ { r }_{ 31 } & { \quad r }_{ 32 } & { \quad r }_{ 33 } & \quad { t }_{ z } \\ 0 & 0 & 0 & 1 \end{bmatrix}
+\label{eq:TC}
+\end{equation}
+
+Esta matriz tiene en total 6 grados de libertad: tres grados pertenecientes a la rotación alrededor de los ejes $x$, $y$ y $z$, y tres grados de traslación $x$, $y$ y $z$. 
+
+La representación del vector $t$ es canónica, ya que los tres componentes del vector corresponden directamente
+a tres grados de libertad. Sin embargo, la representación R de la rotación no es
+canónica, ya que posee nueve parámetros, pero en conjunto solo representan
+tres grados de libertad. Los seis parámetros restantes están restringidos debido
+a la característica de ortogonalidad de la matriz y la necesidad de tener norma
+igual a 1 para todas sus columnas y filas (propiedades \ref{eq:Propiedad1MatrizRotacion} y \ref{eq:Propiedad2MatrizRotacion}). Esto impone seis restricciones, dejando
+solamente tres parámetros libres de modificación.
+
+En este caso, los puntos de ${\rm I\!R}^3$ de la forma $P = (X, Y, Z)$  son representados por vectores homogéneos $P = {(X, Y, Z, 1)}^{T}$ , y la multiplicación de $T$ por un vector homogéneo genera otro vector homogéneo:
+
+\begin{equation}
+\begin{pmatrix} \begin{matrix} X' \\ Y' \\ Z' \end{matrix} \\ 1 \end{pmatrix}\quad =\quad T\quad \begin{pmatrix} \begin{matrix} X \\ Y \\ Z \end{matrix} \\ 1 \end{pmatrix}
+\end{equation}
+
+
+Las transformaciones de cuerpo rígido se utilizan para representar el movimiento traslacional y rotacional de un objeto de manera compacta y siempre están definidas en relación con un sistema de coordenadas de referencia, ya se trate del sistema de coordenadas global o de otro sistema de coordenadas arbitrario. Esto permite concatenar varias transformaciones de cuerpo rígido aplicando la multiplicación matricial entre ellas:
+
+\begin{equation}
+{ T }_{ c }\quad =\quad { T }_{ a }{ .T }_{ a-b }.{ T }_{ b-c }
+\end{equation}
+
+En este caso, tal como se ilustra en la figura \ref{imagen:TC_Concatenacion}, la orientación y posición final del cuerpo ${T}_{c}$, respecto al sistema de referencia global, es el resultado de la concatenación de la orientación y posición inicial ${T}_{a}$ en $(a)$ con el cambio de orientación y traslación ${T}_{a-b}$  de $(a)$ a $(b)$, y el cambio ${T}_{b-c}$ de $(b)$ a $(c)$.
+
+
+ \begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{TC_Concatenacion}
+	\caption[Concatenación de transformaciones de cuerpo rígido]{Concatenación de transformaciones de cuerpo rígido}
+	\label{imagen:TC_Concatenacion}
+\end{figure} 
+
+Las transformaciones de cuerpo rígido son fundamentales para poder relacionar las mediciones realizadas en el sistema de referencia de la imu con las imágenes tomadas por la cámara, y a su vez relacionar las estimaciones de movimiento de estos marcos de referencia con el sistema de referencia fijo.\\
+
+La figura \ref{fig:TransformacionesRobot} presenta los sistemas de referencia presentes en el robot. La transformación ${T}_{IMU-CAM}$ relaciona los sistemas de referencia de la cámara y la imu, y corresponde a un parámetro extrínseco del sistema que es invariante debido a que la cámara y la imu se encuentran físicamente acoplados.Esta transformación se obtiene mediante la calibración de los sensores y esta conformada por dos partes: rotación del sistema de referencia de la cámara respecto al sistema de referencia de la imu; y traslación del sistema de referencia de la cámara respecto al sistema de referencia de la imu. Determinar estos parámetros con precisión es de vital importancia en los sistemas visuales-inerciales debido a que los errores de calibración puede generar resultados insatisfactorios en los algoritmos de estimación.
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{ImuCam}
+	\caption{Sistemas de Referencia del Robot }
+	\label{fig:TransformacionesRobot}
+\end{figure}
+
+
+De forma concreta:
+
+\begin{equation}
+{ { T } }_{ IMU -CAM }\quad =\quad \begin{bmatrix} R_{ IMU - CAM } & \quad { { P } }_{ IMU - CAM } \\ { 0 }^{ T } & \quad 1 \end{bmatrix}\quad =\quad \begin{bmatrix} { r }_{ 11 } & { \quad r }_{ 12 } & { \quad r }_{ 13 } & \quad t_{ x-IMU } \\ { r }_{ 21 } & { \quad r }_{ 22 } & { \quad r }_{ 23 } & { \quad t }_{ y-IMU } \\ { r }_{ 31 } & { \quad r }_{ 32 } & { \quad r }_{ 33 } & \quad { t }_{ z-IMU } \\ 0 & 0 & 0 & 1 \end{bmatrix}\quad 
+\label{eq:transformacionIMUCAM} 
+\end{equation}
+
+Donde ${R}_{IMU-CAM}$ es la matriz de rotación que al concantenarse con la orientación de la IMU, se obtiene la orientación de la cámara. La orientación de la IMU se representa mediante la matriz ${R}_{IMU}$, la cual es la orientación de la imu respecto al sistema de referencia fijo. En síntesis se tiene que la orientación de la cámara respecto al sistema de referencia fijo (${R}_{CAM}$) es:
+
+\begin{equation}
+{ R }_{ CAM }\quad =\quad { R }_{ IMU }*{ R }_{ IMU-CAM }\quad 
+\label{eq:rotacionIMUCAM} 
+\end{equation}
 
 
 
 \section{ Filtros de fusión inercial }
 
 Existen varias alternativas para determinar la orientación de un robot a partir de las medidas del acelerómetro y el giroscópio. Entre los más conocidos se encuentran el filtro Kalman, el filtro de Madgwick, el filtro complementario de Valenti, y el filtro de Mahony.
+
 \subsubsection{Cálculo de Roll, Pitch y Yaw}
 Lá forma básica de cálculo de los ángulos de roll, pitch y yaw es mediante el cálculo de la integral numérica de sus tasas de cambio como se muestra en
 la integral definida en la ecuación 
@@ -352,37 +486,6 @@ El filtro de Madgwick se encuentra dividido en cuator partes: el cálculo de la 
 Este filtro también utiliza la representación en cuaterniones. Fusiona la estimación del cuaternion de orientación con el delta de cuaternion obtenido del acelerómetro. Este último sirve sólo como corrección de las componentes de roll y pitch, estimando el ángulo de yaw a partir de las mediciones del giroscopio. Si se provee medidas del magnetómetro, se estima otro delta de cuaternion mediante las lecturas del campo  magnético, el cual se utiliza para las correcciones de la estimación del yaw.\\
 
 El termino de filtro complemenetario se debe al uso del analisis en el domino de la frecuencia de las señales para tener una mejor estimación de una cantidad en particular. Si se tienen señales afectadas por  ruidos de diferentes frecuencias, se utilizan dos filtros con un ancho de banda apropiado. Para estimación de la orientación de las medidas de la IMU, un filtro complementario utiliza un filtro pasa altas para la orientación estimada del giroscopio, la cual es afectada por  ruido de baja frecuencia , y un filtro pasa bajo para las medidas del acelerómetro, las cuales poseen rudio de alta frecuencia. Idealmente, la fusión de los dos filtros genera un filtro pasa todo con medidas libres de ruido. El termino complementeario deriva debido a que la frecuencia de corte es la misma para ambos filtros. \\
-
-
-\section{Selección de keyframes}
-
-Los keyframes son seleccionados cuando la disparidad entre las imágenes excede un valor fijo (threshold). Debido a que se cuenta con la información rotacional proveniente del filtro de la imu, la disparidad es dividida en dos tipos de disparidad: La disparidad traslacional, y la disparidad rotacional. La diparidad rotacional es expresada en grados por:\\
-modulo(rotacionx2 +rotaciony2 + rotacionz2);
-
-Es decir, corresponde al modulo del vector rotación. Sólo depende del residual de rotación.
-
-Por su parte, la disparidad traslacional corresponde al promedio de la distancia euclidiana entre las parejas de las imágenes , expresada en pixeles, resultantes del movimiento traslacional. Para obtener la disparidad traslacional es necesario realizar una reproyección de las parejas utilizando sólo la información del residual rotacional.
-
-\subsection{Cálculo de la disparidad traslacional}
-Supongamos que tenemos un keyframe previamente determinado y queremos calcular la disparidad traslacional entre la nueva imagen y el keyframe actual, para determinar si la nueva imagen es un keyframe utilizando la disparidad traslacional.
-
-Siendo pki el feature con coordenadas en pixeles (uki, vki)  en el keyframe y pj su pareja correspondiente en la nueva imagen, con coordenadas (uj,vj) ,la disparidad traslacional se calcula como:
-
-Reproyección de 2D a 3D del punto del keyframe:\\
-Transformacion rotacional del punto 3D del keyframe\\
-proyeccion del punto 3D del Keyframe\\
-Calculo de la distancia euclidiana entre el punto proyectado y el punto en la imagen nueva \\
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -470,22 +573,6 @@ Para el calculo del histograma se obtiene la frecuencia de aparición de cada va
 	\end{displaymath}
 \end{itemize}
 
-En la figura \ref{imagen:stretch} se puede apreciar el cambio, tanto en el histograma como en la misma imagen, luego de aplicar el proceso previamente descrito.
-
-
-\begin{figure}[h]
-	\centering
-	\vspace{0.6cm}
-	\begin{tabular}{@{}cc@{}}
-		\includegraphics[width=.50\textwidth]{gray-01} &
-		\includegraphics[width=.40\textwidth]{hist-01} \\
-		\includegraphics[width=.50\textwidth]{gray-stretch-01} &
-		\includegraphics[width=.40\textwidth]{hist-stretch-01}
-	\end{tabular}
-	\captionof{figure}[Estiramiento del histograma]{Arriba: imagen original y su respectivo histograma a su derecha. Abajo: Imagen luego de aplicar el estiramiento del histograma, y su respectivo histograma a su derecha.}
-	\label{imagen:stretch}
-\end{figure}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Resultados}
@@ -539,19 +626,7 @@ En el cuadro \ref{0234} se observan los resultados para 61 pares de imágenes de
 	\end{tabular}
 \end{table}
 
-\begin{figure}[h]
-	
-	\centering
-	\vspace{0.6cm}
-	\begin{tabular}{@{}cccc@{}}
-		\includegraphics[width=.23\textwidth]{0234-1} &
-		\includegraphics[width=.23\textwidth]{0234-2} &
-		\includegraphics[width=.23\textwidth]{0234-3} &
-		\includegraphics[width=.23\textwidth]{0234-4} 
-	\end{tabular}
-	\captionof{figure}{imágenes representativas del conjunto \textit{Chuspa}}
-	\label{imagen:0234}
-\end{figure}
+
 
 
 En el cuadro \ref{SR} se observan los resultados para 42 pares de imágenes. Estas imágenes fueron proporcionadas por el centro Australiano de Robótica de Campo ACFR (del inglés: Australian Center for Field Robotics) y pertenecen al conjunto de datos \textit{ScottReef 25}. Adicionalmente, en la figura \ref{imagen:SR} se ilustran cuatro imágenes representativas del conjunto estudiado. Para esta prueba se utilizaron imágenes de $640\times480$ píxeles.
@@ -664,20 +739,6 @@ En el cuadro \ref{0752} se observan los resultados para 51 pares de imágenes de
 	\end{tabular}
 \end{table}
 
-\begin{figure}[h]
-	\centering
-	\vspace{0.6cm}
-	\begin{tabular}{@{}cccc@{}}
-		\includegraphics[width=.23\textwidth]{0752-1} &
-		\includegraphics[width=.23\textwidth]{0752-2} &
-		\includegraphics[width=.23\textwidth]{0752-3} &
-		\includegraphics[width=.23\textwidth]{0752-4} 
-	\end{tabular}
-	\captionof{figure}{imágenes representativas del conjunto \textit{Mochima}}
-	\label{imagen:0752}
-\end{figure}
-
-En el cuadro \ref{geotagg} se observan los resultados para 50 pares de imágenes aéreas de una cantera de grava (conjunto \textit{Grava}), ubicado en Suiza. Estas imágenes fueron proporcionadas por la empresa SenseFly\footnote{\url{https://www.sensefly.com/education/datasets/}} y capturadas por un dron eBee\footnote{\url{https://www.sensefly.com/drone/ebee-mapping-drone/}}.  Adicionalmente, en la figura \ref{imagen:geotag} se ilustran cuatro imágenes representativas del conjunto estudiado. Para esta prueba se utilizaron imágenes de $1280\times960$ píxeles.
 
 \begin{table}[h]
 	\centering
@@ -720,17 +781,7 @@ En el cuadro \ref{geotagg} se observan los resultados para 50 pares de imágenes
 	\end{tabular}
 \end{table}
 
-\begin{figure}[h]
-	\centering
-	\begin{tabular}{@{}cccc@{}}
-		\includegraphics[width=.23\textwidth]{geotagg-1} &
-		\includegraphics[width=.23\textwidth]{geotagg-2} &
-		\includegraphics[width=.23\textwidth]{geotagg-3} &
-		\includegraphics[width=.23\textwidth]{geotagg-4} 
-	\end{tabular}
-	\caption{imágenes representativas del conjunto \textit{Grava}}
-	\label{imagen:geotag}
-\end{figure}
+
 
 Partiendo de los resultados previamente expuesto, analizaremos el rendimiento de todas las combinaciones estudiadas en función a los parámetros descritos al inicio de la sección.
 
