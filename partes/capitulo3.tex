@@ -70,15 +70,6 @@ De la misma forma, la reproyección del píxel al punto , que resulta en una tra
 
 Cabe destacar que el conjunto de puntos de la forma $s*(X, Y, Z)$, donde $s$ es un factor de escala o de profundidad, forman la recta de color rojo visualizada en la figura \ref{imagen:modelo_pinhole}. A estos puntos de ${\rm I\!R}^3$ le corresponde el mismo píxel de proyección sobre la imagen $(u, v)$. Esto implica que de una única imagen no es posible extraer la información de la profundidad del punto proyectado. Para ello es necesario más de una imagen y emplear métodos como los de triangulación.
 
-\subsection{Geometría epipolar}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.7\textwidth]{epipolar}
-	\caption[Geometría epipolar]{Geometría epipolar. Adaptado \protect\footnotemark.}
-	\label{imagen:epipolar}
-\end{figure}
-\footnotetext{\url{https://docs.opencv.org/3.1.0/da/de9/tutorial_py_epipolar_geometry.html}}
 
 %
 \section{Detectores y descriptores de características}
@@ -247,7 +238,6 @@ Este proceso se repite hasta tener la distancia de cada punto de la imagen $1$ c
 Este proceso es mejor conocido como emparejamiento por fuerza bruta, ya que se compara entre todos los puntos por la mejor pareja posible. Aún cuando se asegura obtener el mejor emparejamiento, siendo viable para trabajar con pocos datos, el hecho de probar todas los casos posibles cuando se tiene una gran cantidad de puntos, incrementa en gran medida el tiempo de cómputo. Para efectuar este proceso de una forma eficiente se desarrollaron algoritmos basados en la búsqueda de vecinos mas cercanos. En este sentido se cuenta con el algoritmo \textit{kd-forest} (abreviado del inglés: k-dimensional forest), el cual es una mejora del algoritmo \textit{kd-tree} (abreviado del inglés: k-dimensional tree) para mejor desempeño al usar vectores multidimensionales, implementado en la librería para la rápida aproximación de vecinos mas cercanos FLANN \cite{flann} (del inglés: Fast Library for Approximate Nearest Neighbors).
 
 %\textit{kd-tree} es una estructura de datos de segmentación de espacios para organizar puntos en un espacio de k dimensiones
-
 \section{Módulo comparativo}
 
 Una vez se conocen los algoritmos que se proponen utilizar, es necesario comparar su rendimiento bajo distintas condiciones, de modo que se pueda seleccionar el indicado para cada tipo de aplicación. En este sentido, se pretende estudiar el rendimiento en base a los siguientes parámetros:
@@ -421,7 +411,53 @@ Donde ${R}_{IMU-CAM}$ es la matriz de rotación que al concantenarse con la orie
 \end{equation}
 
 
+\section{Geometría epipolar y triangulación}
 
+La geometría epipolar relaciona la localización en un par de imágenes de un punto $X$ en el espacio, y está relacionada directamente con la matriz esencial $E$, la cual a su vez es utilizada en métodos de estimación de la traslación y rotación basados en puntos característicos y en métodos de triangulación.
+
+En primer lugar, se observa la figura \ref{imagen:epipolar}. En esta figura se observan la imagen 1 y la imagen 2, cuyos origines del sistema de referencia de la cámara se denotan como $O$ y $O'$, respectivamente.
+
+El punto $X$ es proyectado en la imagen 1 en $x$. Podemos que también cada punto perteneciente a la recta $OX$ es proyectado al mismo punto $x$. Al considerar la imagen 2, se observa que la proyección del punto $X$ sobre la imagen es $x'$, pero que la posición en el plano de la imagen varia al cambiar la profundidad del punto $X$, es decir, al tomar otro punto en la recta $OX$.  Por tanto, la triangulación consiste en encontrar la profundidad correcta de $X$, conociendo las ubicaciones de sus proyecciones en un par de imágenes diferentes.
+
+Las proyecciones de la recta $OX$ forma la linea sobre la imagen de la derecha, llamada epilinea. Se denomina epilinea del punto $x$ debido a que para encontrar este punto en la imagen 2 se debe buscar a lo largo de esta linea. Esto añade eficiencia computacional ya que no debemos buscar en la imagen entera, y a esta restricción se denomina restricción epipolar. El plano $XOO'$ es conocido como el plano epipolar.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{epipolar}
+	\caption[Geometría epipolar]{Geometría epipolar. Adaptado \protect\footnotemark.}
+	\label{imagen:epipolar}
+\end{figure}
+\footnotetext{\url{https://docs.opencv.org/3.1.0/da/de9/tutorial_py_epipolar_geometry.html}}
+
+También es posible calcular el vector normal al plano epipolar utilizando los vectores paralelos a las rectas $OX$ y $O'X$. Para ello, se utilizan los segmentos de recta $Ox$ y $O'x'$, y se definen los vectores de características unitarios como:
+
+\begin{equation}
+\overset { \rightarrow  }{ { f }_{ i } } =\quad \left[ \begin{matrix} \frac { u_{ i }-{ c }_{ x } }{ { f }_{ x } }  \\ \frac { { v }_{ i }-{ c }_{ y } }{ { f }_{ y } }  \\ 1 \end{matrix} \right] 
+\end{equation}
+
+Este vector unitario puede ser entendido observando la ecuación \ref{eq:ReproyeccionCAM} como un vector que no posee unidades y que apunta desde el origen de coordenadas de la cámara a la ubicación del punto $X$ en el espacio. El vector ${ f }_{ 1}$ se obtiene a partir  de $x = (u1,v1)$  y de los parámetros intrínsecos de la cámara $fx, fy, cx$ y $cy$.
+
+De esta forma es posible visualizar que el vector normal al plano epipolar puede ser obtenido con el producto vectorial de ${ f }_{ 1}$ y ${ f }_{ 2}$. Sin embargo, estos vectores no se encuentran referenciados a un único sistema de la cámara. El vector ${ f }_{ 1}$ se encuentra calculado en el sistema $O$ y el vector ${ f }_{ 2}$ al sistema $O'$. 
+
+Por tanto colocamos el sistema de la imagen 1 como el sistema de referencia global, y calculamos  ${ f }_{ 2}$ 
+conociendo la transformación de cuerpo rígido que existe de la imagen 1 a la imagen 2:
+
+\begin{equation}
+\begin{matrix} \overset { \rightarrow  }{ { f }_{ 2,\quad 1 } } \quad =\quad { R }_{ 1 }^{ 2 }.\overset { \rightarrow  }{ { f }_{ 2 } } +{ P }_{ 1 }^{ 2 } \end{matrix}
+\end{equation}
+
+Donde $\overset { \rightarrow  }{ { f }_{ 2,\quad 1 } } \quad $ significa el vector $\overset { \rightarrow  }{ { f }_{ 2 } } $ respecto al sistema de referencia de la imagen 1.
+
+Sin embargo, debido a que sólo es necesaria la dirección de los vectores para el calculo del vector normal, y considerando que la traslación de los sistemas ${ P }_{ 1 }^{ 2 }$ no varia la dirección del vector $\overset { \rightarrow  }{ { f }_{ 2,\quad 1 } }$, el vector normal al plano epipolar puede ser calculado como:
+
+
+\begin{equation}
+\overset { \rightarrow  }{ n } \quad =\quad \overset { \rightarrow  }{ { f }_{ 1 } } \quad \times \quad (\quad \overset { \rightarrow  }{ { { R }_{ 1 }^{ 2 } } } \quad .\quad \overset { \rightarrow  }{ { f }_{ 2 } } \quad )
+\label{eq:normalEpipolar}
+\end{equation}
+
+
+%Enlazar con ecuación de Z*vector
 \section{ Filtros de fusión inercial }
 
 Existen varias alternativas para determinar la orientación de un robot a partir de las medidas del acelerómetro y el giroscópio. Entre los más conocidos se encuentran el filtro Kalman, el filtro de Madgwick, el filtro complementario de Valenti, y el filtro de Mahony.

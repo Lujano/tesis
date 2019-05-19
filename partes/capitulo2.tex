@@ -8,6 +8,83 @@ Con esto se pretende recuperar y trascender el conocimiento acumulado en esta á
 
 \section{Estado del arte}
 
+\subsection{EuRoC MAV Dataset}
+El conjunto de datos de prueba empleado en este trabajo corresponde al al EuRoC MAV Dataset \cite{0}, el cual es un dataset de referencia que es utilizado para evaluar diferentes algoritmos de SLAM visual-inercial y que dispone de 11 secuencias de datos. \\
+
+
+El EuRoC MAV Dataset contiene imágenes estéreo sincronizadas con las medidas de la IMU,  y un groundtruth preciso que es estimado utilizando el láser Leica y el sistema de captura de movimiento Vicon. Los datos fueron recolectados utilizando robot aéreo el cual se presenta en la figura \ref{fig:robotEuroc}. \\
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{Implementacion/robotEuroc.png}
+	\caption{Robot aéreo empleado en la recolección de datos en el EuRoC MAV Dataset .}
+	\label{fig:robotEuroc}
+\end{figure}
+
+Las cámaras empleadas en estas secuencias capturan datos a 20Hz, mientras que la IMU opera a 200Hz. En nuestro caso, se utilizará la cámara CAM0 de la figura \ref{fig:robotEuroc}. Esta cámara se encuentra sincronizada con la IMU tal como se presenta en la figura \ref{fig:sincronizacionEuroc}. En un tiempo $t_k$ se captura tanto la imagen de la cámara, como las medidas de aceleración y velocidad angular provenientes de la IMU. El tiempo $t_c$ representa el lapso de tiempo entre la captura de dos imágenes y corresponde con 50 ms. En este caso, se tienen $n = 10$ medidas de la IMU entre cada captura de la cámara. \\
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{Implementacion/DiagramaIMUCamara.png}
+	\caption{Sincronización entre la IMU y la cámara.}
+	\label{fig:sincronizacionEuroc}
+\end{figure}
+
+También se dispone de la calibración de los parámetros intrísecos y extrinsecos del sistema. En la figura \ref{fig:extrinsecosEuroc} se muestran los parámetros extrínsecos relevantes para este trabajo. En este caso, se utiliza la transformación de cuerpo rígido $T{B-CAM0}$, que relaciona el sistema de referencia de la IMU (Body, B) y el sistema de referencia de la cámara CAM0. 
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{Euroc/Enlaces.png}
+	\caption{Parámetros extrínsecos del sistema}
+	\label{fig:extrinsecosEuroc}
+\end{figure}
+
+Las secuencias de este conjuntos de datos se encuentran clasificadas en "fácil", "media", y "difícil",  en función de la media de la velocidad lineal y angular del robot utilizado y de las condiciones visuales y niveles de iluminación. En la figura \ref{fig:tablaDeCaracteristicas} se presentan las características de las secuencias. 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{Euroc/TabladeCaracteristicas.png}
+	\caption{Características de las secuencias de datos del EuRoC MAV Dataset}
+	\label{fig:tablaDeCaracteristicas}
+\end{figure}
+
+
+
+Este conjunto de datos fue recolectado en dos tipos de ambiente. El primer ambiente se presenta en la figura \ref{fig:machineHall} y  corresponde a una sala de máquinas en el cual fueron recolectadas 5 secuencias de datos (MH\_01\_easy, MH\_02\_easy, MH\_03\_medium, MH\_04\_difficult, MH\_05\_difficult). \\
+
+En la figura \ref{fig:vicon} se muestra el segundo ambiente correspondiente a una habitación en el que se tomaron 6 secuencias de datos (V1\_01\_easy, V1\_02\_medium, V1\_03\_difficult, V2\_02\_easy, V2\_02\_medium, V2\_03\_difficult). En estas secuencias se dispone de la nube de puntos de la habitación, la cual fue generada a través de la fusión de las medidas tomadas con el láser Leica, y se presentan en la figura \ref{fig:pointcloudEuroc}.\\
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.2]{Euroc/MachineHall1.png}
+	\includegraphics[scale=0.2]{Euroc/MachineHall2.png}
+	\caption{Imágenes de la secuencia de datos correspondiente a la sala de máquinas.}
+	\label{fig:machineHall}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.2]{Euroc/Vicon0.png}
+	\includegraphics[scale=0.2]{Euroc/Vicon1.png}
+	\caption{Imágenes de la secuencia de datos correspondiente a la habitación Vicon.}
+	\label{fig:vicon}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.2]{Euroc/Pointcloud0.png}
+	\includegraphics[scale=0.2]{Euroc/Pointcloud1.png}
+	\includegraphics[scale=0.2]{Euroc/Pointcloud2.png}
+	\includegraphics[scale=0.2]{Euroc/Pointcloud3.png}
+	\caption{Nubes de puntos de la habitación utilizada en el EuRoC MAV Dataset}
+	\label{fig:pointcloudEuroc}
+\end{figure}
+
+
 La elaboración de mosaicos para la construcción de mapas de superficies, se ha desarrollado incluso antes desde la era digital de la computadoras. Desde que el proceso de registrar fotografías ha existido, se comenzaron a usar para elaborar mapas topográficos \cite{primeros-mapas}, donde imágenes adquiridas a partir de globos aerostáticos o altas colinas eran unidas manualmente. Posteriormente, producto de los avances en materia de aeronáutica, el interés por la aerofotografía se incrementó en gran medida. En este mismo sentido se utilizaban aviones para el registro de imágenes a mayores altitudes, logrando cubrir grandes áreas en menor cantidad de tiempo. Pero debido a que no se alcanzaba suficiente altura, y se mantenía la necesidad de registrar grandes áreas, era requerido que los mapas se construyan mediante fotografías que se superpongan, de igual forma esta tarea se llevaba a cabo mediante técnicas manuales por medio de expertos. Esto permite ilustrar un aspecto del problema subyacente, donde existe un compromiso entre área total a ser mapeada y la resolución espacial de dicho mapa.
 
 La necesidad de registrar áreas aun mas grandes siguió avanzando, motivado por la llegada de los satélites que eran capaces de enviar a tierra la información que obtenían de las cámaras. Los avances tecnológicos en materia de computación, y el creciente aumento de datos para esta aplicación, promovieron el desarrollo de técnicas de procesamiento digital de imágenes para dar solución a este tipo de problemas.

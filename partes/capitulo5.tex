@@ -113,119 +113,184 @@ Por tanto, la disparidad traslacional tiene unidades de píxeles.
 
 \section{Estimación de la traslación}
 
+\subsection{Método de dos puntos}
 El método para estimar la traslación está basado en una modificación del esquema RANSAC de dos puntos implementado en [].
+%Robust Real-Time Visual Odometry
+%with a Single Camera and an IMU
  
 Este método aprovecha la información rotacional y la geometría epipolar para hallar el vector de traslación entre las dos imágenes.
 
-En primer lugar se desea estimar el vector de traslación entre la imagen 1 y la imagen 2.
+En primer lugar, debido a que la escala real de la traslación no es determinable a partir de imágenes,  se desea entonces estimar el vector de traslación unitario entre la imagen 1 y la imagen 2. A la imagen 1 la denotaramos como la imagen key y a la imagen 2 como la imagen current, y como ${C}_{key}$ y ${C}_{current}$ a la posición de la cámara en las imágenes 1 y 2, respectivamente. El vector a estimar lo denotaremos en este caso como $\overset { \rightarrow  }{ { \quad t }_{ current }^{ key } }  $
 
-Se definen los vectores unitarios como:
+Para ello se utilizan dos parejas de puntos característicos. La primera pareja corresponde con la proyección del punto ${P}_{1}$ de la figura \ref{imagen:epipolarPlanes}. La segunda pareja corresponde a la proyección de ${P}_{2}$ en las imágenes. 
+
+Posteriormente se  calculan los vectores normales a los planos epipolares, denotando a ${n}_{1}$ como el vector normal al plano epipolar de la pareja de ${P}_{1}$ y a ${n}_{2}$ como el vector normal al plano epipolar de la pareja de ${P}_{2}$.
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{TwoPoint}
+	\caption[Intersección de planos epipolares]{Intersección de planos epipolares.}
+	\label{imagen:epipolarPlanes}
+\end{figure}
+
+
+En la figura \ref{imagen:epipolarPlanes}, podemos observar que la intersección de estos planos tiene como lugar una recta cuya dirección es la del vector  $\overset { \rightarrow  }{ { \quad t }_{ key }^{ current } } $. Por tanto, es evidente que los vectores ${n}_{1}$ y ${n}_{1}$ son perpendiculares al vector $\overset { \rightarrow  }{ { \quad t }_{ key }^{ current } }  $ , y por tanto podemos calcular un vector con la misma dirección que este último como:
+
+
 \begin{equation}
-\overset { \rightarrow  }{ { f }_{ i } } =\quad \left[ \begin{matrix} \frac { u_{ i }-{ c }_{ x } }{ { f }_{ x } }  \\ \frac { { v }_{ i }-{ c }_{ y } }{ { f }_{ y } }  \\ 1 \end{matrix} \right] 
+\overset { \rightarrow  }{ { t } } =\overset { \rightarrow  }{ { { n }_{ 1 } } } \times \overset { \rightarrow  }{ { { n }_{ 2 } } } 
 \end{equation}
 
+Por tanto se cumple:
+
+\begin{equation}
+ \overset { \rightarrow  }{ { t } } = s.\overset { \rightarrow  }{ {t }_{ key }^{ current } } 
+\end{equation}
+
+Donde s es un factor de escala.
+
+Debido a esto, el vector de traslación unitario puede ser calculado como:
+
+\begin{equation}
+\overset { \rightarrow  }{ { t }_{ key}^{ current } } =\pm \quad \frac { \overset { \rightarrow  }{ t }  }{ \left\| \overset { \rightarrow  }{ t }  \right\|  } 
+\end{equation}
+
+Para determinar el signo, se  impone que la siguiente restricción:
+
+\begin{equation}
+(\overset { \rightarrow  }{ { f }_{ 1 } } \quad -\quad (\quad \overset { \rightarrow  }{ { { R }_{ 1 }^{ 2 } } } \quad .\quad \overset { \rightarrow  }{ { f }_{ 2 } } \quad ).\overset { \rightarrow  }{ { t }_{ current }^{ key } } >0
+\end{equation}
+
+La cual implica que los puntos característicos se encuentran al frente de la imagen.
+
+
+
+\subsection{Selección de la función de error }
+
+En general, es posible encontrar más de un par de parejas de correspondencias por imagen, por lo que es necesario estimar el vector de traslación unitario que reduzca el error grupal de correspondencias.
+
+Una forma de hacer esto es realizar la triangulación de las correspondecias con el residual de rotación y  el vector unitario de traslación para un par de características del grupo, y calcular el error de reproyección para todas las correspondencias, y el vector de traslación que disminuya el error del grupo se considerará como la mejor estimación. Sin embargo, esto tiene un alto costo computacional debido a que en cada iteración deben ser nuevamente trianguladas los puntos característicos.
+
+Debido a ello, y para conservar la simplicidad y reducir el costo computacional, se toma como función de error el producto punto entre el vector estimado y los vectores normales a los planos epipolares $\overset { \rightarrow  }{ { n }_{ i } } $ . En teoría, el producto punto entre el vector unitario de traslación y el normal al plano epipolar debe ser $0$, sin embargo debido a la resolución de la imagen, a la precisión de la detección de la característica, y a la profundidad del punto, esto no ocurre en general.
+
+Una vez definida la función de error existen dos aproximaciones básicas para hallar la mejor estimación.
+En presencia de un número significativo de correspondecias erróneas, se puede optar por métodos como RANSAC, para estimar el vector unitario de traslación que mejor se ajuste a un subconjunto del grupo de características, o en caso de tener una parte previa de filtrado de correspondencias, utilizar métodos iterativos como el de Gauss-Newton para hallar el vector de traslación que reduzca el error grupal.
+
+En este trabajo se eligio emplear RANSAC debido a su simplicidad, costo computacional fijo, y robustez ante correspondencias erróneas.
+
+\subsection{RANSAC}
 
 
 
 
-%Robust Real-Time Visual Odometry
-%with a Single Camera and an IMU
+
+\section{Extracción de residuales fotométricos}
+\subsection{ Selección de parejas }
+
+Actualmente la selección de parejas posee una esquema de  implementación basado en  CPU (figura 13) y  esquema similar basado en GPU (figura 14).\\
+
+En ambos módulos se tienen las imágenes i e i+1, las cuales son la entrada del modulo de extracción de características.
+En la salida de este módulo se tienen la ubicación de los puntos característicos en las imágenes y sus descriptores. Este módulo tiene a disposición 5 tipos de detectores en la versión en CPU y 2 tipos de detectores en la versión en GPU.\\
+
+Posteriormente, el módulo de emparejamiento es el encargado de generar las parejas de correspondencias entre los puntos característicos de las dos imágenes, utilizando para ello algoritmos de emparejamiento como FLANN (del inglés: Fast Library for Approximate Nearest Neighbors)
+y fuerza bruta. En la implementación en CPU se dispone de ambos algoritmos, mientras que la versión en GPU sólo implementa fuerza bruta.\\
+
+Por último, el módulo de filtrado se encarga de seleccionar las mejores parejas entre las dos imágenes.  Este módulo es común en ambas versiones y se encuentra implementado en CPU.\\
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{Implementacion/DiagramaCPU2.png}
+	\caption{Esquema general del módulo de extracción de parejas en CPU.}
+	\label{fig:my_label}
+\end{figure}
 
 
-\subsubsection*{Espacio de color CIELAB}
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{Implementacion/DiagramaGPU2.png}
+	\caption{Esquema general del módulo de extracción de parejas en GPU.}
+	\label{fig:my_label}
+\end{figure}
 
-Conocido en ocasiones con el nombre de l*a*b, es un espacio derivado del \textit{CIE 1931 XYZ}, creado por la comisión internacional de la iluminación CIE (del francés: Comission Internationale de l'Éclairage).
+\subsubsection{Extracción de puntos característicos}
 
-\begin{figure}[h]
-	\centering     %%% not \center
-	\subfigure[]{\label{fig:lab-a}\includegraphics[width=.42\textwidth]{lab1}}
-	\subfigure[]{\label{fig:lab-b}\includegraphics[width=.50\textwidth]{lab2}}
+El modulo de extracción de puntos característicos en CPU dispone de detectores como SIFT, SURF, KAZE, AKAZE y ORB, mientras que la versión en GPU sólo posee SURF y ORB.\\
+
+En la figura 15 se muestran la detección de puntos característicos  para una imagen perteneciente al EuRoC MAV Dataset \cite{0}. De izquierda a derecha se presenta la extracción de  puntos característicos para SIFT (1666 puntos), SURF (1504 puntos), KAZE (1865 puntos), AKAZE (1653 puntos) y ORB (1500 puntos) sobre la misma imagen. \\
+\begin{figure}[H]
 	
-	\caption[Espacio de color CIELAB]{Espacio de color CIELAB. En (a) se aprecia el diagrama tridimensional, mientras que en (b) una vista superior del rango de colores con luminancia fija.}
-	\label{imagen:lab-color}
+	\includegraphics[scale=0.3]{Implementacion/DeteccionCaracteristicas/Imagen1SURF.png}
+	\includegraphics[scale=0.3]{Implementacion/DeteccionCaracteristicas/Imagen1SIFT.png}
+	\includegraphics[scale=0.3]{Implementacion/DeteccionCaracteristicas/Imagen1KAZE.png}
+	\includegraphics[scale=0.3]{Implementacion/DeteccionCaracteristicas/Imagen1AKAZE.png}
+	\includegraphics[scale=0.3]{Implementacion/DeteccionCaracteristicas/Imagen1ORB.png}
+	\caption{Extracción de características.}
+	\label{fig:my_label}
 \end{figure}
 
-Este es un espacio de color tridimensional descrito por los ejes $a$, que extiende desde verde ($-a$) hasta rojo ($+a$), el eje $b$ que se extiende desde azul ($-b$) hasta amarillo ($+b$), y la luminancia $l$ que varia desde negro ($-l$) hasta blanco ($+l$). Esta representación se puede observar en la figura \ref{imagen:lab-color}.
 
-Debido a que la cantidad de valores para representar los colores en este espacio es menor que en RGB, es mas rápido hacer correcciones de color en LAB, ya que un cambio en la cantidad de valor de una variable produce un cambio con importancia visual. Además de permitir trabajar la iluminación de la imagen por separado de los colores.
-
-\subsection{Método de Reinhard}
-El objetivo de esta transformación de color es lograr que la distribución de los puntos en el espacio de color LAB se transfieran entre imágenes. Para esto se utiliza la información de la media y desviación estándar sobre cada canal (L, A y B).
-
-Para un par de imágenes $I$ e $I^*$, donde $I$ es la imagen origen e $I^*$ es la imagen que se quiere corregir, se calcula la media y desviación estándar para cada canal.
-\begin{align*}
-&{\langle l \rangle} \hspace{0.55cm} {\langle l^* \rangle}  &{ \sigma_l } \hspace{0.5cm} { \sigma^*_l } \\
-&{\langle a \rangle} \hspace{0.48cm} {\langle a^* \rangle}  &{ \sigma_a } \hspace{0.5cm} { \sigma^*_a }  \\
-&{\langle b \rangle} \hspace{0.5cm} {\langle b^* \rangle}  &{ \sigma_b } \hspace{0.5cm} { \sigma^*_b } 
-\end{align*}
-Luego se ajusta la distribución de la imagen objetivo restandole la media obtenida en el paso anterior:
-\begin{align*}
-l^* &= l^* - \langle l^* \rangle \\
-a^* &= a^* - \langle a^* \rangle \\
-b^* &= b^* - \langle b^* \rangle
-\end{align*}
-Luego se escalan los valores en función a las desviaciones estándar:
-\begin{align*}
-l^* &= \frac{\sigma^*_l}{\sigma_l} l^* \\
-a^* &= \frac{\sigma^*_a}{\sigma_a} a^* \\
-b^* &= \frac{\sigma^*_b}{\sigma_b} b^*
-\end{align*}
-Finalmente se le suma la media, pero en este caso de la imagen de origen (imagen del color deseado):
-\begin{align*}
-l^* &= l^* + \langle l \rangle \\
-a^* &= a^* + \langle a \rangle \\
-b^* &= b^* + \langle b \rangle
-\end{align*}
-Para lograr un mapeo de color correcto es necesario obtener la información de desviación estándar y media únicamente en el área de intersección entre las imágenes $I\cap I^*$. De esta forma se logra igualar estas regiones de la imagen que deben corresponder a la misma escena.
+\subsubsection{Filtrado de parejas}
 
 
-\section{Fusión de imágenes}\label{seccion-fusion}
+Una vez se han identificado los puntos característicos en la imagen i y la i+1, se calculan los descriptores de las características detectadas y se procede a encontrar las correspondencias entre las dos imágenes. Para esta tarea se utiliza el método de vecinos más cercanos (KNN, del inglés:K Nearest Neighbors), el cual puede a su vez puede implementarse con algoritmos del tipo fuerza bruta o FLANN (del inglés: Fast Library for Approximate Nearest Neighbors). Este método se encarga de comparar el descriptor de un punto de referencia presente en la imagen i con los descriptores de los puntos de referencia de la imagen i+1 y determinar los k descriptores más cercanos al descriptor de la imagen i . En este caso la métrica de distancia puede corresponder a distancia euclidiana, en el caso de descriptores vectoriales, o a distancia Hamming, en el caso de descriptores binarios.\\
 
-Una vez se logra determinar la mejor linea de corte y aplicar una corrección de color, es posible que aun se cuenten con transiciones entre imágenes con cierto nivel de discontinuidad. En este caso es conveniente aplicar algoritmos que permitan una transición suavizada entre dichos bordes.
+En esta implementación se utiliza k = 2, y se considera como una correspondencia aquellos casos donde la distancia entre el descriptor de la característica presente en la imagen i (D1) y su vecino más cercano en la imagen i+1 resulta 0.8 veces menor a la distancia entre D1 y el siguiente vecino de la imagen i+1. El valor de 0.8 se establece en correspondencia con el método de extracción de parejas de alta calidad establecido por David G. Lowe en \cite{1}.\\
 
-Se tienen varias versiones de estos algoritmos que serán explicados a continuación: fusión ponderada simple o bajo un esquema piramidal.
+Posteriormente se realiza una prueba de simetría entre parejas. En esta prueba, si el descriptor D1 de la característica  de la imagen i posee una correspondencia D2 en la imagen i+1, entonces al calcular la correspondencia desde D2 a la imagen i, debe resultar D1. Las parejas que no cumplan este criterio son descartadas.\\
 
-\subsection{Fusión ponderada} \label{feathering}
-Este tipo de algoritmos realiza una fusión que consiste en realizar un suma ponderada, en la cual se modifica el peso de los píxeles en función de la distancia con el borde de su imagen. Es decir, se realiza una suma de los valores de las imágenes ($\mathtt{I_1},\, \mathtt{I_2}$) en el área de intersección ($\mathtt{I_1}\cap \mathtt{I_2}$) para cada canal, dándole menor peso a los píxeles que se encuentren mas cercanos del extremo de la imagen. Cabe destacar que esta suma se normaliza para asegurar que no se supere el rango $0-255$ con el cual se representan los valores de la imagen final. La ecuación para la suma ponderada se muestra a continuación:
-\begin{displaymath}
-	F = (1-\alpha)\cdot \mathtt{I}_1 + \alpha\cdot \mathtt{I}_2
-\end{displaymath} 
-Donde el parámetro $\alpha$ varia en el rango $0\to 1$, en este caso en función a la distancia, tal y como se ilustra en la figura.
+En la figura 16 se presenta un ejemplo del filtrado  utilizando el detector SIFT. En la imagen i se detectaron 1666 puntos (figura 1) característicos, mientras que en la imagen i+1 se detectaron 1826. Luego de aplicar el filtrado de parejas por vecinos más cercanos y la prueba de simetría, la imagen i de la izquierda posee 882 correspondencias con la imagen i+1 presentada a la derecha.\\
 
-
-
-
-El algoritmo de fusión ponderada bajo el esquema de transición presenta ciertas desventajas, entre estas el efecto fantasma, en el que se observan duplicados de los objetos en la escena pero con cierto grado de desvanecimiento. Aunque no será implementado, el estudio de su funcionamiento es necesario para comprender el algoritmo de fusión que trabaja bajo un esquema piramidal.
-
-\subsection{Fusión ponderada piramidal}
-
-El método planteado anteriormente propone una transición suavizada para imágenes que tengan una región en común, presentando así una primera aproximación al problema aquí planteado, sin embargo los algoritmos que se pretenden utilizar en etapas previas (linea de corte) eliminan ésta área de intersección, quedando don imágenes con solo un borde en común. 
-
-Esta técnica es llamada fusión piramidal o fusión multibanda, y su proceso consiste en fusionar las imágenes para distintos niveles de escala. Refiriéndonos a la figura \ref{imagen:piramidal1}, se crea para una misma imagen distintos niveles de escala ($G_i$), donde cada nivel corresponde con una reducción a un cuarto del área del nivel anterior. La cantidad de niveles en la pirámide corresponde con la cantidad de bandas que se quieren fusionar. Es importante mencionar que el proceso de compresión y posterior expansión de una imagen, se aproxima al proceso de aplicar un filtro gaussiano, con lo cual a cada nivel creado $G_i$ recibe el nombre de gaussiana, resultando lo que se denomina una pirámide de gaussianas, tal y como se ilustra en la figura \ref{imagen:piramidal1} con 5 niveles.
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=.8\linewidth]{piramidal1.pdf}
-	\caption[Construcción de pirámide de gaussianas]{Construcción de pirámide de gaussianas}
-	\label{imagen:piramidal1}
+\begin{figure}[H]
+	
+	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1.png}
+	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen2.png}
+	\caption{Salida del modulo de filtrado luego de la prueba de simetría.}
+	\label{fig:my_label}
 \end{figure}
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=.8\linewidth]{piramidal2.pdf}
-	\caption[Construcción de pirámide de laplacianas]{Construcción de pirámide de laplacianas}
-	\label{imagen:piramidal2}
+
+Finalmente, se realiza una distribución espacial de las mejores parejas  sobre las imágenes i e i+1 utilizando un filtro de celdas. En este último,la imagen i es dividida en celdas de m x n pixeles. En esta implementación se m y n son el resultado de dividir el ancho y el largo de la imagen, respectivamente, por un mismo número entero k. \\
+
+La figura 17 presenta dos imágenes en las que el filtro de celdas es aplicado. La imagen de la izquierda es el resultado de colocar las dimensiones de una imagen de resolución 752x480 píxeles, en celdas unitarias de aproximadamente 62x40 píxeles,
+tomando k = 12,  generando por tanto 144 celdas y teniendo un total de 112 parejas finales luego de aplicado el filtrado. Por su parte, la imagen de la derecha es el resultado de fraccionar en 36 celdas la imagen original, tomando k = 6. En ésta, se tienen 34 parejas finales. \\
+
+
+\begin{figure}[H]
+	
+	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1Grid12.png}
+	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1Grid6.png}
+	\caption{División de la imagen en celdas.}
+	\label{fig:my_label}
 \end{figure}
 
-Una vez se tiene la pirámide de gaussianas, se elabora una pirámide de laplacianas utilizando \textit{DoG}, es decir, cada nivel de esta pirámide se construye restando un nivel de la pirámide gaussiana con su nivel siguiente pero expandido (para lograr las mismas dimensiones). Al restar una imagen con ella misma pero aplicada un filtro gaussiano --- que remueve las componentes en bajas frecuencias ---, se logra una imagen que resalte las componentes en las frecuencias altas. Esta composición se puede observar en la figura \ref{imagen:piramidal2}, donde a cada imagen laplaciana $L_i$ se le sumó una constante para efectos de visualización, ya que presenta valores muy bajos al aplicar únicamente la resta.
 
-Como ya se mencionó, este proceso se aplica para imágenes que no comparten un área de superposición, con lo cual es necesario definir mediante una máscara binaria los límites de cada imagen. Convenientemente, el proceso de determinar la línea de corte ya nos ofrece esta máscara mediante el proceso de etiquetado, con lo cual se utiliza para definir las fronteras en esta fusión.
+El criterio aplicado para seleccionar las mejores parejas y distribuirlas de forma homogénea sobre la imagen  consiste en seleccionar la mejor pareja  dentro de la región de la imagen correspondiente a la celda, y descartar a las demás parejas presentes. Se considera como mejor pareja a aquella que posea la menor distancia entre los descriptores de sus dos puntos característicos.\\
 
-La pirámide gaussiana que se elaboró en un principio para cada imagen a fusionar, debe también crearse para la máscara, ya que la fusión debe realizarse en cada nivel de la pirámide. Finalmente para mostrar la imagen final en la resolución original, el proceso de fusión debe realizarse escalando cada nivel hasta las dimensiones originales.
+Las figuras 18 y 19 presentan el resultado final del modulo de filtrado de parejas con 36 y 144 celdas, respectivamente. Se puede observar que el filtro de celdas sólo es aplicado en los puntos característicos de la imagen i, ya que debido al movimiento del robot las puntos característicos se encuentran distribuidos de forma diferente en la imagen i+1 (imagen mostrada a la derecha) . \\
 
-Éste proceso consiste en expandir el último nivel de la pirámide --- con su respectiva máscara---, una vez expandido se le suma el laplaciano correspondiente, devolviéndole la componente en alta frecuencia que le fue removida. En este punto se tiene el par de imágenes expandidas un nivel, además de la máscara aun afectada por el efecto del filtro gaussiano, con lo cual se efectúa una suma ponderada entre las dos imágenes similar que en la sección \ref{feathering}, pero en este caso se utiliza la máscara difuminada para determinar el peso de la suma, y donde el inverso de la máscara determina la ponderación de la segunda imagen.
+\begin{figure}[H]
+	
+	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1BEST12.png}
+	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen2BEST12.png}
+	\caption{Filtrado de parejas con 144 celdas.}
+	\label{fig:my_label}
+\end{figure}
 
-En la figurase puede observar el resultado de aplicar una fusión bajo el esquema piramidal.
+
+\begin{figure}[H]
+	
+	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1BEST6.png}
+	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen2BEST6.png}
+	\caption{Filtrado de parejas con 36 celdas.}
+	\label{fig:my_label}
+\end{figure}
+
+Cabe destacar que siempre que existan suficientes puntos característicos distribuidos en la imagen a la entrada de este módulo, el número de parejas finales será cercano al número de celdas. \\
+
+Para evaluar el tiempo de cómputo del filtrado espacial se utilizó un equipo Intel ® Core 2 Duo CPU E8400 @ 3.00Ghz, dando como resultado un tiempo aproximado de 400 $\mu$s para 144, 121, 100, 81, 64, 49 y 36 celdas, teniendo como entrada 882 parejas.
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
