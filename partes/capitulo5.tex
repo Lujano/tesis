@@ -293,18 +293,3 @@ Para evaluar el tiempo de cómputo del filtrado espacial se utilizó un equipo I
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Resultados}
-
-
-Hasta ahora se han presentado casos en los que se lidia con un par de imágenes. Por lo tanto se presenta un mosaico compuesto por tres imágenes del conjunto \textit{Espenky}, adicionalmente se tiene un error producido por el efecto paralaje. En este caso el algoritmo busca por la mejor linea de corte para cada par de imágenes por separado, pero logrando un mosaico final sin errores de discontinuidades.
-
-En este ejemplo en particular se logra evidenciar una debilidad que tiene este algoritmo. A pesar de ser muy robusto al evadir objetos por la diferencia de texturas y bordes, es común que se cuente con discontinuidades visuales producto de cambios de iluminación.
-
-
-\section{Resumen}
-
-En esta sección se presentan los errores resultantes de las etapas de alineación, y que evitan que se logre un  mosaico que cumpla con el objetivo de aparentar ser una misma imagen. Luego del planteamiento del problema se exponen y describen distintos algoritmos que buscan una solución a estos.
-
-En su mayoría estos algoritmos buscan reducir las discontinuidades entre imágenes producto de objetos en movimiento dentro de la escena, errores de alineación de objetos y texturas, y diferencias de iluminación. Al final del capítulo se presentaron los distintos resultados que muestran la efectividad de los algoritmos descritos, en primer lugar resultados concretos de los módulos por separado y finalmente con resultados de mosaicos completos de los conjunto de datos estudiados, aplicando para estos el sistema completo especificado al inicio del presente proyecto.
-
