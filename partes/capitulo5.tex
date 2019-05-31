@@ -181,7 +181,50 @@ En este trabajo se eligio emplear RANSAC debido a su simplicidad, costo computac
 
 \subsection{RANSAC}
 
+Random Sample Consensus (RANSAC) es un algoritmo robusto para el ajuste de modelos en presencia de outliers. Un ejemplo sencillo es el problema de hallar la linea que mejor se ajuste a un conjunto de datos. Si hay 200 puntos disponibles, cada par de puntos forma una línea y por tanto, hay 19900 posibles lineas. El problema es seleccionar el par de puntos que generan la linea que mejor se ajusta al conjunto entre todos los pares.
 
+En general, RANSAC da como resultado la hipotesis más probable que es soportada por la mayoria de los inliers.
+Para calcular cual es la linea que se ajusta mejor, el procedimiento es el siguiente:
+
+\begin{itemize}
+\item Tomar de forma aleatoria $n$ muestras del conjunto total de $N$ puntos  y determinar el modelo que generan.
+\item  Para cada una de las N-n puntos calcular la distancia o error al modelo generado.
+\item Contar el número $c$ de puntos cuya distancia o error está por debajo de un valor umbral ($\epsilon$). Estos puntos son denominados inliers del modelo.
+\item Repetir este procedimiento k veces.
+\end{itemize}
+
+El resultado del RANSAC es el modelo que obtiene el mayor número de inliers.
+
+Es claro que en el ejemplo de la linea de ajuste al conjunto de puntos es ineficiente tomar $k= 19900$. Por tanto se toma el modelo probabilístico donde el número de iteraciones $k$ viende dado por:
+
+\begin{equation}
+k\quad =\quad \frac { log(1-P) }{ log(1-{ p }^{ n }) } 
+\end{equation}
+
+Donde:
+
+$n$:número de muestras necesaria para generar un modelo en cada iteración.
+$p$:probabilidad de que las $n$ muestras sean todas inliers.
+$P$:probabilidad de que existe un modelo satisfactorio luego de $k$ iteraciones.
+
+Para el ejemplo del ajuste de la línea se tiene:
+
+
+\begin{table}[htbp]
+	\caption{Algoritmo RANSAC para ajuste de línea}
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		\textbf{\textit{n}} & \textbf{\textit{P}} & \textbf{\textit{p}} & \textbf{\textit{k}} \\ \hline
+		2 & 0.99 & 0.30 & 48.83 \\ \hline
+		2 & 0.99 & 0.60 & 10.32 \\ \hline
+		2 & 0.99 & 0.70 & 6.84 \\ \hline
+		2 & 0.90 & 0.50 & 8.00 \\ \hline
+	\end{tabular}
+	\label{RansacLinea}
+\end{table}
+
+
+En esta tabla se puede obsevar la influencia de las probabilidades $P$ y $p$, para hallar un modelo de ajuste a un conjunto de puntos a partir de una par de estos ($n = 2$).
 
 
 
