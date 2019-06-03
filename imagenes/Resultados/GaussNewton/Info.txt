@@ -1,0 +1,5 @@
+0.573243 s Estimación Gauss Newton
+4 niveles piramidales
+max 10 iteraciones
+
+0.799779 con residuales
