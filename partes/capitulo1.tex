@@ -1,18 +1,52 @@
 \chapter{Introducción}
 \label{capitulo1}
 \lhead{Capítulo 1. \emph{Introducción}}
-% De qué va a tratar el capítulo
-El Grupo de Investigación y Desarrollo en Mecatrónica de la USB \textit{(GIDM)} ha venido desarrollando un conjunto de proyectos relacionados con los sistemas de navegación de robots autónomos y de operación remota de estos.
 
-La navegación y exploración en áreas de difícil acceso mediante el uso de robots, es una linea de investigación que se ha venido desarrollando en el Grupo de Investigación y Desarrollo en Mecatrónica de la USB  \textit{(GIDM)} desde el año 2013. Una de las aplicaciones de mas demanda recientemente, es la reconstrucción de un mapa 2D de la superficie recorrida por los robots utilizados. En el presente capítulo se pretende introducir los trabajos previos y avances que se han tenido en el desarrollo de este tipo aplicaciones, específicamente en el \textit{GIDM}, que dieron origen y motivación para la realización del proyecto. Además se postulan un serie de problemas que el presente trabajo busca solucionar.
+En los últimos años se han logrado avances importantes en el área de navegación y exploración con robots móviles, lo que ha permitido ampliar las aplicaciones de estos en espacios áereos, terrestres y acuáticos en diversas disciplinas, facilitando la extracción de información de estos entornos en lugares de difícil acceso.
+
+En este sentido el Grupo de Investigación y Desarrollo en Mecatrónica de la USB \textit{(GIDM)} ha venido desarrollando un conjunto de proyectos relacionados con los sistemas de navegación de robots autónomos y de operación remota de estos desde el año 2013, donde el área de odometría y SLAM se ha venido trabajando con profundo interés por ser fundamental en la recopilación de información de diferentes ambientes y por abrir la puerta a la automatización de la exploración y navegación de vehículos autónomos.
 
 \section{Antecedentes}
 
 En el \textit{GIDM} se han realizado grandes avances en el desarrollo de equipos y plataformas robóticas para actividades de investigación, exploración e inspección de ambientes no estructurados. Usualmente cuando se opera en este tipo de ambientes, en busca de realizar exploraciones mas eficientes y a mayor escala, se emplean vehículos operados remotamente \textit{ROV} (del inglés: Remotely Operated Vehicles) equipados con cámaras de vídeo. O bien, para el caso de aplicaciones subacuáticas también se suelen utilizar vehículos autónomos submarinos \textit{AUV} (del inglés: Automated Underwater Vehicles), mientras que para exploraciones aéreas se hace uso de vehículos aéreos no tripulados UAV (del ingles: Unmanned Aerial Vehicle).
 
-En este sentido, se tienen proyectos como el presentado por \textit{Danilo, D.} \cite{danilo}, cuyo proyecto de grado consistió en el desarrollo en un sistema de operación remota para un prototipo de robot submarino (\textit{Poseibot}), con la finalidad de implementarlo en tareas de exploración. Con objetivos similares, \textit{Said, A.} \cite{said} basó su proyecto de grado en la instrumentación y control de un robot cuadricóptero volador(\textit{UAV}) diseñado y fabricado también como parte de dicho proyecto. 
+En este sentido, en el año \textit{Certad, N.} \cite{novel} propuso en el 2013 como proyecto de maestría, un algoritmo de localización y mapeo simultáneo ppara un vehículo terrestre de locomoción diferencial instrumentado con sensores exteroceptivos, realimentado por odometría, el cual utilizó Webots como herramienta de simulación y fue implementado utlizando Matlab.
 
-Adicional a los dos prototipos antes mencionados, en el \textit{GIDM} se cuentan con otras plataformas móviles como \textit{Roomba}, \textit{AmigoBot}, y un vehículo submarino OpenROV\footnote{ \url{https://www.openrov.com/products/openrov28/}}, el cual es un robot maniobrado remotamente de baja envergadura, diseñado especialmente operaciones de exploración y está dotado, entre otras cosas, con una cámara de video HD.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{Antecedentes/Certad}
+	\caption{Resultados de trayectoria y reconstrucción de mapas obtenidos en \cite{novel}}
+	\label{imagen:Antecedentes/Certad}
+\end{figure}
+
+
+
+
+
+En el 2017, \textit{Gonzáles M.} \cite{manuel} desarrolló un sistema de reconstrucción de modelos de ambiente utiliznado un sensor de Detección y Localización por Láser (LIDAR, del inglés: Laser Imaging Detection and Ranging). Esta implementación se realizó utilizando ROS como núcleo de control y procesamiento de datos y \textit{Cartographer} como herramienta de manejo de la localización y mapeo del prototipo empleado. Los modelos reconstruidos como el presentado en la figura \ref{imagen:Antecedentes/octomaps} se realizaron utilizando estructuras probabilísticas de ocupación llamadas \textit{octomaps}, las cuales permitieron la disminución del uso de recursos de memoria en la reconstrucción de grandes entornos.
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.3\textwidth]{Antecedentes/mapa2D}
+	\includegraphics[width=0.3\textwidth]{Antecedentes/mapa2DReal}
+	\caption{Resultados de trayectoria y reconstrucción de mapas obtenidos en \cite{manuel}. A la izquierda se presenta el mapa original obtenido y a la derecha se presenta superpuesto al diagrama del edificio real.}
+	\label{imagen:Antecedentes/mapa2D}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{Antecedentes/Octomaps}
+	\caption{Reconstrucción en tres dimensiones utilizando octomaps obtenidos
+		en  \cite{manuel}}
+	\label{imagen:Antecedentes/octomaps}
+\end{figure}
+
+ En este sentido, se tienen proyectos como el presentado por \textit{Danilo, D.} \cite{danilo}, cuyo proyecto de grado consistió en el desarrollo en un sistema de operación remota para un prototipo de robot submarino (\textit{Poseibot}), con la finalidad de implementarlo en tareas de exploración. Con objetivos similares, \textit{Said, A.} \cite{said} basó su proyecto de grado en la instrumentación y control de un robot cuadricóptero volador(\textit{UAV}) diseñado y fabricado también como parte de dicho proyecto. 
+
+Adicional a los dos prototipos antes mencionados, en el \textit{GIDM} se cuentan con otras plataformas móviles como \textit{Roomba}, \textit{AmigoBot}, y un vehículo submarino OpenROV\footnote{ \url{https://www.openrov.com/products/openrov28/}}, el cual es un robot maniobrado remotamente de baja envergadura, diseñado especialmente operaciones de exploración y está dotado, entre otras cosas, con una cámara de video HD y una unidad de medición inercial.
 
 \begin{figure}[H]
 	\centering
@@ -25,48 +59,23 @@ Si bien se cuenta con un conjunto de plataformas robóticas adaptadas para tarea
 
 \section{Justificación y planteamiento del problema}
 
-Cuando se habla de generar un mosaico 2D, se hace referencia al proceso de alinear y recortar imágenes, de tal forma que puedan ser representadas todas juntas en una sola gran imagen. Es importante considerar que las imágenes para este tipo de aplicaciones son capturadas desde diferentes ubicaciones de la cámara, a diferencia del proceso para elaborar imágenes panorámicas, en las cuales esta ubicación es una constante. Esta característica trae consigo uno de los principales problemas en la construcción de mosaicos, y se debe al efecto paralaje. Éste efecto está asociado a la diferencia entre las posiciones aparentes de los objetos, según el punto desde donde se observa.
+El Grupo de Investigación y Desarrollo en Mecatrónica de la USB ha venido desarrollando un conjunto de proyectos relacionados con los sistemas de navegación de robots autónomos y de operación remota de estos. Actualmente cuentan con un vehículo submarino OpenROV 2.8 de operación remota (ROUV, por sus siglas en inglas - Remotely Operated Underwater Vehicle) el cual posee una IMU y tiene la capacidad de transmitir videos en alta definición. Es por ello que los trabajos más recientes de este grupo han estado enfocados al área de visión por computadora con la finalidad de mejorar el desempeño y las capacidades de los sistemas de control de vehículos como el OpenROV 2.8, y para realizar exploración submarina como reconstrucciones y muestreos de arrecifes, embarcaciones hundidas y fauna submarina. Entre estos trabajos se encuentra el proyecto de grado de Fabio Morales, en el cual se implementó un sistema de odometría visual para resolver el problema de SLAM en robots submarinos basado en una cámara monocular, y el proyecto de grado de  Armando Longart, en el cual se desarrollaron módulos de procesamiento de imágenes y video para aplicaciones subacuáticas.
 
-En la figura \ref{imagen:paralaje} se ilustra dicho fenómeno de paralaje, en la cual según el punto de vista \textbf{A}, se observa el triángulo a la izquierda del circulo, mientras que desde el punto \textbf{B} este orden se encuentra invertido. 
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=5cm]{paralaje.pdf}
-	\caption[Efectos en el cambio del punto de vista]{Efectos en el cambio del punto de vista.}
-	\label{imagen:paralaje}
-\end{figure}
-
-Este problema afecta en gran medida la construcción del mosaico, sin embargo no es el único presente, y se intensifican en aplicaciones de mapeo submarino, en las cuales, se evidencian efectos de distorsión de los objetos, absorción y cambios en la dirección de la luz, producto de pequeñas partículas suspendidas en el agua.
-
-\begin{wrapfigure}{r}{0.3\textwidth}
-	\begin{center}
-		\vspace*{-0.5in}
-		\includegraphics[width=0.3\textwidth]{hugin}
-	\end{center}
-	\caption{Logo del software Hugin}
-\end{wrapfigure}
-
-En el \textit{GIDM} actualmente se utilizan mecanismos manuales para la elaboración de estos mapas, en específico, se hace uso de \textit{softwares} como Hugin\footnote{\url{hugin.sourceforge.net/}} y OpenDroneMap (ODM)\footnote{\url{http://opendronemap.net/}}. El primero es un programa de código abierto y gratuito bajo licencia GPL\footnote{\url{http://www.gnu.org/copyleft/gpl.html}}, el cual esta dedicado a la generación de imágenes panorámicas, incluyendo funciones para el recorte, alineación y corrección de color; además de algoritmos para la optimización de parámetros en la cámara, y corrección de distorsión. A pesar de que este software esta diseñado para la creación de imágenes panorámicas, permite el uso de varios tipos de proyecciones cartográficas, entre estas la rectangular, proyectando las imágenes sobre un plano recto. Por su parte ODM es una colección de herramientas propias de \textit{Structure From Motion}, que genera un modelo 3D y luego extrae una proyección ortorectificada como mapa 2D. Los altos requerimientos de capacidad de cómputo de este último, hacen del mismo una solución poco atractiva para las aplicaciones cuyos tiempos de respuesta y procesamiento deben de ser de minutos en lugar de horas.
-
-Adicionalmente se suelen requerir ajustes manuales para cada caso de mapeo en las herramientas antes mencionadas, lo que además de limitar el alcance de los sistemas embebidos para el uso en navegación automática, requiere de una inversión de tiempo importante por medio del usuario en el proceso de selección y alineación de imágenes.
-
-Atendiendo a esta necesidad, es necesario contar con un sistema que permita realizar la reconstrucción de la superficie con la menor interacción posible del ser humano. Asimismo, con el fin de poder realizar operaciones de mapeo y localización simultanea \textit{SLAM} (del inglés: Simultaneous Localization and Mapping), haciendo uso de las herramientas y robots existentes en el laboratorio, se requiere contar con un sistema basado en visión, que genere de forma automática un mapa 2D de la superficie sobre la que navega o sobrevuela el vehículo remoto, y que logre lidiar de manera efectiva ante los problemas previamente planteados.
-
+Dichos trabajos permiten la posibilidad de ser integrados  y optimizados en un nuevo sistema de SLAM visual más robusto, y que además permita ser extendido para robots en diferentes entornos, automatizando la generación de las operaciones de mapeo y localización del vehículo.
 
 \section{Objetivos}
 
 \subsection{Objetivo General}
 
-Analizar e implementar un sistema automatizado que permita la reconstrucción de un mapa en dos dimensiones, del suelo recorrido por robot, aéreo o submarino, a través de la información capturada por una cámara ubicada en su parte inferior.
+Analizar e implementar un sistema automatizado que permita la localización de un robot terrestre, aéreo o submarino, a través de la información capturada por una cámara monucular y una unidad de medición inercial, además de realizar un mapa de su entorno.
 
 \subsection{Objetivos Específicos}
 
 \begin{itemize}
-	\item Análisis comparativo de métodos vigentes en la reconstrucción de mosaicos 2D a partir de imágenes y vídeos.
-	\item Implementación de modulo de pre-procesamiento y corrección de entrada.
-	\item Análisis comparativo de métodos de detección y descripción de puntos característicos.
-	\item Implementación de módulo de alineación de imágenes mediante la detección de puntos característicos.
-	\item Cuantificar el error de proyección y distorsión en los modelos 2D generados.
+	\item  Revisar la localización y mapeo simultáneo en robots móviles (aéreos, terrestres y submarinos) basados en cámara.
+	\item Revisar los métodos de procesamiento de imágenes convenientes para los algoritmos de SLAM visual en función del entorno del robot móvil.
+	\item Implementar un sistema de SLAM visual.
+	\item Generar la posición, trayectoria del robot móvil y  un mapa 3D aproximado de su entorno.
 \end{itemize}
 
 \section{Estructura del trabajo}
