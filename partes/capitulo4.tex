@@ -1,632 +1,338 @@
-\chapter{Resultados y análisis}
+\chapter{Implementación}
 \label{capitulo4}
-\lhead{Capítulo 4. \emph{Resultados y análisis}}
-
-\section{Pruebas en el EuRoC MAV Dataset}
-A continuación se presentan los resultados obtenidos
-utilizando secuencias de datos  $MH\_ 01\_ easy$,  $MH\_ 05\_ difficult$,  $V1\_ 01\_ easy$,
-$V1\_ 02\_ medium$ y  $V1\_ 03\_ difficult$, pertenecientes al EuRoC MAV Dataset.
-
-En primera instancia se presentan los resultados directos del método iterativo de Gauss-Newton, y posteriormente los resultados obtenidos con la inicialización del método utilizando los residuales de rotación provenientes del filtro inercial. Posteriormente se presentan los resultados obtenidos mediante el método RANSAC para la estimación del vector unitario de traslación.
+\lhead{Capítulo 4. \emph{Implementación}}
 
 
-\subsection{Prueba del método de optimización de Gauss-Newton }
-
-Para evaluar la estimación del método de Gauss-Newton se utilizó la secuencia $V1\_ 01\_ easy$ debido a que es una de las secuencias que presentan movimientos lentos y con mayor solapamiento entre imágenes, lo cual era un requisito para el método utilizado ya que este utiliza un método directo para estimar la rotación y la traslación del robot. La figura \ref{imagen:Resultados/GaussNewton/Posicion} muestra los resultados de la posición estimada, la cual se encuentra escala con el desplazamiento real obtenido del groundtruth. También se muestran los resultados respecto a la orientación de la cámara estimada en la figura \ref{imagen:Resultados/GaussNewton/Orientacion}. En esta prueba se utilizó el detector SIFT y se utilizaron 4 escalas piramidales con un máximo numero de iteraciones fijado a 10 para cada nivel. El tiempo promedio de estimación fue de 0.573243 s.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/GaussNewton/Orientacion}
-	\caption{Orientación estimada de la cámara con el método de optimización de Gauss-Newton en secuencia $V1\_ 01\_ easy$. }
-	\label{imagen:Resultados/GaussNewton/Orientacion}
-\end{figure}
-
-Con estos resultados es posible concluir que el método empleado diverge, ya que la orientación estimada no posee cambios, lo cual también se evidencia en la estimación de la posición de la cámara en el espacio de la figura \ref{imagen:Resultados/GaussNewton/Posicion}.
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/GaussNewton/Posicion}
-	\caption{Posición estimada de la cámara con el método de optimización de Gauss-Newton en secuencia $V1\_ 01\_ easy$. }
-	\label{imagen:Resultados/GaussNewton/Posicion}
-\end{figure}
-
-Posteriormente se presentan los resultados de inicializar cada estimacion con el cambio de rotación estimado con el filtro inercial.
-
-En primer lugar se presenta en la figura \ref{imagen:Resultados/GaussNewtonConResiduales1/ResidualOrientacionHistograma} los residuales inerciales utilizados en la inicialización. En la figura \ref{imagen:Resultados/GaussNewtonConResiduales1/ErrorResidualOrientacion} se observa el error del residual.
-
-También se muestra la posición estimada en la figura \ref{imagen:Resultados/GaussNewtonConResiduales1/Posicion} y el error de la orientación estimada en la figura \ref{imagen:Resultados/GaussNewtonConResiduales1/ErrorOrientacion} .
+\section{Introducción}
+El objetivo de este capítulo es explicar detalladamente la implementación realizada en este trabajo.
+\clearpage
 
 
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/GaussNewtonConResiduales1/ResidualOrientacionHistograma}
-	\caption{ Residual de orientación estimado en secuencia $V1\_ 01\_ easy$.}
-	\label{imagen:Resultados/GaussNewtonConResiduales1/ResidualOrientacionHistograma}
-\end{figure}
+\section{Descripción general}\label{seccion-corte}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/GaussNewtonConResiduales1/ErrorResidualOrientacion}
-	\caption{ Error del residual de orientación estimado en secuencia $V1\_ 01\_ easy$.}
-	\label{imagen:Resultados/GaussNewtonConResiduales1/ErrorResidualOrientacion}
-\end{figure}
+La estimación de odometría por medio de la fusión visual inercial fue desarrollada utilizando C++ como lenguaje de programación y ROS para la aplicación de los filtros inerciales y la visualización del movimiento del robot. Este programa utiliza un sólo hilo de ejecución, de forma que la odometría se estima de forma secuencial, pasando primero por estimar la orientación del robot utilizando el filtro inercial, y luego a estimar la traslación a partir de los residuales inerciales y la cámara. El formato de entrada de las imágenes y de los datos de la IMU fueron tomados de acuerdo al formato empleado en el EUROC Mav dataset.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/GaussNewtonConResiduales1/ErrorOrientacion}
-	\caption{Posición estimada de la cámara con el método de optimización de Gauss-Newton en secuencia $V1\_ 01\_ easy$ empleando residuales inerciales. }
-	\label{imagen:Resultados/GaussNewtonConResiduales1/ErrorOrientacion}
-\end{figure}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/GaussNewtonConResiduales1/Posicion}
-	\caption{Posición estimada de la cámara con el método de optimización de Gauss-Newton en secuencia $V1\_ 01\_ easy$ empleando residuales inerciales. }
-	\label{imagen:Resultados/GaussNewtonConResiduales1/Posicion}
-\end{figure}
-
-En este caso la prueba realizada fue similar y se obtuvo un tiempo promedio de iteración del algoritmo de 0.799779 s, el cual es mayor al presentado sin la inicialización con residuales. En primer lugar esto indica que el algoritmo itera un mayor número de veces de la solución que minimice el error fotométrico. Es posible observar que la orientación de la cámara en este caso si es seguida debido a que el error de orientación se mantiene pequeño en los ángulos de roll y pitch, y sufre de drift en el angulo de yaw, lo cual se debe a que esta orientación es principalmente la orientación que se obtiene del filtro inercial. Sin embargo los resultados de la estimación de la posición no fueron satisfactorios.
-
-También es posible observar en los histogramas de las figuras \ref{imagen:Resultados/GaussNewtonConResiduales1/ResidualOrientacionHistograma} y \ref{imagen:Resultados/GaussNewtonConResiduales1/ErrorResidualOrientacion} que el error porcentual del residual es relativamente alto para movimientos lentos, ya que en esta prueba la estimación de residuales se realiza imagen por imagen. Por estas razones, se realizó una segunda prueba calculando los residuales e inicializando el algoritmo de estimación cada 10 imágenes para comparar la estimación de la posición y el error de los residuales. En las figuras  \ref{imagen:Resultados/GaussNewtonConResiduales10/ResidualOrientacionHistograma}, \ref{imagen:Resultados/GaussNewtonConResiduales10/ErrorResidualOrientacion} y \ref{imagen:Resultados/GaussNewtonConResiduales10/Posicion} se muestran los resultados.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/GaussNewtonConResiduales10/ResidualOrientacionHistograma}
-	\caption{ Residual de orientación estimado en secuencia $V1\_ 01\_ easy$.}
-	\label{imagen:Resultados/GaussNewtonConResiduales10/ResidualOrientacionHistograma}
-\end{figure}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/GaussNewtonConResiduales10/ErrorResidualOrientacion}
-	\caption{ Error del residual de orientación estimado en secuencia $V1\_ 01\_ easy$.}
-	\label{imagen:Resultados/GaussNewtonConResiduales10/ErrorResidualOrientacion}
-\end{figure}
+En cuanto al dataset local realizado, también fue implementado utilizando C++ como lenguaje de programación, y utilizando una raspberry pi 3 para la adquisición de los datos de la imu y de la cámara, y utilizando 4 hilos de ejecución.
 
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/GaussNewtonConResiduales10/Posicion}
-	\caption{Posición estimada de la cámara con el método de optimización de Gauss-Newton en secuencia $V1\_ 01\_ easy$ empleando residuales inerciales. }
-	\label{imagen:Resultados/GaussNewtonConResiduales10/Posicion}
-\end{figure}
+\section{Estimación de los residuales rotacionales}
 
-En esta prueba se tuvo un tiempo promedio de 0.739407 s y se puedo observar que el error porcentual de los residuales es más pequeño. Esto indicó que los residuales de orientación tendían a ser más exactos a mayores rangos de movimiento rotacional, lo cual los hace incompatibles con el método de optimización empleado ya que este requiere rangos mínimos de movimiento, lo cual se comprueba nuevamente con la divergencia de la estimación de la posición.
-
-\subsection{Machine Hall Easy}
-
-\begin{table}[htbp]
-	\caption{Parámetros de configuración en Secuencia $MH\_ 01\_ easy$.}
-	\begin{tabular}{|l|c|c|c|c|c|}
-		\hline
-		\multicolumn{1}{|c|}{\textbf{Detector}} & \textbf{KAZE} & \textbf{AKAZE} & \textbf{ORB} & \textbf{SIFT} & \textbf{SURF} \\ \hline
-		Umbral del RANSAC & 0.18 & 0.18 & 0.18 & 0.18 & 0.18 \\ \hline
-		Umbral de frames estáticos & 4 & 4 & 4 & 4 & 4 \\ \hline
-		Umbral disparidad euclideana & 0.5 & 0.5 & 0.5 & 0.5 & 0.5 \\ \hline
-		Umbral disparidad rotacional (°) & 5 & 5 & 5 & 5 & 5 \\ \hline
-		Umbral disparidad traslacional (px) & 15 & 15 & 15 & 15 & 15 \\ \hline
-		Umbral del detector & 0.012 & 0.012 & 100 & 100 & 10000 \\ \hline
-	\end{tabular}
-	\label{Tabla/Parametros/MH_01_easy}
-\end{table}
+Con el empleo de la IMU es posible obtener los cambios de orientación de la cámara y de su aceleración, siempre y cuando se encuentren sincronizadas las mediciones. Bajo esta restricción se tiene el residual de orientación de la IMU (${R}_{RES/IMU}$) , el cual representa el cambio de orientación de la IMU entre el frame actual y el anterior, tal como se presenta en la ecuación \ref{eq:residualIMU}.
 
 
+\begin{equation}
+{ R }_{ IMU2 }\quad =\quad { R }_{ IMU1 }*{ R }_{ RES/IMU }\quad \rightarrow \quad { R }_{ RES/IMU }\quad =\quad { { { R }_{ IMU1 } }^{ T }*\quad R }_{ IMU2 }
+\label{eq:residualIMU} 
+\end{equation}
+
+De forma análoga, el residual de la cámara viene dado por:
+
+\begin{equation}
+{ R }_{ RES/CAM }\quad =\quad \quad { { R }_{ CAM1 } }^{ T }\quad .\quad { R }_{ CAM2 }
+\label{eq:residualCAM} 
+\end{equation}
+
+Utilizando la ecuación \ref{eq:rotacionIMUCAM} en \ref{eq:residualCAM}, y las propiedades de la transpuesta del producto de matrices se tiene:
+
+\begin{align}
+{ R }_{ RES/CAM }\quad =\quad { { R }_{ CAM1 } }^{ T }.{ R }_{ CAM2 }\quad =\quad ({ R }_{ IMU1 }.{ R }_{ IMU-CAM })\quad ^{ T }.{ R }_{ IMU2 }.{ R }_{ IMU-CAM }\\ \quad \quad \quad \quad \quad \quad \quad \quad \quad =\quad ({ { R }_{ IMU-CAM } }^{ T }.{ { R }_{ IMU1 } }^{ T\quad  })\quad { R }_{ IMU2 }.{ R }_{ IMU-CAM }\\ \qquad \qquad \qquad ={ { \quad R }_{ IMU-CAM } }^{ T }.({ { R }_{ IMU1 } }^{ T\quad  }.{ R }_{ IMU2 }).{ R }_{ IMU-CAM }\\ \qquad \qquad \qquad =\quad { { R }_{ IMU-CAM } }^{ T }.({ { R }_{ IMU1 } }^{ T\quad  }.{ R }_{ IMU2 }).{ R }_{ IMU-CAM }
+\label{eq:residualCAMProcedimiento} 
+\end{align}
+
+Y finalmente se obtiene:
+
+\begin{equation}
+{ R }_{ RES/CAM }\quad =\quad { { \quad R }_{ IMU-CAM } }^{ T }. { R }_{ RES/IMU } . { R }_{ IMU-CAM\\  }
+\label{eq:residualCAMDeIMU} 
+\end{equation}
+
+De esta forma, utilizando la ecuación \ref{eq:residualCAMDeIMU}, es posible obtener el residual de orientación de la cámara directamente del residual de orientación de la imu.
+
+
+\section{Estimación de los residuales traslacionales}
+
+
+En general, en base a las transformaciones de cuerpo rígido se tiene:
+
+\begin{equation}
+\left[ \begin{matrix} { X }_{ 1 } \\ { Y }_{ 1 } \\ { Z }_{ 1 } \end{matrix} \right] \quad =\quad { R }_{ 1 }^{ 2 }.\left[ \begin{matrix} { X }_{ 2 } \\ { Y }_{ 2 } \\ { Z }_{ 2 } \end{matrix} \right] +{ P }_{ 1 }^{ 2 } 
+\label{eq:TransformacionCAM1CAM2} 
+\end{equation}
+
+
+Donde $(X1, Y1, Z1)$ y $(X2, Y2, Z2)$ representan la ubicación en el espacio del punto característico detectado en la primera y segunda imagen, respectivamente, referidos a cada uno de los sistemas de referencia de la cámara cuando fue tomada la imagen. Utilizando la ecuación \ref{eq:ReproyeccionCAM} se obtiene:
+
+
+\begin{equation}
+{ Z }_{ 1 }\left[ \begin{matrix} \frac { u_{ 1 }-{ c }_{ x } }{ { f }_{ x } }  \\ \frac { { v }_{ 1 }-{ c }_{ y } }{ { f }_{ y } }  \\ 1 \end{matrix} \right] =\quad { R }_{ 1 }^{ 2 }.{ Z }_{ 2 }\left[ \begin{matrix} \frac { u_{ 2 }-{ c }_{ x } }{ { f }_{ x } }  \\ \frac { { v }_{ 2 }-{ c }_{ y } }{ { f }_{ y } }  \\ 1 \end{matrix} \right] +{ P }_{ 1 }^{ 2 }
+\label{eq:TransformacionCAM1CAM2Reproyeccion} 
+\end{equation}
+
+Debemos recordar que a los puntos de la forma $s (X, Y, Z)$, donde $s$ es un factor de escala, le corresponden el mismo pixel de $(u,v)$ de proyección en la imagen de la cámara. Por tanto, la ecuación \ref{eq:TransformacionCAM1CAM2Reproyeccion} implica que incluso teniendo como medidas los valores de la ubicación  $(u1,v1)$ y $(u2,v2)$ de la ubicación de la pareja de puntos característicos, y conociendo la matriz de rotación ${ R }_{ 1 }^{ 2 }$, que representa el cambio de orientación de la cámara de la imagen 1 a la imagen 2, no es posible determinar la traslación real de la cámara ${ P }_{ 1 }^{ 2 }$, excepto por un factor de escala, sin conocer la profundidad $Z1$ o $Z2$ de la ubicación en el espacio de la característica.
+
+
+\section{Selección de keyframes}
+
+La implementación de keyframes se hace debido a que la estimación de movimiento es más precisa cuando se tiene disparidad entre las imagenes, y debido a que la carga computacional es menor en procesar un numero selecto de imágenes que la totalidad de ellas.
+
+En este trabajo, los keyframes son seleccionados cuando la disparidad entre las imágenes excede un valor fijo (threshold). Debido a que se cuenta con la información rotacional proveniente del filtro de la IMU, la disparidad es dividida en dos tipos de disparidad: La disparidad traslacional, y la disparidad rotacional.
+
+
+\subsection{Disparidad rotacional}
+La disparidad rotacional es obtenida directamente de los residuales rotacionales entre dos imágenes provenientes del filtro de la IMU, y denotados en la representación RPY, de la siguiente forma:
+
+\begin{equation}
+{ D }_{ rot }\quad =\quad \sqrt { { \Delta \phi  }^{ 2 }+{ \Delta \theta  }^{ 2 }+{ \Delta \psi  }^{ 2 }\quad  }
+\label{eq:disparidadRotacional}
+\end{equation}
+
+Donde ${\Delta \psi}$ es el residual en Yaw, ${\Delta \phi}$ es el residual en Roll, y ${\Delta \theta}$ es el residual en Pitch.
+
+Por tanto, la disparidad rotacional tiene unidades de rad/s ó DPS.
+
+
+\subsection{Disparidad traslacional}
+
+Por su parte, la disparidad traslacional corresponde al promedio de la distancia euclidiana entre las parejas de las imágenes , expresada en pixeles, resultantes del movimiento traslacional. 
+
+
+Para obtener la disparidad traslacional es necesario realizar una reproyección de las parejas utilizando sólo la información del residual rotacional. Esto implica que si determinamos la matriz de rotación entre las poses de la cámara en la imagen 1 y 2, y reproyectamos la ubicación de la característica en la imagen 2, hacia la imagen 1, utilizando solo la transformación rotacional, la distancia euclidiana entre la ubicación de la reproyección y la ubicación real del punto característico en la imagen 1, estará vinculada al cambio de traslación de la cámara y la profundidad de las puntos característicos respecto al sistema de referencia de la cámara.
+Además, los puntos que se encuentran a mayor distancia de la cámara tendrán mayor distancia euclidiana que los puntos que se encuentren cercanos, para una mismo movimiento de traslación. Esto implica que es posible utilizar esta distancia euclidiana como una medida de la disparidad entre las imágenes producto del movimiento rotacional siempre y cuando se tome alguna forma de restar peso a la profundidad de las características. Es por esto, que tomamos el promedio de la distancia euclidianas entre la reproyección y la ubicación de las características como medida de disparidad entre las imágenes:
+
+\begin{equation}
+{ D }_{ tras }\quad =\quad \frac { \sum { \sqrt { ({ u }_{ 1 },\quad { v }_{ 1 })\quad -\quad { rep }_{ { R }_{ 1 }^{ 2 }\quad  }({ u }_{ 2 },\quad { v }_{ 2 }) }  }  }{ N } 
+\label{eq:DisparidadTraslacional}
+\end{equation}
+
+Donde N es el número de parejas entre las dos imágenes y ${ rep }_{ { R }_{ 1 }^{ 2 }\quad  }({ u }_{ 2 },\quad { v }_{ 2 })$ es la función que reproyecta el punto característico de la imagen 2 en la imagen 1 utilizando la información rotacional ${ R }_{ 1 }^{ 2}$. 
+%Por lo tanto el procedimiento es el siguiente
+Por tanto, la disparidad traslacional tiene unidades de píxeles.
 
 
 
+\section{Estimación de la traslación}
 
+\subsection{Método de dos puntos}
+El método para estimar la traslación está basado en una modificación del esquema RANSAC de dos puntos implementado en [].
+%Robust Real-Time Visual Odometry
+%with a Single Camera and an IMU
+ 
+Este método aprovecha la información rotacional y la geometría epipolar para hallar el vector de traslación entre las dos imágenes.
 
-\begin{table}[htbp]
-	\caption{Resultados en Secuencia $MH\_ 01\_ easy$.}
-	\begin{tabular}{|l|c|c|c|c|c|}
-		\hline
-		\multicolumn{1}{|c|}{\textbf{Detector}} & \textbf{KAZE} & \textbf{AKAZE} & \textbf{ORB} & \textbf{SIFT} & \textbf{SURF} \\ \hline
-		Número de features detectados & 113 & 111 & 100 & 100 & 119 \\ \hline
-		Número de parejas iniciales & 73 & 61 & 37 & 62 & 80 \\ \hline
-		Número de parejas del filtro de celdas & 28 & 21 & 12 & 29 & 31 \\ \hline
-		Número de inliers del RANSAC & 53 & 43 & 24 & 45 & 58 \\ \hline
-		Número de imágenes procesadas & 2099 & 2099 & 2099 & 2099 & 2099 \\ \hline
-		Número de keyframes & 342 & 297 & 396 & 518 & 497 \\ \hline
-		Tiempo promedio de filtro inercial (ms) & 5.5 & 6.1 & 6.1 & 5.7 & 6.0 \\ \hline
-		Tiempo promedio de detección  (ms) & 743.2 & 166.9 & 30.5 & 346.9 & 116.7 \\ \hline
-		Tiempo promedio de match (ms) & 1.9 & 2.6 & 1.3 & 1.7 & 2.1 \\ \hline
-		Tiempo promedio de RANSAC (ms) & 0.3 & 0.3 & 0.2 & 0.3 & 0.3 \\ \hline
-		Tiempo de estimación (s) & 11.7 & 12.8 & 13.0 & 12.2 & 12.8 \\ \hline
-		Tiempo de  procesamiento (s) & 1574.4 & 367.1 & 79.8 & 743.5 & 262.3 \\ \hline
-		Tiempo de evaluación (s) & 105.0 & 105.0 & 105.0 & 105.0 & 105.0 \\ \hline
-	\end{tabular}
-	\label{Tabla/Resultados/MH_01_easy}
-\end{table}
+En primer lugar, debido a que la escala real de la traslación no es determinable a partir de imágenes,  se desea entonces estimar el vector de traslación unitario entre la imagen 1 y la imagen 2. A la imagen 1 la denotaramos como la imagen key y a la imagen 2 como la imagen current, y como ${C}_{key}$ y ${C}_{current}$ a la posición de la cámara en las imágenes 1 y 2, respectivamente. El vector a estimar lo denotaremos en este caso como $\overset { \rightarrow  }{ { \quad t }_{ current }^{ key } }  $
 
+Para ello se utilizan dos parejas de puntos característicos. La primera pareja corresponde con la proyección del punto ${P}_{1}$ de la figura \ref{imagen:epipolarPlanes}. La segunda pareja corresponde a la proyección de ${P}_{2}$ en las imágenes. 
 
-\subsubsection{KAZE}
+Posteriormente se  calculan los vectores normales a los planos epipolares, denotando a ${n}_{1}$ como el vector normal al plano epipolar de la pareja de ${P}_{1}$ y a ${n}_{2}$ como el vector normal al plano epipolar de la pareja de ${P}_{2}$.
 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/KAZE/Posicion}
-	\caption{Posición de la cámara KAZE}
-	\label{imagen:Resultados/MH_01_easy/KAZE/Posicion}
+	\includegraphics[width=0.7\textwidth]{TwoPoint}
+	\caption[Intersección de planos epipolares]{Intersección de planos epipolares.}
+	\label{imagen:epipolarPlanes}
 \end{figure}
 
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/KAZE/Orientacion}
-	\caption[Error de Orientación KAZE]{Error de Orientación KAZE.}
-	\label{imagen:Resultados/MH_01_easy/KAZE/Orientacion}
-\end{figure}
+En la figura \ref{imagen:epipolarPlanes}, podemos observar que la intersección de estos planos tiene como lugar una recta cuya dirección es la del vector  $\overset { \rightarrow  }{ { \quad t }_{ key }^{ current } } $. Por tanto, es evidente que los vectores ${n}_{1}$ y ${n}_{1}$ son perpendiculares al vector $\overset { \rightarrow  }{ { \quad t }_{ key }^{ current } }  $ , y por tanto podemos calcular un vector con la misma dirección que este último como:
 
 
+\begin{equation}
+\overset { \rightarrow  }{ { t } } =\overset { \rightarrow  }{ { { n }_{ 1 } } } \times \overset { \rightarrow  }{ { { n }_{ 2 } } } 
+\end{equation}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/KAZE/ResidualVelocidad2}
-	\caption{Residual de velocidad KAZE}
-	\label{imagen:Resultados/MH_01_easy/KAZE/ResidualVelocidad}
-\end{figure}
+Por tanto se cumple:
 
+\begin{equation}
+ \overset { \rightarrow  }{ { t } } = s.\overset { \rightarrow  }{ {t }_{ key }^{ current } } 
+\end{equation}
 
+Donde s es un factor de escala.
 
-\subsubsection{AKAZE}
+Debido a esto, el vector de traslación unitario puede ser calculado como:
 
+\begin{equation}
+\overset { \rightarrow  }{ { t }_{ key}^{ current } } =\pm \quad \frac { \overset { \rightarrow  }{ t }  }{ \left\| \overset { \rightarrow  }{ t }  \right\|  } 
+\end{equation}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/AKAZE/Posicion}
-	\caption{Posición de la cámara AKAZE}
-	\label{imagen:Resultados/MH_01_easy/AKAZE/Posicion}
-\end{figure}
+Para determinar el signo, se  impone que la siguiente restricción:
 
+\begin{equation}
+(\overset { \rightarrow  }{ { f }_{ 1 } } \quad -\quad (\quad \overset { \rightarrow  }{ { { R }_{ 1 }^{ 2 } } } \quad .\quad \overset { \rightarrow  }{ { f }_{ 2 } } \quad ).\overset { \rightarrow  }{ { t }_{ current }^{ key } } >0
+\end{equation}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/AKAZE/Orientacion}
-	\caption[Error de Orientación AKAZE]{Error de Orientación AKAZE.}
-	\label{imagen:Resultados/MH_01_easy/AKAZE/Orientacion}
-\end{figure}
+La cual implica que los puntos característicos se encuentran al frente de la imagen.
 
 
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/AKAZE/ResidualVelocidad2}
-	\caption{Residual de velocidad AKAZE}
-	\label{imagen:Resultados/MH_01_easy/AKAZE/ResidualVelocidad}
-\end{figure}
+\subsection{Selección de la función de error }
 
-\subsubsection{ORB}
+En general, es posible encontrar más de un par de parejas de correspondencias por imagen, por lo que es necesario estimar el vector de traslación unitario que reduzca el error grupal de correspondencias.
 
+Una forma de hacer esto es realizar la triangulación de las correspondecias con el residual de rotación y  el vector unitario de traslación para un par de características del grupo, y calcular el error de reproyección para todas las correspondencias, y el vector de traslación que disminuya el error del grupo se considerará como la mejor estimación. Sin embargo, esto tiene un alto costo computacional debido a que en cada iteración deben ser nuevamente trianguladas los puntos característicos.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/ORB/Posicion}
-	\caption{Posición de la cámara ORB}
-	\label{imagen:Resultados/MH_01_easy/ORB/Posicion}
-\end{figure}
+Debido a ello, y para conservar la simplicidad y reducir el costo computacional, se toma como función de error el producto punto entre el vector estimado y los vectores normales a los planos epipolares $\overset { \rightarrow  }{ { n }_{ i } } $ . En teoría, el producto punto entre el vector unitario de traslación y el normal al plano epipolar debe ser $0$, sin embargo debido a la resolución de la imagen, a la precisión de la detección de la característica, y a la profundidad del punto, esto no ocurre en general.
 
+Una vez definida la función de error existen dos aproximaciones básicas para hallar la mejor estimación.
+En presencia de un número significativo de correspondecias erróneas, se puede optar por métodos como RANSAC, para estimar el vector unitario de traslación que mejor se ajuste a un subconjunto del grupo de características, o en caso de tener una parte previa de filtrado de correspondencias, utilizar métodos iterativos como el de Gauss-Newton para hallar el vector de traslación que reduzca el error grupal.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/ORB/Orientacion}
-	\caption[Error de Orientación ORB]{Error de Orientación ORB.}
-	\label{imagen:Resultados/MH_01_easy/ORB/Orientacion}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/ORB/ResidualVelocidad2}
-	\caption{Residual de velocidad ORB}
-	\label{imagen:Resultados/MH_01_easy/ORB/ResidualVelocidad}
-\end{figure}
+En este trabajo se eligio emplear RANSAC debido a su simplicidad, costo computacional fijo, y robustez ante correspondencias erróneas.
 
+\subsection{RANSAC}
 
-\subsubsection{SIFT}
+Random Sample Consensus (RANSAC) es un algoritmo robusto para el ajuste de modelos en presencia de outliers. Un ejemplo sencillo es el problema de hallar la linea que mejor se ajuste a un conjunto de datos. Si hay 200 puntos disponibles, cada par de puntos forma una línea y por tanto, hay 19900 posibles lineas. El problema es seleccionar el par de puntos que generan la linea que mejor se ajusta al conjunto entre todos los pares.
 
+En general, RANSAC da como resultado la hipotesis más probable que es soportada por la mayoria de los inliers.
+Para calcular cual es la linea que se ajusta mejor, el procedimiento es el siguiente:
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SIFT/Posicion}
-	\caption{Posición de la cámara SIFT}
-	\label{imagen:Resultados/MH_01_easy/SIFT/Posicion}
-\end{figure}
+\begin{itemize}
+\item Tomar de forma aleatoria $n$ muestras del conjunto total de $N$ puntos  y determinar el modelo que generan.
+\item  Para cada una de las N-n puntos calcular la distancia o error al modelo generado.
+\item Contar el número $c$ de puntos cuya distancia o error está por debajo de un valor umbral ($\epsilon$). Estos puntos son denominados inliers del modelo.
+\item Repetir este procedimiento k veces.
+\end{itemize}
 
+El resultado del RANSAC es el modelo que obtiene el mayor número de inliers.
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SIFT/Orientacion}
-	\caption[Error de Orientación SIFT]{Error de Orientación SIFT.}
-	\label{imagen:Resultados/MH_01_easy/SIFT/Orientacion}
-\end{figure}
+Es claro que en el ejemplo de la linea de ajuste al conjunto de puntos es ineficiente tomar $k= 19900$. Por tanto se toma el modelo probabilístico donde el número de iteraciones $k$ viende dado por:
 
+\begin{equation}
+k\quad =\quad \frac { log(1-P) }{ log(1-{ p }^{ n }) } 
+\end{equation}
 
+Donde:
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SIFT/ResidualVelocidad2}
-	\caption{Residual de velocidad SIFT}
-	\label{imagen:Resultados/MH_01_easy/SIFT/ResidualVelocidad}
-\end{figure}
+$n$:número de muestras necesaria para generar un modelo en cada iteración.
+$p$:probabilidad de que las $n$ muestras sean todas inliers.
+$P$:probabilidad de que existe un modelo satisfactorio luego de $k$ iteraciones.
 
-\subsubsection{SURF}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SURF/Posicion}
-	\caption{Posición de la cámara SURF}
-	\label{imagen:Resultados/MH_01_easy/SURF/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SURF/Orientacion}
-	\caption[Error de Orientación SURF]{Error de Orientación SURF.}
-	\label{imagen:Resultados/MH_01_easy/SURF/Orientacion}
-\end{figure}
-
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SURF/ResidualVelocidad2}
-	\caption{Residual de velocidad SURF}
-	\label{imagen:Resultados/MH_01_easy/SURF/ResidualVelocidad}
-\end{figure}
-
-
-
-\subsection{Vicon Room Easy}
-
-\begin{table}[htbp]
-	\caption{Parámetros de configuración en secuencia $V1\_01\_easy$.}
-	\begin{tabular}{|l|c|c|c|c|c|}
-		\hline
-		\multicolumn{1}{|c|}{\textbf{Detector}} & \textbf{KAZE} & \textbf{AKAZE} & \textbf{ORB} & \textbf{SIFT} & \textbf{SURF} \\ \hline
-		Umbral del RANSAC & 0.18 & 0.18 & 0.18 & 0.18 & 0.18 \\ \hline
-		Umbral de frames estáticos & 4 & 4 & 4 & 4 & 4 \\ \hline
-		Umbral disparidad euclideana & 0.5 & 0.5 & 0.5 & 0.5 & 0.5 \\ \hline
-		Umbral disparidad rotacional (°) & 5 & 5 & 5 & 5 & 5 \\ \hline
-		Umbral disparidad traslacional (px) & 15 & 15 & 15 & 15 & 15 \\ \hline
-		Umbral del detector & 0.008 & 0.006 & 100 & 100 & 6000 \\ \hline
-	\end{tabular}
-	\label{Tabla/Parametros/V1_01_easy}
-\end{table}
-
-\begin{table}[htbp]
-	\caption{Resultados en secuencia $V1\_ 01\_ easy$.}
-	\begin{tabular}{|l|c|c|c|c|c|}
-		\hline
-		\multicolumn{1}{|c|}{\textbf{Detector}} & \textbf{KAZE} & \textbf{AKAZE} & \textbf{ORB} & \textbf{SIFT} & \textbf{SURF} \\ \hline
-		Número de features detectados & 230 & 243 & 100 & 100 & 150 \\ \hline
-		Número de parejas iniciales & 153 & 136 & 35 & 61 & 103 \\ \hline
-		Número de parejas del filtro de celdas & 26 & 23 & 9 & 13 & 26 \\ \hline
-		Número de inliers del RANSAC & 93 & 76 & 19 & 32 & 67 \\ \hline
-		Número de imágenes procesadas & 2498 & 2498 & 2498 & 2498 & 2498 \\ \hline
-		Número de keyframes & 638 & 565 & 685 & 711 & 738 \\ \hline
-		Tiempo promedio de filtro inercial (ms) & 5.9 & 6.2 & 6.8 & 6.2 & 6.6 \\ \hline
-		Tiempo promedio de detección  (ms) & 764.6 & 181.6 & 27 & 337.7 & 128.7 \\ \hline
-		Tiempo promedio de match (ms) & 6.4 & 11.9 & 1.4 & 1.8 & 3.2 \\ \hline
-		Tiempo promedio de RANSAC (ms) & 0.6 & 0.5 & 0.2 & 0.3 & 0.4 \\ \hline
-		Tiempo de estimación (s) & 15 & 15.9 & 17.1 & 15.6 & 16.8 \\ \hline
-		Tiempo de  procesamiento (s) & 1936.3 & 497.5 & 88.1 & 862 & 262.3 \\ \hline
-		Tiempo de evaluación (s) & 124.9 & 124.9 & 124.9 & 124.9 & 124.9 \\ \hline
-	\end{tabular}
-	\label{Tabla/Resultados/V1_01_easy}
-\end{table}
-
-
-\subsubsection{KAZE}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/KAZE/Posicion}
-	\caption{Posición de la cámara KAZE}
-	\label{imagen:Resultados/V1_01_easy/KAZE/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/KAZE/Orientacion}
-	\caption[Error de Orientación KAZE]{Error de Orientación KAZE.}
-	\label{imagen:Resultados/V1_01_easy/KAZE/Orientacion}
-\end{figure}
-
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/KAZE/ResidualVelocidad2}
-	\caption{Residual de velocidad KAZE}
-	\label{imagen:Resultados/V1_01_easy/KAZE/ResidualVelocidad}
-\end{figure}
-
-
-
-\subsubsection{AKAZE}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/AKAZE/Posicion}
-	\caption{Posición de la cámara AKAZE}
-	\label{imagen:Resultados/V1_01_easy/AKAZE/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/AKAZE/Orientacion}
-	\caption[Error de Orientación AKAZE]{Error de Orientación AKAZE.}
-	\label{imagen:Resultados/V1_01_easy/AKAZE/Orientacion}
-\end{figure}
-
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/AKAZE/ResidualVelocidad2}
-	\caption{Residual de velocidad AKAZE}
-	\label{imagen:Resultados/V1_01_easy/AKAZE/ResidualVelocidad}
-\end{figure}
-
-\subsubsection{ORB}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/ORB/Posicion}
-	\caption{Posición de la cámara ORB}
-	\label{imagen:Resultados/V1_01_easy/ORB/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/ORB/Orientacion}
-	\caption[Error de Orientación ORB]{Error de Orientación ORB.}
-	\label{imagen:Resultados/V1_01_easy/ORB/Orientacion}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/ORB/ResidualVelocidad2}
-	\caption{Residual de velocidad ORB}
-	\label{imagen:Resultados/V1_01_easy/ORB/ResidualVelocidad}
-\end{figure}
-
-
-\subsubsection{SIFT}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SIFT/Posicion}
-	\caption{Posición de la cámara SIFT}
-	\label{imagen:Resultados/V1_01_easy/SIFT/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SIFT/Orientacion}
-	\caption[Error de Orientación SIFT]{Error de Orientación SIFT.}
-	\label{imagen:Resultados/V1_01_easy/SIFT/Orientacion}
-\end{figure}
-
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SIFT/ResidualVelocidad2}
-	\caption{Residual de velocidad SIFT}
-	\label{imagen:Resultados/V1_01_easy/SIFT/ResidualVelocidad}
-\end{figure}
-
-\subsubsection{SURF}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SURF/Posicion}
-	\caption{Posición de la cámara SURF}
-	\label{imagen:Resultados/V1_01_easy/SURF/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SURF/Orientacion}
-	\caption[Error de Orientación SURF]{Error de Orientación SURF.}
-	\label{imagen:Resultados/V1_01_easy/SURF/Orientacion}
-\end{figure}
-
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SURF/ResidualVelocidad2}
-	\caption{Residual de velocidad SURF}
-	\label{imagen:Resultados/V1_01_easy/SURF/ResidualVelocidad}
-\end{figure}
-
-
-
-
-\subsection{Vicon Room Medium}
+Para el ejemplo del ajuste de la línea se tiene:
 
 
 \begin{table}[htbp]
-	\caption{Parámetros de configuración  en secuencia $V1\_ 02\_ medium$.}
-	\begin{tabular}{|l|c|c|c|c|c|}
+	\caption{Algoritmo RANSAC para ajuste de línea}
+	\begin{tabular}{|c|c|c|c|}
 		\hline
-		\multicolumn{1}{|c|}{\textbf{Detector}} & \textbf{KAZE} & \textbf{AKAZE} & \textbf{ORB} & \textbf{SIFT} & \textbf{SURF} \\ \hline
-		Umbral del RANSAC & 0.18 & 0.18 & 0.18 & 0.18 & 0.18 \\ \hline
-		Umbral de frames estáticos & 4 & 4 & 4 & 4 & 4 \\ \hline
-		Umbral disparidad euclideana & \textbf{1} & \textbf{1} & \textbf{1} & \textbf{1} & \textbf{1} \\ \hline
-		Umbral disparidad rotacional (°) & 5 & 5 & 5 & 5 & 5 \\ \hline
-		Umbral disparidad traslacional (px) & 15 & 15 & 15 & 15 & 15 \\ \hline
-		Umbral del detector & 0.005 & 0.003 & 250 & 250 & 1100 \\ \hline
+		\textbf{\textit{n}} & \textbf{\textit{P}} & \textbf{\textit{p}} & \textbf{\textit{k}} \\ \hline
+		2 & 0.99 & 0.30 & 48.83 \\ \hline
+		2 & 0.99 & 0.60 & 10.32 \\ \hline
+		2 & 0.99 & 0.70 & 6.84 \\ \hline
+		2 & 0.90 & 0.50 & 8.00 \\ \hline
 	\end{tabular}
-	\label{Tabla/Parametros/V1_02_medium}
+	\label{RansacLinea}
 \end{table}
 
-\begin{table}[htbp]
-	\caption{Resultados  en secuencia $V1\_02\_medium$.}
-	\begin{tabular}{|l|c|c|c|c|c|}
-		\hline
-		\multicolumn{1}{|c|}{\textbf{Detector}} & \textbf{KAZE} & \textbf{AKAZE} & \textbf{ORB} & \textbf{SIFT} & \textbf{SURF} \\ \hline
-		Número de features detectados & 227 & 261 & 249 & 247 & 353 \\ \hline
-		Número de parejas iniciales & 142 & 146 & 81 & 150 & 230 \\ \hline
-		Número de parejas del filtro de celdas & 30 & 27 & 15 & 35 & 45 \\ \hline
-		Número de inliers del RANSAC & 96 & 89 & 48 & 100 & 163 \\ \hline
-		Número de imágenes procesadas & \textbf{1625} & 1643 & \textbf{1644} & 1647 & 1647 \\ \hline
-		Número de keyframes & 719 & 647 & 715 & 800 & 768 \\ \hline
-		Tiempo promedio de filtro inercial (ms) & 5.4 & 6.5 & 6.8 & 6.1 & 6.3 \\ \hline
-		Tiempo promedio de detección  (ms) & 699.4 & 192 & 25.8 & 348.5 & 202.6 \\ \hline
-		Tiempo promedio de match (ms) & 4.2 & 10.4 & 4.6 & 6.6 & 9.8 \\ \hline
-		Tiempo promedio de RANSAC (ms) & 0.5 & 0.6 & 0.4 & 0.6 & 1 \\ \hline
-		Tiempo de estimación (s) & 9.2 & 11.1 & 11.4 & 10.5 & 11.1 \\ \hline
-		Tiempo de  procesamiento (s) & 1152.6 & 343.6 & 61.5 & 593.3 & 361 \\ \hline
-		Tiempo de evaluación (s) & 81.45 & 82.4 & 82.4 & 82.4 & 82.4 \\ \hline
-	\end{tabular}
-	\label{Tabla/Resultados/V1_02_medium}
-\end{table}
 
-\subsubsection{KAZE}
+En esta tabla se puede obsevar la influencia de las probabilidades $P$ y $p$, para hallar un modelo de ajuste a un conjunto de puntos a partir de una par de estos ($n = 2$).
 
+
+
+\section{Extracción de residuales fotométricos}
+\subsection{ Selección de parejas }
+
+Actualmente la selección de parejas posee una esquema de  implementación basado en  CPU (figura 13) y  esquema similar basado en GPU (figura 14).\\
+
+En ambos módulos se tienen las imágenes i e i+1, las cuales son la entrada del modulo de extracción de características.
+En la salida de este módulo se tienen la ubicación de los puntos característicos en las imágenes y sus descriptores. Este módulo tiene a disposición 5 tipos de detectores en la versión en CPU y 2 tipos de detectores en la versión en GPU.\\
+
+Posteriormente, el módulo de emparejamiento es el encargado de generar las parejas de correspondencias entre los puntos característicos de las dos imágenes, utilizando para ello algoritmos de emparejamiento como FLANN (del inglés: Fast Library for Approximate Nearest Neighbors)
+y fuerza bruta. En la implementación en CPU se dispone de ambos algoritmos, mientras que la versión en GPU sólo implementa fuerza bruta.\\
+
+Por último, el módulo de filtrado se encarga de seleccionar las mejores parejas entre las dos imágenes.  Este módulo es común en ambas versiones y se encuentra implementado en CPU.\\
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/KAZE/Posicion}
-	\caption{Posición de la cámara KAZE}
-	\label{imagen:Resultados/V1_02_medium/KAZE/Posicion}
+	\includegraphics[scale=0.4]{Implementacion/DiagramaCPU2.png}
+	\caption{Esquema general del módulo de extracción de parejas en CPU.}
+	\label{fig:my_label}
 \end{figure}
 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/KAZE/Orientacion}
-	\caption[Error de Orientación KAZE]{Error de Orientación KAZE.}
-	\label{imagen:Resultados/V1_02_medium/KAZE/Orientacion}
+	\includegraphics[scale=0.4]{Implementacion/DiagramaGPU2.png}
+	\caption{Esquema general del módulo de extracción de parejas en GPU.}
+	\label{fig:my_label}
+\end{figure}
+
+\subsubsection{Extracción de puntos característicos}
+
+El modulo de extracción de puntos característicos en CPU dispone de detectores como SIFT, SURF, KAZE, AKAZE y ORB, mientras que la versión en GPU sólo posee SURF y ORB.\\
+
+En la figura 15 se muestran la detección de puntos característicos  para una imagen perteneciente al EuRoC MAV Dataset \cite{0}. De izquierda a derecha se presenta la extracción de  puntos característicos para SIFT (1666 puntos), SURF (1504 puntos), KAZE (1865 puntos), AKAZE (1653 puntos) y ORB (1500 puntos) sobre la misma imagen. \\
+\begin{figure}[H]
+	
+	\includegraphics[scale=0.3]{Implementacion/DeteccionCaracteristicas/Imagen1SURF.png}
+	\includegraphics[scale=0.3]{Implementacion/DeteccionCaracteristicas/Imagen1SIFT.png}
+	\includegraphics[scale=0.3]{Implementacion/DeteccionCaracteristicas/Imagen1KAZE.png}
+	\includegraphics[scale=0.3]{Implementacion/DeteccionCaracteristicas/Imagen1AKAZE.png}
+	\includegraphics[scale=0.3]{Implementacion/DeteccionCaracteristicas/Imagen1ORB.png}
+	\caption{Extracción de características.}
+	\label{fig:my_label}
 \end{figure}
 
 
+\subsubsection{Filtrado de parejas}
+
+
+Una vez se han identificado los puntos característicos en la imagen i y la i+1, se calculan los descriptores de las características detectadas y se procede a encontrar las correspondencias entre las dos imágenes. Para esta tarea se utiliza el método de vecinos más cercanos (KNN, del inglés:K Nearest Neighbors), el cual puede a su vez puede implementarse con algoritmos del tipo fuerza bruta o FLANN (del inglés: Fast Library for Approximate Nearest Neighbors). Este método se encarga de comparar el descriptor de un punto de referencia presente en la imagen i con los descriptores de los puntos de referencia de la imagen i+1 y determinar los k descriptores más cercanos al descriptor de la imagen i . En este caso la métrica de distancia puede corresponder a distancia euclidiana, en el caso de descriptores vectoriales, o a distancia Hamming, en el caso de descriptores binarios.\\
+
+En esta implementación se utiliza k = 2, y se considera como una correspondencia aquellos casos donde la distancia entre el descriptor de la característica presente en la imagen i (D1) y su vecino más cercano en la imagen i+1 resulta 0.8 veces menor a la distancia entre D1 y el siguiente vecino de la imagen i+1. El valor de 0.8 se establece en correspondencia con el método de extracción de parejas de alta calidad establecido por David G. Lowe en \cite{1}.\\
+
+Posteriormente se realiza una prueba de simetría entre parejas. En esta prueba, si el descriptor D1 de la característica  de la imagen i posee una correspondencia D2 en la imagen i+1, entonces al calcular la correspondencia desde D2 a la imagen i, debe resultar D1. Las parejas que no cumplan este criterio son descartadas.\\
+
+En la figura 16 se presenta un ejemplo del filtrado  utilizando el detector SIFT. En la imagen i se detectaron 1666 puntos (figura 1) característicos, mientras que en la imagen i+1 se detectaron 1826. Luego de aplicar el filtrado de parejas por vecinos más cercanos y la prueba de simetría, la imagen i de la izquierda posee 882 correspondencias con la imagen i+1 presentada a la derecha.\\
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/KAZE/ResidualVelocidad2}
-	\caption{Residual de velocidad KAZE}
-	\label{imagen:Resultados/V1_02_medium/KAZE/ResidualVelocidad}
+	
+	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1.png}
+	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen2.png}
+	\caption{Salida del modulo de filtrado luego de la prueba de simetría.}
+	\label{fig:my_label}
 \end{figure}
 
 
+Finalmente, se realiza una distribución espacial de las mejores parejas  sobre las imágenes i e i+1 utilizando un filtro de celdas. En este último,la imagen i es dividida en celdas de m x n pixeles. En esta implementación se m y n son el resultado de dividir el ancho y el largo de la imagen, respectivamente, por un mismo número entero k. \\
 
-\subsubsection{AKAZE}
+La figura 17 presenta dos imágenes en las que el filtro de celdas es aplicado. La imagen de la izquierda es el resultado de colocar las dimensiones de una imagen de resolución 752x480 píxeles, en celdas unitarias de aproximadamente 62x40 píxeles,
+tomando k = 12,  generando por tanto 144 celdas y teniendo un total de 112 parejas finales luego de aplicado el filtrado. Por su parte, la imagen de la derecha es el resultado de fraccionar en 36 celdas la imagen original, tomando k = 6. En ésta, se tienen 34 parejas finales. \\
 
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/AKAZE/Posicion}
-	\caption{Posición de la cámara AKAZE}
-	\label{imagen:Resultados/V1_02_medium/AKAZE/Posicion}
+	
+	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1Grid12.png}
+	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1Grid6.png}
+	\caption{División de la imagen en celdas.}
+	\label{fig:my_label}
 \end{figure}
 
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/AKAZE/Orientacion}
-	\caption[Error de Orientación AKAZE]{Error de Orientación AKAZE.}
-	\label{imagen:Resultados/V1_02_medium/AKAZE/Orientacion}
-\end{figure}
+El criterio aplicado para seleccionar las mejores parejas y distribuirlas de forma homogénea sobre la imagen  consiste en seleccionar la mejor pareja  dentro de la región de la imagen correspondiente a la celda, y descartar a las demás parejas presentes. Se considera como mejor pareja a aquella que posea la menor distancia entre los descriptores de sus dos puntos característicos.\\
 
-
+Las figuras 18 y 19 presentan el resultado final del modulo de filtrado de parejas con 36 y 144 celdas, respectivamente. Se puede observar que el filtro de celdas sólo es aplicado en los puntos característicos de la imagen i, ya que debido al movimiento del robot las puntos característicos se encuentran distribuidos de forma diferente en la imagen i+1 (imagen mostrada a la derecha) . \\
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/AKAZE/ResidualVelocidad2}
-	\caption{Residual de velocidad AKAZE}
-	\label{imagen:Resultados/V1_02_medium/AKAZE/ResidualVelocidad}
-\end{figure}
-
-\subsubsection{ORB}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/ORB/Posicion}
-	\caption{Posición de la cámara ORB}
-	\label{imagen:Resultados/V1_02_medium/ORB/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/ORB/Orientacion}
-	\caption[Error de Orientación ORB]{Error de Orientación ORB.}
-	\label{imagen:Resultados/V1_02_medium/ORB/Orientacion}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/ORB/ResidualVelocidad2}
-	\caption{Residual de velocidad ORB}
-	\label{imagen:Resultados/V1_02_medium/ORB/ResidualVelocidad}
-\end{figure}
-
-
-\subsubsection{SIFT}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SIFT/Posicion}
-	\caption{Posición de la cámara SIFT}
-	\label{imagen:Resultados/V1_02_medium/SIFT/Posicion}
+	
+	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1BEST12.png}
+	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen2BEST12.png}
+	\caption{Filtrado de parejas con 144 celdas.}
+	\label{fig:my_label}
 \end{figure}
 
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SIFT/Orientacion}
-	\caption[Error de Orientación SIFT]{Error de Orientación SIFT.}
-	\label{imagen:Resultados/V1_02_medium/SIFT/Orientacion}
+	
+	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1BEST6.png}
+	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen2BEST6.png}
+	\caption{Filtrado de parejas con 36 celdas.}
+	\label{fig:my_label}
 \end{figure}
 
+Cabe destacar que siempre que existan suficientes puntos característicos distribuidos en la imagen a la entrada de este módulo, el número de parejas finales será cercano al número de celdas. \\
 
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SIFT/ResidualVelocidad2}
-	\caption{Residual de velocidad SIFT}
-	\label{imagen:Resultados/V1_02_medium/SIFT/ResidualVelocidad}
-\end{figure}
-
-\subsubsection{SURF}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SURF/Posicion}
-	\caption{Posición de la cámara SURF}
-	\label{imagen:Resultados/V1_02_medium/SURF/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SURF/Orientacion}
-	\caption[Error de Orientación SURF]{Error de Orientación SURF.}
-	\label{imagen:Resultados/V1_02_medium/SURF/Orientacion}
-\end{figure}
+Para evaluar el tiempo de cómputo del filtrado espacial se utilizó un equipo Intel ® Core 2 Duo CPU E8400 @ 3.00Ghz, dando como resultado un tiempo aproximado de 400 $\mu$s para 144, 121, 100, 81, 64, 49 y 36 celdas, teniendo como entrada 882 parejas.
 
 
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SURF/ResidualVelocidad2}
-	\caption{Residual de velocidad SURF}
-	\label{imagen:Resultados/V1_02_medium/SURF/ResidualVelocidad}
-\end{figure}
+

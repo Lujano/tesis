@@ -1,368 +1,632 @@
-\chapter{Dataset local}
+\chapter{Resultados y análisis}
 \label{capitulo6}
-\lhead{Capítulo 6. \emph{Dataset local}}
+\lhead{Capítulo 6. \emph{Resultados y análisis}}
+
+\section{Pruebas en el EuRoC MAV Dataset}
+A continuación se presentan los resultados obtenidos
+utilizando secuencias de datos  $MH\_ 01\_ easy$,  $MH\_ 05\_ difficult$,  $V1\_ 01\_ easy$,
+$V1\_ 02\_ medium$ y  $V1\_ 03\_ difficult$, pertenecientes al EuRoC MAV Dataset.
+
+En primera instancia se presentan los resultados directos del método iterativo de Gauss-Newton, y posteriormente los resultados obtenidos con la inicialización del método utilizando los residuales de rotación provenientes del filtro inercial. Posteriormente se presentan los resultados obtenidos mediante el método RANSAC para la estimación del vector unitario de traslación.
 
 
-\section{Introducción}
-El objetivo de este capítulo es explicar la elaboración de un dataset visual inercial, a través de la construcción de un robot prototipo, la adquisición de datos de odometría de los encoders del robot, de la captura de imágenes de la cámara empleada, y de la adquisición de las medidas tomadas por la IMU.
+\subsection{Prueba del método de optimización de Gauss-Newton }
 
-
-\clearpage
-
-\section{Descripción del prototipo}
-
-El prototipo realizado consiste en un robot diferencial inicialmente diseñado para la categorría Sumo de la VII Competencia Nacional de Robótica CCSBOTS 2018. El prototipo tiene un peso de 2.9 kg y es capaz de soportar pesos de hasta 4kg. Posee una placa de control a bajo nivel de los motores del robot, y una Raspberry Pi 3 que es utilizada para controlar el robot utilizando un mando del tipo joystick a través de la interfaz bluetooth. El robot posee además encoders en sus ruedas que permiten tener datos de odometría. Este prototipo tiene una autonomía aproximada de 1 hora. La figura \ref{imagen:Robot} muestra la configuración final del robot. 
-
-Más información puede ser encontrada en el \href{https://github.com/Robot-Sumo/}{repositirio de desarrollo del robot} .
-
-
-\begin{figure}[H]
-	\centering		\includegraphics[width=0.7\linewidth]{imagenes/prototipo/Robot}
-	\caption{Prototipo final.}
-	\label{imagen:Robot}
-\end{figure}
-
-
-\section{Diseño mecánico}
-
-
-El diseño mecánico del robot está centrado en el diseño de la caja de velocidad del robot. El modelaje 3D del robot se realizó utilizando Autocad como software de diseño y visualización del prototipo.
-
-
-
-\subsection{Motores}
-
-Los motores empleados en el diseño del robot fueron 4 motores con escobillas Mabuchi  C2162-60006. La figura \ref{imagen:prototipo/CajaMotores} presenta la configuración utilizada. El cuadro \ref{MabuchiDatasheet} presenta la información del motor suminastrada por el fabricante y el cuadro \ref{MabuchiResultados} presenta los resultados de las mediciones realizadas al motor para la caracterización de su resistencia de armadura.
+Para evaluar la estimación del método de Gauss-Newton se utilizó la secuencia $V1\_ 01\_ easy$ debido a que es una de las secuencias que presentan movimientos lentos y con mayor solapamiento entre imágenes, lo cual era un requisito para el método utilizado ya que este utiliza un método directo para estimar la rotación y la traslación del robot. La figura \ref{imagen:Resultados/GaussNewton/Posicion} muestra los resultados de la posición estimada, la cual se encuentra escala con el desplazamiento real obtenido del groundtruth. También se muestran los resultados respecto a la orientación de la cámara estimada en la figura \ref{imagen:Resultados/GaussNewton/Orientacion}. En esta prueba se utilizó el detector SIFT y se utilizaron 4 escalas piramidales con un máximo numero de iteraciones fijado a 10 para cada nivel. El tiempo promedio de estimación fue de 0.573243 s.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.7\textwidth]{prototipo/CajaMotores}
-	\caption[Motores Mabuchi empleados en el diseño del prototipo]{Componentes de Hardware del robot.}
-	\label{imagen:prototipo/CajaMotores}
+	\includegraphics[scale=0.6]{Resultados/GaussNewton/Orientacion}
+	\caption{Orientación estimada de la cámara con el método de optimización de Gauss-Newton en secuencia $V1\_ 01\_ easy$. }
+	\label{imagen:Resultados/GaussNewton/Orientacion}
 \end{figure}
 
-\begin{table}[htbp]
-	\caption{Datos del motor Mabuchi proveidos por el fabricante.}
+Con estos resultados es posible concluir que el método empleado diverge, ya que la orientación estimada no posee cambios, lo cual también se evidencia en la estimación de la posición de la cámara en el espacio de la figura \ref{imagen:Resultados/GaussNewton/Posicion}.
+
+
+\begin{figure}[H]
 	\centering
-	\begin{tabular}{|l|c|}
-		\hline
-		\multicolumn{ 2}{|c|}{\textbf{Motor  Mabuchi Brush C2162-60006 19-24v HP}} \\ \hline
-		Rating [volts] & 19 \\ \hline
-		Test [volts] & 24 \\ \hline
-		Stall Torque [N-cm] & 28.7 \\ \hline
-		Max. Power [Watts] & 34.2 \\ \hline
-		Max. Power [mili-hp] & 45.8 \\ \hline
-		Duration [sec] & 30 \\ \hline
-		Energy [Joules] & 1026 \\ \hline
-		Weight [grams] & 224 \\ \hline
-		Power/Weight [Watts/kg] & 153 \\ \hline
-		Energy/Weight [Joules/kg] & 4580 \\ \hline
-	\end{tabular}
-	\label{MabuchiDatasheet}
-\end{table}
+	\includegraphics[scale=0.6]{Resultados/GaussNewton/Posicion}
+	\caption{Posición estimada de la cámara con el método de optimización de Gauss-Newton en secuencia $V1\_ 01\_ easy$. }
+	\label{imagen:Resultados/GaussNewton/Posicion}
+\end{figure}
 
+Posteriormente se presentan los resultados de inicializar cada estimacion con el cambio de rotación estimado con el filtro inercial.
 
+En primer lugar se presenta en la figura \ref{imagen:Resultados/GaussNewtonConResiduales1/ResidualOrientacionHistograma} los residuales inerciales utilizados en la inicialización. En la figura \ref{imagen:Resultados/GaussNewtonConResiduales1/ErrorResidualOrientacion} se observa el error del residual.
 
-\begin{table}[htbp]
-	\caption{Resultados de mediciones realizadas al motor.}
-	\centering
-	\begin{tabular}{|l|c|}
-		\hline
-		No Load Current [Amps] & 0.15 \\ \hline
-		Resistance [Ohms] & 15 \\ \hline
-		Stall Current [amps] & 1.6 \\ \hline
-		No Load Speed [rpm] & 3500 \\ \hline
-	\end{tabular}
-	\label{MabuchiResultados}
-\end{table}
-
-
-
-
-Entre los datos relevantes en estos cuadros destacan la corriente del motor cuando es aplicado el máximo torque (Stall Current), la cual es utilizada para el diseño de las protecciones y de los puntos de referencia de los drivers, el máximo torque aplicado por el motor (Stall Torque)  y velocidad sin carga (No Load Speed), las cuales son utilizadas para el criterio de selección de la relación de reducción en el sistema de engranajes.
-
-\subsection{Caja de velocidad}
-
-
-El cuadro \ref{TablaPruebaEngranajes} presenta los resultados estimados  de torque máximo y velocidad máxima del robot para una relación de engranajes específica. En este caso la velocidad máxima del motor fue aproximada en 3000 rpm ya que la medición sin carga fue cercana a los 3500 rpm, y estas revoluciones bajan al presentar carga en el sistema de transferencia. El torque máximo inicial representa el aproximado de la suma del torque máximo de dos motores, cuyo valor se tomó cercano a 30 N-cm, respecto al valor de de 28.7 N-cm proveido por el fabricante en el cuadro \ref{MabuchiDatasheet}.
-
-\begin{table}[htbp]
-	\caption{Pruebas de diferentes relaciones de engranajes}
-	\begin{tabular}{|l|r|r|r|r|}
-		\hline
-		\textbf{Relación final de engranajes} & \textbf{20} & \textbf{15} & \textbf{12} & \textbf{8} \\ \hline
-		Velocidad máxima del motor (rpm) & 3000 & 3000 & 3000 & 3000 \\ \hline
-		Radio de la rueda (cm) & 3.74 & 3.74 & 3.74 & 3.74 \\ \hline
-		Velocidad máxima de la rueda (rpm) & 150 & 200 & 250 & 375 \\ \hline
-		Velocidad máxima de la rueda (rev/s) & 15.708 & 20.944 & 26.18 & 39.27 \\ \hline
-		Torque máximo del Motor (N-cm) & 60 & 60 & 60 & 60 \\ \hline
-		\textbf{Torque máximo final (N-cm)} & \textbf{1200} & \textbf{900} & \textbf{720} & \textbf{480} \\ \hline
-		\textbf{Velocidad máxima del robot (m/s)} & \textbf{0.59} & \textbf{0.78} & \textbf{0.98} & \textbf{1.47} \\ \hline
-	\end{tabular}
-	\label{TablaPruebaEngranajes}
-\end{table}
-
-
-
-Con los resultados obtenidos para diferentes relaciones de engranajes, se utilizó Unity para simular las propiedades dinámicas del robot y de esta manera seleccionar la relación de engranajes con la mejor relación torque-velocidad. En la figura \ref{imagen:prototipo/SimulacionUnity} se presenta una captura de esta simulación, en la cual el robot debía ser capaz de mover a un robot con un peso de 3kg con características similares.
+También se muestra la posición estimada en la figura \ref{imagen:Resultados/GaussNewtonConResiduales1/Posicion} y el error de la orientación estimada en la figura \ref{imagen:Resultados/GaussNewtonConResiduales1/ErrorOrientacion} .
 
 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.7\textwidth]{imagenes/prototipo/SimulacionUnity}
-	\caption{Simulación en Unity de las características dinámicas del robot para la elección de la relación de reducción de velocidad.}
-	\label{imagen:prototipo/SimulacionUnity}
+	\includegraphics[scale=0.6]{Resultados/GaussNewtonConResiduales1/ResidualOrientacionHistograma}
+	\caption{ Residual de orientación estimado en secuencia $V1\_ 01\_ easy$.}
+	\label{imagen:Resultados/GaussNewtonConResiduales1/ResidualOrientacionHistograma}
 \end{figure}
-
-La relación final de reducción seleccionada fue de  15:1. De esta forma, el sistema de engranajes fue diseñado para cumplir esta relación. La figura \ref{imagen:disenoEngranajesAutocad} presenta el diseño realizado. En éste, se tiene un engranaje de 20 dientes acoplado a un engranaje de 60 dientes, el cual se encuentra acoplado en su mismo eje a un engranaje de 20 dientes. Posterioremente se tiene un engranajes de transmision de 20 dientes que se encarga de transmitir la velocidad al engranaje de la rueda, el cual fue diseñado para tener 100 dientes. Este engranaje es el de mayor tamaño en la figura \ref{imagen:disenoEngranajesAutocad}. De esta forma se garantizó la relación de reducción a 15.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.7\linewidth]{imagenes/prototipo/EngranajesAutocad}
-	\caption{Parte del modelado en 3D del robot realizado en Autocad}
-	\label{imagen:disenoEngranajesAutocad}
+	\includegraphics[scale=0.6]{Resultados/GaussNewtonConResiduales1/ErrorResidualOrientacion}
+	\caption{ Error del residual de orientación estimado en secuencia $V1\_ 01\_ easy$.}
+	\label{imagen:Resultados/GaussNewtonConResiduales1/ErrorResidualOrientacion}
 \end{figure}
-
-
-Las imágenes oresentadas en la figura \ref{imagen:construccionFinalRobot} presentan parte del proceso de construcción de la caja de velocidades. Los engranajes presentados fueron impresos utilizando el diseño 3D previamente realizado, y utilizando como material de impresión el polímero PLA. Cabe acotar que el empleo de dos motores por cada sistema de engranajes fue realizado para aumentar el torque de la caja de velocidad.
-
-\begin{figure}[H]
-	\centering		\includegraphics[width=0.7\linewidth]{imagenes/prototipo/Motores}
-	\includegraphics[width=0.4\linewidth]{imagenes/prototipo/CajaColocandoEngranejes}
-	\includegraphics[width=0.4\linewidth]{imagenes/prototipo/CajaLista}
-
-	\caption{Imagenes de armado del robot}
-	\label{imagen:construccionFinalRobot}
-\end{figure}
-
-
-
-\subsection{Drivers}
-
-Los drivers empleados en el diseño del robot fueron los STA6940M, los cuales soportan motores con escobillas con voltajes de operación de hasta 44V y 4 amperios de corriente promedio, y son compatibles con la tensión de alimentación lógica de 5V. La figura \ref{imagen:Driver} presenta el empaquetado 18-pin ZIP del driver empleado.
-
-\begin{figure}[H]
-	\centering		\includegraphics[width=0.3\linewidth]{imagenes/prototipo/Driver}
-	\caption{Driver STA6940M. }
-	\label{imagen:Driver}
-\end{figure}
-
-La configuración utilizada en el robot es similar a la recomendada por el fabricante en la figura \ref{imagen:DriverAplicacion}. El diagrama de pines se muestra en la tabla \ref{imagen:DriverTabla}.
-
-\begin{figure}[H]
-	\centering		\includegraphics[width=0.7\linewidth]{imagenes/prototipo/InformacionDeAplicacion}
-	\caption{Diagrama de aplicación del driver STA6940M proveído por el fabricante.}
-	\label{imagen:DriverAplicacion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering		\includegraphics[width=0.7\linewidth]{imagenes/prototipo/TablaDePines}
-	\caption{Lista de pines del driver STA6940M proveída por el fabricante. }
-	\label{imagen:DriverTabla}
-\end{figure}
-
-Cabe destacar que la protección de sobrecorriente que presenta el driver ($OCP\_ REF$) es colacada manualmente con un arreglo de resisitencias ,al igual que la referencia del PWM ($PWM\_ REF$). En particular, el voltaje de $OCP\_ REF$ debe ser igual al voltaje de la resistencia de sensado cuando el motor presenta su punto de máximo torque, que en este caso es cuando se alcanza la corriente de Stall a 1.6 Amperios. En la configuración final se utilizan dos motores en paralelo para cada driver por lo que el ajuste se realizó para 3.2 Amperios.
-
-
-\subsection{Encoders}
-
-El sistema de encoders también fue diseñado desde cero. La figura \ref{imagen:RuedaEncoders} presenta el modelaje 3D de la rueda del encoder y la disposición final sobre el eje de la rueda del robot.
-
-\begin{figure}[H]
-	\centering		\includegraphics[width=0.3\linewidth]{imagenes/prototipo/Ruedaencoder}
-	\includegraphics[width=0.3\linewidth]{imagenes/prototipo/EncoderReal}
-	\caption{Diseño 3D de la rueda de los encoders del robot}
-	\label{imagen:RuedaEncoders}
-\end{figure}
-
-El diseño final de la rueda del encoder tiene 40 ranuras. El proceso de calibración del encoder pasó por ajustar las resistencias de los fotoemisores y fotoreceptores del encoder y posteriormente realizar una restricción del mínimo tiempo de interrupción entre dos ranuras basada en la máxima velocidad de la rueda.
-
-Cabe destacar que los encoders presentan un circuito de adecuación para generar la interrupciones en el microcontrolador de la placa de control a bajo nivel, el cual consiste en un comparador LM311.
-
-Los resultados finales de calibración fueron bastantes satisfactorios, obteniéndose un error de lectura de 4 ranuras por cada 4000 ranuras, el cual representa un error de 0.1\%.
-Cabe destacar que la correcta lectura de los encoders es de vital importancia para obtener datos confiables de odometría del robot.
-
-\subsection{Placa de control a bajo nivel}
-Los drivers del motor, los circuitos de acondicionamiento de los encoders y el microcontrolador encargado de realizar el control PWM del robot fueron integrados en una PCB, la cual se diseño utilizando Kicad 5.0.2 para Ubuntu. La figura \ref{imagen:PlacaMotores} presenta el esquemático de la placa. El microcontrolador utilizado fue el Arduino Nano 328p.
-
-
-\begin{figure}[H]
-	\centering		\includegraphics[width=1.0\linewidth]{imagenes/prototipo/Placa/PlacaMotores}
-	\caption{Esquemático de la placa de los motores.}
-	\label{imagen:PlacaMotores}
-\end{figure}
-
-Las figura \ref{imagen:PlacaMotoresFrontal} presenta la vista frontal de las capas de la placa, su vista 3D y el modelo final.
-
-
-%\begin{figure}[H]
-%	\centering		
-%	\includegraphics[width=0.7\linewidth]{imagenes/prototipo/Placa/3dViewerBottom}
-%	\caption{Vista trasera de las capas de la placa de los motores}
-%	\label{imagen:PlacaMotoresBottom}
-%\end{figure}
-
-
-\begin{figure}[H]
-	\centering	
-	\includegraphics[width=0.7\linewidth]{imagenes/prototipo/Placa/PCB_FrontAllLayers}	\includegraphics[width=0.7\linewidth]{imagenes/prototipo/Placa/3dViewerFront}
-	\includegraphics[width=0.7\linewidth]{imagenes/prototipo/Placa/PCB_FinalFront}
-	\caption{Vista frontal de la placa de los motores.}
-	\label{imagen:PlacaMotoresFrontal}
-\end{figure}
-
-\subsection{Sistema de alimentación y autonomía}
-
-El robot es alimentado por dos paquetes de baterías de 12V, los cuales fueron construidos con baterías de litio Sony G5 18650 de 2200mAh. Cada paquete dispone de 6 baterias de litio, para un total de 12 baterías.  Estas baterías se disponen en serie para lograr el voltaje de 24V de funcionamiento de los motores del robot, con una capacidad de 4400mAh. Se aprovecha la toma de 12V para alimentar la placa de control de los motores y la raspberry utilizando dos conversores del tipo Buck independientes. Los conversores empleados son del tipo MP2307, y su voltaje de salida es fijado a  5V.
-La figura \ref{imagen:BuckCurva} presenta la curva de eficiencia del conversor utilizado.
-
-
-\begin{figure}[H]
-	\centering	
-	\includegraphics[width=0.5\linewidth]{imagenes/prototipo/Buck}
-	\caption{Curva de eficiencia vs corriente de carga del conversor Buck utilizado}
-	\label{imagen:BuckCurva}
-\end{figure}
-
-
-En la figura \ref{imagen:Bateria} se presenta el proceso de carga de uno de los paquetes de batería de 12V. En este caso se utilizan 3 circuitos de cargadores de batería de litio de 3.7V HW-107 que emplean el controlador de carga TC4056. Estos circuitos se encuentran eléctricamente aislados ya que utilizan cargadores independientes de la red eléctrica nacional a 5V@1A. El tiempo aproximado de carga de cada paquete de batería es de 6 horas.
-
-\begin{figure}[H]
-	\centering	
-	\includegraphics[width=0.7\linewidth]{imagenes/prototipo/Bateria}
-	\caption{Carga del paquete de baterías de 12V del robot.}
-	\label{imagen:Bateria}
-\end{figure}
-
-También se presenta el cálculo de autonomía del robot en función de la eficiencia de los conversores tipo Buck y del consumo de los componentes del robot.
-
-La tabla \ref{Buck1} presenta el consumo de carga promedio del conversor Buck 1. En este caso la corriente de carga aproximada es de 115.2 mA, y debido a que el voltaje de salida es de 5V, la potencia de consumo es 0.58 W. En esta caso se aproxima la eficiencia del conversor a 90\% para el cálculo de las perdidas de conversión. La tabla \ref{Buck1Perdidas} presenta la corriente de alimentación suminastrada por el arreglo de baterías de 12V en el proceso de conversión, la cual es la potencia total consumida por el conversor entre 12V.
-
-\begin{table}[htbp]
-	\caption{Consumo de carga del conversor Buck 1}
-	\begin{tabular}{|l|c|c|c|c|}
-		\hline
-		\multicolumn{1}{|c|}{\textbf{Componente}} & \textbf{Cantidad} & \textbf{ Vin (V)} & \textbf{ Ipr (mA)} & \textbf{Itotal (mA)} \\ \hline
-		Arduino Nano 328p & 1 & 5 & 15 & 15 \\ \hline
-		Leds PCB & 3 & 5 & 10 & 30 \\ \hline
-		Fotoreceptor-Fotoemisor Encoder & 2 & 5 & 10 & 20 \\ \hline
-		Comparador LM311 & 2 & 5 & 5.1 & 10.2 \\ \hline
-		Driver STA6940M & 2 & 5 & 20 & 40 \\ \hline
-		& \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \textbf{Iload (mA)} & 115.2 \\ \hline
-	\end{tabular}
-	\label{Buck1}
-\end{table}
-
-
-
-\begin{table}[htbp]
-	\caption{Consumo conversor Buck 1}
-	\begin{tabular}{|l|c|}
-		\hline
-		Consumo Buck 1 (W) & 0.58 \\ \hline
-		Perdidas por Conversión (W) & 0.06 \\ \hline
-		Consumo Total (W) & 0.64 \\ \hline
-		Corriente de Alimentación Equivalente (mA) & \multicolumn{1}{r|}{53.3333333333} \\ \hline
-	\end{tabular}
-	\label{Buck1Perdidas}
-\end{table}
-
-
-En el caso del consumo del conversor Buck 2, se calcula  en función del consumo promedio de la Raspberry Pi 3 utilizando sus cuatro núcleos al 100\%, el consumo de la cámara y el de la IMU. La tabla \ref{} presenta estos resultados.
-
-\begin{table}[htbp]
-	\caption{Consumo conversor Buck 2}
-	\begin{tabular}{|l|c|c|c|c|}
-		\hline
-		\multicolumn{1}{|c|}{\textbf{Componente}} & \textbf{Cantidad} & \textbf{ Vin (V)} & \textbf{ Ipr (mA)} & \textbf{Itotal (mA)} \\ \hline
-		IMU MPU6050 & 1 & 3.3 & 3.8 & 3.8 \\ \hline
-		Raspberry Pi 3  & 1 & 5 & 730 & 730 \\ \hline
-		Pi Camera  v1.2 & 1 & 1.3 & 250 & 250 \\ \hline
-		& \multicolumn{1}{l|}{} & \multicolumn{1}{l|}{} & \textbf{Iload (mA)} & 983.8 \\ \hline
-	\end{tabular}
-	\label{Buck2}
-\end{table}
-
-\begin{table}[htbp]
-	\caption{Consumo conversor Buck 2}
-	\begin{tabular}{|l|c|}
-		\hline
-		Consumo Buck 2 (W) & 1.3 \\ \hline
-		Perdidas por Conversión (W) & 0.54 \\ \hline
-		Consumo Total (W) & 5.4 \\ \hline
-		Corriente de Alimentación Equivalente (mA) & 450 \\ \hline
-	\end{tabular}
-	\label{Buck2Perdidas}
-\end{table}
-
-Por tanto el consumo de corriente total de los Bucks es de  503mA, a lo cual se le debe sumar los 250mA estimados que consume en promedio cada motor del robot. Por tanto el consumo total del robot es de 1.5A, por paquete de baterías. Como cada paquete presente una capacidad de 4400 mAh, la autonomía estimada es de aproximadametne 2 horas. Sin embargo, la autonomía real del robot es de aproximadamente 1 hora debido a que las baterías empleadas son recicladas.
-
-\subsection{Joystick}
-
-
-
-
-\begin{figure}[H]
-	\centering		\includegraphics[width=0.7\linewidth]{imagenes/prototipo/Raspberry}
-	\caption{Disposición de sensores en la Rasperry Pi 3}
-	\label{imagen:Raspbery}
-\end{figure}
-
-En cuanto al dataset local realizado, también fue implementado utilizando C++ como lenguaje de programación, y utilizando una raspberry pi 3 para la adquisición de los datos de la imu y de la cámara, y utilizando 4 hilos de ejecución.
-
-
-\section{Componentes de hardware}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.7\textwidth]{HardwareRobot}
-	\caption[Componentes de Hardware del robot]{Componentes de Hardware del robot.}
-	\label{imagen:HardwareRobot}
+	\includegraphics[scale=0.6]{Resultados/GaussNewtonConResiduales1/ErrorOrientacion}
+	\caption{Posición estimada de la cámara con el método de optimización de Gauss-Newton en secuencia $V1\_ 01\_ easy$ empleando residuales inerciales. }
+	\label{imagen:Resultados/GaussNewtonConResiduales1/ErrorOrientacion}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/GaussNewtonConResiduales1/Posicion}
+	\caption{Posición estimada de la cámara con el método de optimización de Gauss-Newton en secuencia $V1\_ 01\_ easy$ empleando residuales inerciales. }
+	\label{imagen:Resultados/GaussNewtonConResiduales1/Posicion}
+\end{figure}
+
+En este caso la prueba realizada fue similar y se obtuvo un tiempo promedio de iteración del algoritmo de 0.799779 s, el cual es mayor al presentado sin la inicialización con residuales. En primer lugar esto indica que el algoritmo itera un mayor número de veces de la solución que minimice el error fotométrico. Es posible observar que la orientación de la cámara en este caso si es seguida debido a que el error de orientación se mantiene pequeño en los ángulos de roll y pitch, y sufre de drift en el angulo de yaw, lo cual se debe a que esta orientación es principalmente la orientación que se obtiene del filtro inercial. Sin embargo los resultados de la estimación de la posición no fueron satisfactorios.
+
+También es posible observar en los histogramas de las figuras \ref{imagen:Resultados/GaussNewtonConResiduales1/ResidualOrientacionHistograma} y \ref{imagen:Resultados/GaussNewtonConResiduales1/ErrorResidualOrientacion} que el error porcentual del residual es relativamente alto para movimientos lentos, ya que en esta prueba la estimación de residuales se realiza imagen por imagen. Por estas razones, se realizó una segunda prueba calculando los residuales e inicializando el algoritmo de estimación cada 10 imágenes para comparar la estimación de la posición y el error de los residuales. En las figuras  \ref{imagen:Resultados/GaussNewtonConResiduales10/ResidualOrientacionHistograma}, \ref{imagen:Resultados/GaussNewtonConResiduales10/ErrorResidualOrientacion} y \ref{imagen:Resultados/GaussNewtonConResiduales10/Posicion} se muestran los resultados.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/GaussNewtonConResiduales10/ResidualOrientacionHistograma}
+	\caption{ Residual de orientación estimado en secuencia $V1\_ 01\_ easy$.}
+	\label{imagen:Resultados/GaussNewtonConResiduales10/ResidualOrientacionHistograma}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/GaussNewtonConResiduales10/ErrorResidualOrientacion}
+	\caption{ Error del residual de orientación estimado en secuencia $V1\_ 01\_ easy$.}
+	\label{imagen:Resultados/GaussNewtonConResiduales10/ErrorResidualOrientacion}
 \end{figure}
 
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/GaussNewtonConResiduales10/Posicion}
+	\caption{Posición estimada de la cámara con el método de optimización de Gauss-Newton en secuencia $V1\_ 01\_ easy$ empleando residuales inerciales. }
+	\label{imagen:Resultados/GaussNewtonConResiduales10/Posicion}
+\end{figure}
 
-Con el empleo de la IMU es posible obtener los cambios de orientación de la cámara y de su aceleración, siempre y cuando se encuentren sincronizadas las mediciones. Bajo esta restricción se tiene el residual de orientación de la IMU (${R}_{RES/IMU}$) , el cual representa el cambio de orientación de la IMU entre el frame actual y el anterior, tal como se presenta en la ecuación \ref{eq:residualIMU}.
+En esta prueba se tuvo un tiempo promedio de 0.739407 s y se puedo observar que el error porcentual de los residuales es más pequeño. Esto indicó que los residuales de orientación tendían a ser más exactos a mayores rangos de movimiento rotacional, lo cual los hace incompatibles con el método de optimización empleado ya que este requiere rangos mínimos de movimiento, lo cual se comprueba nuevamente con la divergencia de la estimación de la posición.
+
+\subsection{Machine Hall Easy}
 
 \begin{table}[htbp]
-	\caption{Presupuesto del robot prototipo}
-	\begin{tabular}{|l|c|c|c|}
+	\caption{Parámetros de configuración en Secuencia $MH\_ 01\_ easy$.}
+	\begin{tabular}{|l|c|c|c|c|c|}
 		\hline
-		\multicolumn{1}{|c|}{\textbf{Componente}} & \textbf{Cantidad} & \textbf{Valor (\$)} & \textbf{Precio Total (\$)} \\ \hline
-		Arduino Nano 328p & 1 & 1.9 & 1.9 \\ \hline
-		Batería Litio Sony G5 18650  2200mAh  & 12 & 2.0 & 24.0 \\ \hline
-		Caja Acrílico Robot Diferencial & 1 & 25.0 & 25.0 \\ \hline
-		Case Raspberry Pi 3 & 1 & 2.0 & 2.0 \\ \hline
-		Caster & 1 & 4.0 & 4.0 \\ \hline
-		Comparador LM311 & 2 & 0.1 & 0.2 \\ \hline
-		Conectores y Cableado & 1 & 2.0 & 2.0 \\ \hline
-		Driver STA6940M & 2 & 5.0 & 10.0 \\ \hline
-		Ejes, Rolineras, Retenedores, Tornillos & 1 & 8.0 & 8.0 \\ \hline
-		Fotoreceptor-Fotoemisor Impresora & 2 & 0.2 & 0.4 \\ \hline
-		Frente Metálico & 1 & 1.0 & 1.0 \\ \hline
-		Fusible 1A  Modelo  Americano & 2 & 0.1 & 0.2 \\ \hline
-		Fusible 350 mA Modelo Europeo & 1 & 0.1 & 0.1 \\ \hline
-		Impresión Engranajes y Rueda Encoder & 1 & 2.0 & 2.0 \\ \hline
-		IMU MPU6050 & 1 & 0.6 & 0.6 \\ \hline
-		Joystick PS3 & 1 & 10.0 & 10.0 \\ \hline
-		Mini DC Buck Converter MP2307 & 2 & 0.4 & 0.8 \\ \hline
-		Motor Mabuchi C2162-60006 19-24v Hp & 4 & 3.5 & 14.0 \\ \hline
-		PCB Control Bajo Nivel & 1 & 10.0 & 10.0 \\ \hline
-		Pi Camera  v1.2 & 1 & 7.2 & 7.2 \\ \hline
-		Raspberry Pi 3 & 1 & 35.0 & 35.0 \\ \hline
-		Rueda de Goma 7.48 mm de Diámetro & 2 & 4.0 & 8.0 \\ \hline
-		& \multicolumn{1}{l|}{\textbf{Total (\$)}} & \multicolumn{1}{l|}{} & \textbf{166.44} \\ \hline
+		\multicolumn{1}{|c|}{\textbf{Detector}} & \textbf{KAZE} & \textbf{AKAZE} & \textbf{ORB} & \textbf{SIFT} & \textbf{SURF} \\ \hline
+		Umbral del RANSAC & 0.18 & 0.18 & 0.18 & 0.18 & 0.18 \\ \hline
+		Umbral de frames estáticos & 4 & 4 & 4 & 4 & 4 \\ \hline
+		Umbral disparidad euclideana & 0.5 & 0.5 & 0.5 & 0.5 & 0.5 \\ \hline
+		Umbral disparidad rotacional (°) & 5 & 5 & 5 & 5 & 5 \\ \hline
+		Umbral disparidad traslacional (px) & 15 & 15 & 15 & 15 & 15 \\ \hline
+		Umbral del detector & 0.012 & 0.012 & 100 & 100 & 10000 \\ \hline
 	\end{tabular}
-	\label{PresupuestoRobot}
+	\label{Tabla/Parametros/MH_01_easy}
 \end{table}
 
 
 
-\section{Componentes}
 
 
 
 
+\begin{table}[htbp]
+	\caption{Resultados en Secuencia $MH\_ 01\_ easy$.}
+	\begin{tabular}{|l|c|c|c|c|c|}
+		\hline
+		\multicolumn{1}{|c|}{\textbf{Detector}} & \textbf{KAZE} & \textbf{AKAZE} & \textbf{ORB} & \textbf{SIFT} & \textbf{SURF} \\ \hline
+		Número de features detectados & 113 & 111 & 100 & 100 & 119 \\ \hline
+		Número de parejas iniciales & 73 & 61 & 37 & 62 & 80 \\ \hline
+		Número de parejas del filtro de celdas & 28 & 21 & 12 & 29 & 31 \\ \hline
+		Número de inliers del RANSAC & 53 & 43 & 24 & 45 & 58 \\ \hline
+		Número de imágenes procesadas & 2099 & 2099 & 2099 & 2099 & 2099 \\ \hline
+		Número de keyframes & 342 & 297 & 396 & 518 & 497 \\ \hline
+		Tiempo promedio de filtro inercial (ms) & 5.5 & 6.1 & 6.1 & 5.7 & 6.0 \\ \hline
+		Tiempo promedio de detección  (ms) & 743.2 & 166.9 & 30.5 & 346.9 & 116.7 \\ \hline
+		Tiempo promedio de match (ms) & 1.9 & 2.6 & 1.3 & 1.7 & 2.1 \\ \hline
+		Tiempo promedio de RANSAC (ms) & 0.3 & 0.3 & 0.2 & 0.3 & 0.3 \\ \hline
+		Tiempo de estimación (s) & 11.7 & 12.8 & 13.0 & 12.2 & 12.8 \\ \hline
+		Tiempo de  procesamiento (s) & 1574.4 & 367.1 & 79.8 & 743.5 & 262.3 \\ \hline
+		Tiempo de evaluación (s) & 105.0 & 105.0 & 105.0 & 105.0 & 105.0 \\ \hline
+	\end{tabular}
+	\label{Tabla/Resultados/MH_01_easy}
+\end{table}
 
+
+\subsubsection{KAZE}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/MH_01_easy/KAZE/Posicion}
+	\caption{Posición de la cámara KAZE}
+	\label{imagen:Resultados/MH_01_easy/KAZE/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/MH_01_easy/KAZE/Orientacion}
+	\caption[Error de Orientación KAZE]{Error de Orientación KAZE.}
+	\label{imagen:Resultados/MH_01_easy/KAZE/Orientacion}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/MH_01_easy/KAZE/ResidualVelocidad2}
+	\caption{Residual de velocidad KAZE}
+	\label{imagen:Resultados/MH_01_easy/KAZE/ResidualVelocidad}
+\end{figure}
+
+
+
+\subsubsection{AKAZE}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/MH_01_easy/AKAZE/Posicion}
+	\caption{Posición de la cámara AKAZE}
+	\label{imagen:Resultados/MH_01_easy/AKAZE/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/MH_01_easy/AKAZE/Orientacion}
+	\caption[Error de Orientación AKAZE]{Error de Orientación AKAZE.}
+	\label{imagen:Resultados/MH_01_easy/AKAZE/Orientacion}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/MH_01_easy/AKAZE/ResidualVelocidad2}
+	\caption{Residual de velocidad AKAZE}
+	\label{imagen:Resultados/MH_01_easy/AKAZE/ResidualVelocidad}
+\end{figure}
+
+\subsubsection{ORB}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/MH_01_easy/ORB/Posicion}
+	\caption{Posición de la cámara ORB}
+	\label{imagen:Resultados/MH_01_easy/ORB/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/MH_01_easy/ORB/Orientacion}
+	\caption[Error de Orientación ORB]{Error de Orientación ORB.}
+	\label{imagen:Resultados/MH_01_easy/ORB/Orientacion}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/MH_01_easy/ORB/ResidualVelocidad2}
+	\caption{Residual de velocidad ORB}
+	\label{imagen:Resultados/MH_01_easy/ORB/ResidualVelocidad}
+\end{figure}
+
+
+\subsubsection{SIFT}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SIFT/Posicion}
+	\caption{Posición de la cámara SIFT}
+	\label{imagen:Resultados/MH_01_easy/SIFT/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SIFT/Orientacion}
+	\caption[Error de Orientación SIFT]{Error de Orientación SIFT.}
+	\label{imagen:Resultados/MH_01_easy/SIFT/Orientacion}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SIFT/ResidualVelocidad2}
+	\caption{Residual de velocidad SIFT}
+	\label{imagen:Resultados/MH_01_easy/SIFT/ResidualVelocidad}
+\end{figure}
+
+\subsubsection{SURF}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SURF/Posicion}
+	\caption{Posición de la cámara SURF}
+	\label{imagen:Resultados/MH_01_easy/SURF/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SURF/Orientacion}
+	\caption[Error de Orientación SURF]{Error de Orientación SURF.}
+	\label{imagen:Resultados/MH_01_easy/SURF/Orientacion}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SURF/ResidualVelocidad2}
+	\caption{Residual de velocidad SURF}
+	\label{imagen:Resultados/MH_01_easy/SURF/ResidualVelocidad}
+\end{figure}
+
+
+
+\subsection{Vicon Room Easy}
+
+\begin{table}[htbp]
+	\caption{Parámetros de configuración en secuencia $V1\_01\_easy$.}
+	\begin{tabular}{|l|c|c|c|c|c|}
+		\hline
+		\multicolumn{1}{|c|}{\textbf{Detector}} & \textbf{KAZE} & \textbf{AKAZE} & \textbf{ORB} & \textbf{SIFT} & \textbf{SURF} \\ \hline
+		Umbral del RANSAC & 0.18 & 0.18 & 0.18 & 0.18 & 0.18 \\ \hline
+		Umbral de frames estáticos & 4 & 4 & 4 & 4 & 4 \\ \hline
+		Umbral disparidad euclideana & 0.5 & 0.5 & 0.5 & 0.5 & 0.5 \\ \hline
+		Umbral disparidad rotacional (°) & 5 & 5 & 5 & 5 & 5 \\ \hline
+		Umbral disparidad traslacional (px) & 15 & 15 & 15 & 15 & 15 \\ \hline
+		Umbral del detector & 0.008 & 0.006 & 100 & 100 & 6000 \\ \hline
+	\end{tabular}
+	\label{Tabla/Parametros/V1_01_easy}
+\end{table}
+
+\begin{table}[htbp]
+	\caption{Resultados en secuencia $V1\_ 01\_ easy$.}
+	\begin{tabular}{|l|c|c|c|c|c|}
+		\hline
+		\multicolumn{1}{|c|}{\textbf{Detector}} & \textbf{KAZE} & \textbf{AKAZE} & \textbf{ORB} & \textbf{SIFT} & \textbf{SURF} \\ \hline
+		Número de features detectados & 230 & 243 & 100 & 100 & 150 \\ \hline
+		Número de parejas iniciales & 153 & 136 & 35 & 61 & 103 \\ \hline
+		Número de parejas del filtro de celdas & 26 & 23 & 9 & 13 & 26 \\ \hline
+		Número de inliers del RANSAC & 93 & 76 & 19 & 32 & 67 \\ \hline
+		Número de imágenes procesadas & 2498 & 2498 & 2498 & 2498 & 2498 \\ \hline
+		Número de keyframes & 638 & 565 & 685 & 711 & 738 \\ \hline
+		Tiempo promedio de filtro inercial (ms) & 5.9 & 6.2 & 6.8 & 6.2 & 6.6 \\ \hline
+		Tiempo promedio de detección  (ms) & 764.6 & 181.6 & 27 & 337.7 & 128.7 \\ \hline
+		Tiempo promedio de match (ms) & 6.4 & 11.9 & 1.4 & 1.8 & 3.2 \\ \hline
+		Tiempo promedio de RANSAC (ms) & 0.6 & 0.5 & 0.2 & 0.3 & 0.4 \\ \hline
+		Tiempo de estimación (s) & 15 & 15.9 & 17.1 & 15.6 & 16.8 \\ \hline
+		Tiempo de  procesamiento (s) & 1936.3 & 497.5 & 88.1 & 862 & 262.3 \\ \hline
+		Tiempo de evaluación (s) & 124.9 & 124.9 & 124.9 & 124.9 & 124.9 \\ \hline
+	\end{tabular}
+	\label{Tabla/Resultados/V1_01_easy}
+\end{table}
+
+
+\subsubsection{KAZE}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_01_easy/KAZE/Posicion}
+	\caption{Posición de la cámara KAZE}
+	\label{imagen:Resultados/V1_01_easy/KAZE/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_01_easy/KAZE/Orientacion}
+	\caption[Error de Orientación KAZE]{Error de Orientación KAZE.}
+	\label{imagen:Resultados/V1_01_easy/KAZE/Orientacion}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_01_easy/KAZE/ResidualVelocidad2}
+	\caption{Residual de velocidad KAZE}
+	\label{imagen:Resultados/V1_01_easy/KAZE/ResidualVelocidad}
+\end{figure}
+
+
+
+\subsubsection{AKAZE}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_01_easy/AKAZE/Posicion}
+	\caption{Posición de la cámara AKAZE}
+	\label{imagen:Resultados/V1_01_easy/AKAZE/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_01_easy/AKAZE/Orientacion}
+	\caption[Error de Orientación AKAZE]{Error de Orientación AKAZE.}
+	\label{imagen:Resultados/V1_01_easy/AKAZE/Orientacion}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_01_easy/AKAZE/ResidualVelocidad2}
+	\caption{Residual de velocidad AKAZE}
+	\label{imagen:Resultados/V1_01_easy/AKAZE/ResidualVelocidad}
+\end{figure}
+
+\subsubsection{ORB}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_01_easy/ORB/Posicion}
+	\caption{Posición de la cámara ORB}
+	\label{imagen:Resultados/V1_01_easy/ORB/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_01_easy/ORB/Orientacion}
+	\caption[Error de Orientación ORB]{Error de Orientación ORB.}
+	\label{imagen:Resultados/V1_01_easy/ORB/Orientacion}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_01_easy/ORB/ResidualVelocidad2}
+	\caption{Residual de velocidad ORB}
+	\label{imagen:Resultados/V1_01_easy/ORB/ResidualVelocidad}
+\end{figure}
+
+
+\subsubsection{SIFT}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SIFT/Posicion}
+	\caption{Posición de la cámara SIFT}
+	\label{imagen:Resultados/V1_01_easy/SIFT/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SIFT/Orientacion}
+	\caption[Error de Orientación SIFT]{Error de Orientación SIFT.}
+	\label{imagen:Resultados/V1_01_easy/SIFT/Orientacion}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SIFT/ResidualVelocidad2}
+	\caption{Residual de velocidad SIFT}
+	\label{imagen:Resultados/V1_01_easy/SIFT/ResidualVelocidad}
+\end{figure}
+
+\subsubsection{SURF}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SURF/Posicion}
+	\caption{Posición de la cámara SURF}
+	\label{imagen:Resultados/V1_01_easy/SURF/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SURF/Orientacion}
+	\caption[Error de Orientación SURF]{Error de Orientación SURF.}
+	\label{imagen:Resultados/V1_01_easy/SURF/Orientacion}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SURF/ResidualVelocidad2}
+	\caption{Residual de velocidad SURF}
+	\label{imagen:Resultados/V1_01_easy/SURF/ResidualVelocidad}
+\end{figure}
+
+
+
+
+\subsection{Vicon Room Medium}
+
+
+\begin{table}[htbp]
+	\caption{Parámetros de configuración  en secuencia $V1\_ 02\_ medium$.}
+	\begin{tabular}{|l|c|c|c|c|c|}
+		\hline
+		\multicolumn{1}{|c|}{\textbf{Detector}} & \textbf{KAZE} & \textbf{AKAZE} & \textbf{ORB} & \textbf{SIFT} & \textbf{SURF} \\ \hline
+		Umbral del RANSAC & 0.18 & 0.18 & 0.18 & 0.18 & 0.18 \\ \hline
+		Umbral de frames estáticos & 4 & 4 & 4 & 4 & 4 \\ \hline
+		Umbral disparidad euclideana & \textbf{1} & \textbf{1} & \textbf{1} & \textbf{1} & \textbf{1} \\ \hline
+		Umbral disparidad rotacional (°) & 5 & 5 & 5 & 5 & 5 \\ \hline
+		Umbral disparidad traslacional (px) & 15 & 15 & 15 & 15 & 15 \\ \hline
+		Umbral del detector & 0.005 & 0.003 & 250 & 250 & 1100 \\ \hline
+	\end{tabular}
+	\label{Tabla/Parametros/V1_02_medium}
+\end{table}
+
+\begin{table}[htbp]
+	\caption{Resultados  en secuencia $V1\_02\_medium$.}
+	\begin{tabular}{|l|c|c|c|c|c|}
+		\hline
+		\multicolumn{1}{|c|}{\textbf{Detector}} & \textbf{KAZE} & \textbf{AKAZE} & \textbf{ORB} & \textbf{SIFT} & \textbf{SURF} \\ \hline
+		Número de features detectados & 227 & 261 & 249 & 247 & 353 \\ \hline
+		Número de parejas iniciales & 142 & 146 & 81 & 150 & 230 \\ \hline
+		Número de parejas del filtro de celdas & 30 & 27 & 15 & 35 & 45 \\ \hline
+		Número de inliers del RANSAC & 96 & 89 & 48 & 100 & 163 \\ \hline
+		Número de imágenes procesadas & \textbf{1625} & 1643 & \textbf{1644} & 1647 & 1647 \\ \hline
+		Número de keyframes & 719 & 647 & 715 & 800 & 768 \\ \hline
+		Tiempo promedio de filtro inercial (ms) & 5.4 & 6.5 & 6.8 & 6.1 & 6.3 \\ \hline
+		Tiempo promedio de detección  (ms) & 699.4 & 192 & 25.8 & 348.5 & 202.6 \\ \hline
+		Tiempo promedio de match (ms) & 4.2 & 10.4 & 4.6 & 6.6 & 9.8 \\ \hline
+		Tiempo promedio de RANSAC (ms) & 0.5 & 0.6 & 0.4 & 0.6 & 1 \\ \hline
+		Tiempo de estimación (s) & 9.2 & 11.1 & 11.4 & 10.5 & 11.1 \\ \hline
+		Tiempo de  procesamiento (s) & 1152.6 & 343.6 & 61.5 & 593.3 & 361 \\ \hline
+		Tiempo de evaluación (s) & 81.45 & 82.4 & 82.4 & 82.4 & 82.4 \\ \hline
+	\end{tabular}
+	\label{Tabla/Resultados/V1_02_medium}
+\end{table}
+
+\subsubsection{KAZE}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_02_medium/KAZE/Posicion}
+	\caption{Posición de la cámara KAZE}
+	\label{imagen:Resultados/V1_02_medium/KAZE/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_02_medium/KAZE/Orientacion}
+	\caption[Error de Orientación KAZE]{Error de Orientación KAZE.}
+	\label{imagen:Resultados/V1_02_medium/KAZE/Orientacion}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_02_medium/KAZE/ResidualVelocidad2}
+	\caption{Residual de velocidad KAZE}
+	\label{imagen:Resultados/V1_02_medium/KAZE/ResidualVelocidad}
+\end{figure}
+
+
+
+\subsubsection{AKAZE}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_02_medium/AKAZE/Posicion}
+	\caption{Posición de la cámara AKAZE}
+	\label{imagen:Resultados/V1_02_medium/AKAZE/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_02_medium/AKAZE/Orientacion}
+	\caption[Error de Orientación AKAZE]{Error de Orientación AKAZE.}
+	\label{imagen:Resultados/V1_02_medium/AKAZE/Orientacion}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_02_medium/AKAZE/ResidualVelocidad2}
+	\caption{Residual de velocidad AKAZE}
+	\label{imagen:Resultados/V1_02_medium/AKAZE/ResidualVelocidad}
+\end{figure}
+
+\subsubsection{ORB}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_02_medium/ORB/Posicion}
+	\caption{Posición de la cámara ORB}
+	\label{imagen:Resultados/V1_02_medium/ORB/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_02_medium/ORB/Orientacion}
+	\caption[Error de Orientación ORB]{Error de Orientación ORB.}
+	\label{imagen:Resultados/V1_02_medium/ORB/Orientacion}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_02_medium/ORB/ResidualVelocidad2}
+	\caption{Residual de velocidad ORB}
+	\label{imagen:Resultados/V1_02_medium/ORB/ResidualVelocidad}
+\end{figure}
+
+
+\subsubsection{SIFT}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SIFT/Posicion}
+	\caption{Posición de la cámara SIFT}
+	\label{imagen:Resultados/V1_02_medium/SIFT/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SIFT/Orientacion}
+	\caption[Error de Orientación SIFT]{Error de Orientación SIFT.}
+	\label{imagen:Resultados/V1_02_medium/SIFT/Orientacion}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SIFT/ResidualVelocidad2}
+	\caption{Residual de velocidad SIFT}
+	\label{imagen:Resultados/V1_02_medium/SIFT/ResidualVelocidad}
+\end{figure}
+
+\subsubsection{SURF}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SURF/Posicion}
+	\caption{Posición de la cámara SURF}
+	\label{imagen:Resultados/V1_02_medium/SURF/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SURF/Orientacion}
+	\caption[Error de Orientación SURF]{Error de Orientación SURF.}
+	\label{imagen:Resultados/V1_02_medium/SURF/Orientacion}
+\end{figure}
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SURF/ResidualVelocidad2}
+	\caption{Residual de velocidad SURF}
+	\label{imagen:Resultados/V1_02_medium/SURF/ResidualVelocidad}
+\end{figure}

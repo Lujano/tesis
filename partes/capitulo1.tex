@@ -2,13 +2,13 @@
 \label{capitulo1}
 \lhead{Capítulo 1. \emph{Introducción}}
 
-En los últimos años se han logrado avances importantes en el área de navegación y exploración con robots móviles, lo que ha permitido ampliar las aplicaciones de estos en espacios áereos, terrestres y acuáticos en diversas disciplinas, facilitando la extracción de información de estos entornos en lugares de difícil acceso.
+En los últimos años se han logrado avances importantes en el área de navegación y exploración con robots móviles, lo que ha permitido ampliar las aplicaciones de éstos en espacios áereos, terrestres y acuáticos en diversas disciplinas, facilitando la extracción de información de estos entornos incluso en lugares de difícil acceso.
 
-En este sentido el Grupo de Investigación y Desarrollo en Mecatrónica de la USB \textit{(GIDM)} ha venido desarrollando un conjunto de proyectos relacionados con los sistemas de navegación de robots autónomos y de operación remota de estos desde el año 2013, donde el área de odometría y SLAM se ha venido trabajando con profundo interés por ser fundamental en la recopilación de información de diferentes ambientes y por abrir la puerta a la automatización de la exploración y navegación de vehículos autónomos.
+En este sentido el Grupo de Investigación y Desarrollo en Mecatrónica de la USB \textit{(GIDM)} ha venido desarrollando un conjunto de proyectos relacionados con los sistemas de navegación de robots autónomos y de operación remota de éstos desde el año 2013, donde el área de odometría y SLAM se ha venido trabajando con profundo interés por ser fundamental en la recopilación de información de diferentes ambientes y por abrir la puerta a la automatización de la exploración y navegación de vehículos autónomos.
 
 \section{Antecedentes}
 
-En el \textit{GIDM} se han realizado grandes avances en el desarrollo de equipos y plataformas robóticas para actividades de investigación, exploración e inspección de ambientes no estructurados. Usualmente cuando se opera en este tipo de ambientes, en busca de realizar exploraciones mas eficientes y a mayor escala, se emplean vehículos operados remotamente \textit{ROV} (del inglés: Remotely Operated Vehicles) equipados con cámaras de vídeo. O bien, para el caso de aplicaciones subacuáticas también se suelen utilizar vehículos autónomos submarinos \textit{AUV} (del inglés: Automated Underwater Vehicles), mientras que para exploraciones aéreas se hace uso de vehículos aéreos no tripulados UAV (del ingles: Unmanned Aerial Vehicle).
+En el \textit{GIDM} se han realizado grandes avances en el empleo de vehículos operados remotamente \textit{ROV} (del inglés: Remotely Operated Vehicles) y de vehículos autónomos submarinos \textit{AUV} (del inglés: Automated Underwater Vehicles) para actividades de investigación, exploración e inspección de ambientes no estructurados.
 
 En este sentido, en el año \textit{Certad, N.} \cite{novel} propuso en el 2013 como proyecto de maestría, un algoritmo de localización y mapeo simultáneo ppara un vehículo terrestre de locomoción diferencial instrumentado con sensores exteroceptivos, realimentado por odometría, el cual utilizó Webots como herramienta de simulación y fue implementado utlizando Matlab.
 
@@ -19,10 +19,6 @@ En este sentido, en el año \textit{Certad, N.} \cite{novel} propuso en el 2013 
 	\caption{Resultados de trayectoria y reconstrucción de mapas obtenidos en \cite{novel}}
 	\label{imagen:Antecedentes/Certad}
 \end{figure}
-
-
-
-
 
 En el 2017, \textit{Gonzáles M.} \cite{manuel} desarrolló un sistema de reconstrucción de modelos de ambiente utiliznado un sensor de Detección y Localización por Láser (LIDAR, del inglés: Laser Imaging Detection and Ranging). Esta implementación se realizó utilizando ROS como núcleo de control y procesamiento de datos y \textit{Cartographer} como herramienta de manejo de la localización y mapeo del prototipo empleado. Los modelos reconstruidos como el presentado en la figura \ref{imagen:Antecedentes/octomaps} se realizaron utilizando estructuras probabilísticas de ocupación llamadas \textit{octomaps}, las cuales permitieron la disminución del uso de recursos de memoria en la reconstrucción de grandes entornos.
 
@@ -44,9 +40,26 @@ En el 2017, \textit{Gonzáles M.} \cite{manuel} desarrolló un sistema de recons
 	\label{imagen:Antecedentes/octomaps}
 \end{figure}
 
- En este sentido, se tienen proyectos como el presentado por \textit{Danilo, D.} \cite{danilo}, cuyo proyecto de grado consistió en el desarrollo en un sistema de operación remota para un prototipo de robot submarino (\textit{Poseibot}), con la finalidad de implementarlo en tareas de exploración. Con objetivos similares, \textit{Said, A.} \cite{said} basó su proyecto de grado en la instrumentación y control de un robot cuadricóptero volador(\textit{UAV}) diseñado y fabricado también como parte de dicho proyecto. 
+En 2018,  \textit{Morales F.} \cite{fabio} desarrolló un sistema de odometría basado en cámara monocular utilizando un método directo basado en optimización de Gauss-Newton para estimar el movimiento de la cámara. La figura \ref{imagen:Antecedentes/fabio} presenta los resultados obtenidos utilizando la secuencia freiburg2 xyz del banco de datos RGB-D SLAM Dataset and Benchmark, creado por Jürgen
+Sturm de la Universidad Tecnológica de Múnich.
 
-Adicional a los dos prototipos antes mencionados, en el \textit{GIDM} se cuentan con otras plataformas móviles como \textit{Roomba}, \textit{AmigoBot}, y un vehículo submarino OpenROV\footnote{ \url{https://www.openrov.com/products/openrov28/}}, el cual es un robot maniobrado remotamente de baja envergadura, diseñado especialmente operaciones de exploración y está dotado, entre otras cosas, con una cámara de video HD y una unidad de medición inercial.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{Antecedentes/fabio}
+	\caption{Gráficas X vs Y del movimiento de la cámara de la secuencia
+		freiburg2 xyz. Izquierda: gráfica del movimiento real de la cámra en X y Y.
+		Derecha: gráfica del movimiento estimado de la cámara en X y Y.}
+	\label{imagen:Antecedentes/fabio}
+\end{figure}
+
+ En este sentido, se tienen proyectos como el presentado por \textit{Danilo, D.} \cite{danilo}, cuyo proyecto de grado consistió en el desarrollo en un sistema de operación remota para un prototipo de robot submarino (\textit{Poseibot}), con la finalidad de implementarlo en tareas de exploración. Con objetivos similares, \textit{Said, A.} \cite{said} basó su proyecto de grado en la instrumentación y control de un robot cuadricóptero volador(\textit{UAV}) diseñado y fabricado también como parte de dicho proyecto. Este prototipo se presenta en la figura \ref{imagen:said}.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{Antecedentes/said}
+	\caption{Prototipo UAV desarrollado en  \cite{said}}
+	\label{imagen:said}
+\end{figure}
+Adicionala estos prototipos,  el \textit{GIDM} cuentan con otras plataformas móviles como \textit{Roomba}, \textit{AmigoBot}, y un vehículo submarino OpenROV\footnote{ \url{https://www.openrov.com/products/openrov28/}}, el cual es un robot maniobrado remotamente de baja envergadura, diseñado especialmente operaciones de exploración y está dotado, entre otras cosas, con una cámara de video HD y una unidad de medición inercial.
 
 \begin{figure}[H]
 	\centering
@@ -80,14 +93,19 @@ Analizar e implementar un sistema automatizado que permita la localización de u
 
 \section{Estructura del trabajo}
 
-Luego de presentar el planteamiento del problema y la descripción del proyecto, el presente trabajo se encuentra estructurado en 5 capítulos, donde se explica todo el desarrollo realizado y está organizado de la siguiente manera:
+El presente trabajo se encuentra estructurado en 7 capítulos. El \textit{\textbf{Capítulo 1}} describe el problema a resolver, y los antecedentes y objetivos del proyecto.
 
-En el \textit{\textbf{Capítulo 2}} se presenta una revisión del estado del arte sobre los algoritmos de generación de mosaico, en el cual se exponen los trabajos recientes y avances importantes en esta área de investigación. Al mismo tiempo, se describen los módulos principales que componen este tipo de sistemas. Luego, en base a los algoritmos y técnicas estudiadas, se propone un esquema para un sistemas de generación de mosaico. Para finalizar, se presenta la librería de procesamiento de imágenes que se planteó utilizar para la implementación de los algoritmos propuestos.
+El estado del arte de la odometría visual inercial es detallado en el \textit{\textbf{Capítulo 2}} donde se presentan los trabajos recientes y avances importantes en esta área de investigación. Posteriormente , en base a las técnicas y algoritmos estudiados, se propone un esquema de odometría visual inercial.
 
-El \textit{\textbf{Capítulo 3}} inicia una revisión teórica en la cual se describe el funcionamiento de los algoritmos detectores, descriptores y emparejadores de características; y posteriormente se presentan resultados de pruebas comparativas entre los mas usados para este tipo de aplicaciones. 
 
-El módulo encargado de la alineación de imágenes en el mosaico, es descrito en el \textit{\textbf{Capítulo 4}}. Al igual que el capítulo anterior, se presenta una revisión teórica de los conceptos necesarios para su implementación. Luego, se introduce el modelo de submosaicos, y la implementación de un conjunto de correcciones geométricas sobre este nuevo modelo. Finalmente se muestran los resultados de los algoritmos aplicados en esta sección, seguidos de sus respectivos análisis.
+El \textit{\textbf{Capítulo 3}} inicia una revisión teórica en la que se describe el modelo de la cámara utilizado, las transformaciones de cuerpo rígido, 
+el funcionamiento de los algoritmos detectores, descriptores y emparejadores de características, el filtrado de correspondencias y los filtros de fusión inercial.
 
-En el \textit{\textbf{Capítulo 5}} se describe el módulo final del sistema, en donde se explica el funcionamiento de los algoritmos que corrigen visualmente el mosaico definitivo. De igual forma se muestran los resultados de su implementación, seguidos de una conclusión final sobre estos.
+La metodología implementada en este trabajo se presenta en el \textit{\textbf{Capítulo 4}}, en donde se introducen los conceptos necesarios para su implementación.
 
-Finalmente, en el \textit{\textbf{Capítulo 6}} se presentan las conclusiones derivadas del proyecto, además de propuestas sobre recomendaciones y posibles implementaciones que pueden aportar mejoras y/o permitir la continuación del desarrollo de investigación aquí descrito.
+Posteriormente, en el textit{\textbf{Capítulo 5}} se presenta el desarrollo de un dataset local visual inercial. En este capítulo se expone el diseño del robot prototipo utilizado, así como también los componentes de hardware empleados y el diagrama del esquema de recopilación de datos implementados. Además se presenta la calibración de los sensores involucrados y los resultados obtenidos para la odometría del robot.
+
+En el \textit{\textbf{Capítulo 6}} se presenta la implementación del esquema del sistema, en donde se presentan los resultados obtenidos por dos tipos de métodos diferentes a lo largo de varias secuencias de datos. También se incluye un análisis comparativo de los resultados.
+
+
+Finalmente, en el \textit{\textbf{Capítulo 7}} se presentan las conclusiones derivadas del proyecto, además de propuestas sobre recomendaciones y posibles implementaciones que pueden aportar mejoras y/o permitir la continuación del desarrollo de investigación aquí descrito.
