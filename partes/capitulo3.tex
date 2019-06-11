@@ -76,7 +76,16 @@ Cabe destacar que el conjunto de puntos de la forma $s*(X, Y, Z)$, donde $s$ es 
 %
 \section{Detectores y descriptores de características}
 
-Los puntos de interés, puntos clave, o \textit{"features"} (en español: características) como son comúnmente llamados, son regiones en una imagen que contienen patrones específicos, lo que hace que puedan ser fácilmente seguidos o ubicados en otra imagen. Tuytelaars y Mikolajczyk \cite{Tuytelaars} definen un punto característico local como \textit{``un patrón en la imagen que difiere de su vecindario directo''}. De esta forma, se considera que los puntos característicos deben proporcionar la posibilidad de ser identificados en diferentes imágenes con el objetivo de emparejarlos.
+Los puntos característicos o "features" son regiones en una imagen que contienen patrones específicos, lo que hace que puedan ser fácilmente seguidos o ubicados en otra imagen. Tuytelaars y Mikolajczyk \cite{Tuytelaars} definen un punto característico local como \textit{``un patrón en la imagen que difiere de su vecindario directo''}. 
+
+En este sentido, los detectores de características son los algoritmos que clasifican regiones de una imagen bajo un criterio determinado, generando puntos característicos.
+
+La imagen \ref{imagen:features} muestra un ejemplo de esto. En ésta se puede observar que se toman seis áreas de interés. Analizando estos segmentos, vemos las regiones que \textbf{\textit{A}} y \textbf{\textit{B}} corresponden con superficies planas, lo que hace difícil  identificar a que región de la imagen original corresponde ya que pueden existir más de una correspondencia. Por otro lado, tenemos las regiones \textbf{\textit{C}} y \textbf{\textit{D}}, las cuales corresponden con bordes en la imagen, que si bien es posible limitar en gran medida el área de búsqueda hacia toda las regiones del mismo bordes, sigue siendo difícil acertar con la ubicación correcta en la imagen. Por el contrario, en las regiones \textbf{\textit{E}} y \textbf{\textit{F}} observamos esquinas de la imagen original, en cuyo caso se puede identificar  la ubicación exacta de la región en la imagen con relativa facilidad.
+
+De esta forma, se puede evidenciar que deben un detector de características de tener ciertas propiedades que garanticen la generación de puntos característicos confiables bajo distintas condiciones y que además permitan la posibilidad de ser emparejados en diferentes imágenes.
+
+
+De esta forma, se considera que los puntos característicos deben proporcionar la posibilidad de ser identificados en diferentes imágenes con el objetivo de emparejarlos.
 
 Para alcanzar este objetivo los detectores y extractores de puntos característicos deben cumplir con ciertas propiedades que les permita funcionar bajo distintas condiciones, en concreto se busca que estos algoritmos cumplan con las siguientes propiedades:
 
@@ -106,16 +115,14 @@ Para alcanzar este objetivo los detectores y extractores de puntos característi
 \footnotetext{\url{https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_feature2d/py_features_meaning/py_features_meaning.html}}
 %https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_feature2d/py_features_meaning/py_features_meaning.html
 
-Llegados a este punto, es necesario definir el funcionamiento de los algoritmos detectores, así como también lo que éstos consideran como puntos característicos, basados en la definición previamente planteada. Atendiendo a la imagen \ref{imagen:features}, se puede observar que se caracterizan seis áreas de interés. Analizando estos segmentos, vemos que \textbf{\textit{A}} y \textbf{\textit{B}} corresponden con superficies planas, lo que hace que sea muy difícil identificar la ubicación exacta de estas superficies en la imagen original. Por otro lado, tenemos las regiones \textbf{\textit{C}} y \textbf{\textit{D}}, las cuales corresponden con bordes en la imagen, que si bien es posible limitar en gran medida el área de búsqueda hacia toda las regiones del mismo bordes, sigue siendo difícil acertar con la ubicación correcta. Por ultimo, analizando las regiones \textbf{\textit{E}} y \textbf{\textit{F}} tenemos que corresponden a esquinas de la imagen original, en este caso se puede identificar fácilmente la ubicación exacta de la región en la imagen.
+Basados en estas definiciones es necesario exponer el funcionamiento de los algoritmos detectores.  Siguiendo el ejemplo de la imagen \ref{imagen:features}, y basado en la detección de esquinas como regiones facilmente identificables,  en \textit{1988} nace el primer algoritmo de detección de puntos de interés llamado Detector de esquinas de Harris \cite{harris} (nombre original en inglés: Harris Corner Detector).
 
-A partir de esta idea, en la cual se consideran las esquinas como regiones fácilmente identificables en una imagen, en \textit{1988} nace el primer algoritmo de detección de puntos de interés llamado Detector de esquinas de Harris \cite{harris} (nombre original en inglés: Harris Corner Detector), y como su nombre lo indica está basado en la detección de esquinas.
-
-Retomando el concepto planteado previamente, este detector busca la diferencia de intensidad de una región con su entorno directo, es decir, se detectará una esquina para aquellas regiones que presenten una alta variación de intensidad, al desplazar la ventana estudiada en cualquier dirección. En la figura \ref{imagen:harris-window} se puede apreciar visualmente como funciona esta ventana de búsqueda.
+Este detector utiliza una ventana de búsqueda para calcular la diferencia de intensidad de una región con su entorno directo, por lo que una esquina  será detectada en aquella regiones que presenten una alta variación de intensidad, al desplazar la ventana en cualquier dirección. En la figura \ref{imagen:harris-window} se puede apreciar visualmente como funciona esta ventana de búsqueda.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.9\textwidth]{harris-window}
-	\caption[Ventana de búsqueda para de detección de esquinas]{Ventana de búsqueda para de detección de esquinas, adaptado de\protect\footnotemark}
+	\caption[Ventana de búsqueda para de detección de esquinas]{Ventana de búsqueda para de detección de esquina. Adaptado\protect\footnotemark}
 	\label{imagen:harris-window}
 \end{figure}
 \footnotetext{\url{https://dsp.stackexchange.com/questions/14338/}}

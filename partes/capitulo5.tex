@@ -11,9 +11,9 @@ El objetivo de este capítulo es explicar la elaboración de un dataset visual i
 
 \section{Descripción del prototipo}
 
-El prototipo realizado consiste en un robot diferencial inicialmente diseñado para la categorría Sumo de la VII Competencia Nacional de Robótica CCSBOTS 2018. El prototipo tiene un peso de 2.9 kg y es capaz de soportar pesos de hasta 4kg. Posee una placa de control a bajo nivel de los motores del robot, y una Raspberry Pi 3 que es utilizada para controlar el robot utilizando un mando del tipo joystick a través de la interfaz bluetooth. El robot posee además encoders en sus ruedas que permiten tener datos de odometría. Este prototipo tiene una autonomía aproximada de 1 hora. La figura \ref{imagen:Robot} muestra la configuración final del robot. 
+El prototipo realizado consiste en un robot diferencial inicialmente diseñado para la categoría Sumo de la VII Competencia Nacional de Robótica CCSBOTS 2018. El prototipo tiene un peso de 2.9 kg y es capaz de soportar pesos de hasta 4kg. Posee una placa de control a bajo nivel de los motores del robot, y una Raspberry Pi 3 que es utilizada para controlar el robot utilizando un mando del tipo joystick a través de la interfaz bluetooth. El robot posee además encoders en sus ruedas que permiten tener datos de odometría. Este prototipo tiene una autonomía aproximada de 1 hora. La figura \ref{imagen:Robot} muestra la configuración final del robot. 
 
-Más información puede ser encontrada en el \href{https://github.com/Robot-Sumo/}{\underline{repositorio de desarrollo del robot}} .
+Más información puede ser encontrada en el \href{https://github.com/Robot-Sumo/}{\underline{repositorio de desarrollo del robot}}.
 
 
 \begin{figure}[H]
@@ -26,13 +26,13 @@ Más información puede ser encontrada en el \href{https://github.com/Robot-Sumo
 \section{Diseño mecánico}
 
 
-El diseño mecánico del robot está centrado en el diseño de la caja de velocidad del robot. El modelaje 3D del robot se realizó utilizando Autocad como software de diseño y visualización del prototipo.
+El diseño mecánico del robot está centrado en el diseño de la caja de velocidad del mismo. El modelaje 3D del robot se realizó utilizando Autocad como software de diseño y visualización del prototipo.
 
 
 
 \subsection{Motores}
 
-Los motores empleados en el diseño del robot fueron 4 motores con escobillas Mabuchi  C2162-60006. La figura \ref{imagen:prototipo/CajaMotores} presenta la configuración utilizada. El cuadro \ref{MabuchiDatasheet} presenta la información del motor suminastrada por el fabricante y el cuadro \ref{MabuchiResultados} presenta los resultados de las mediciones realizadas al motor para la caracterización de su resistencia de armadura.
+Los motores empleados en el diseño del robot fueron 4 motores con escobillas Mabuchi  C2162-60006. La figura \ref{imagen:prototipo/CajaMotores} presenta la configuración utilizada. El cuadro \ref{MabuchiDatasheet} presenta la información del motor suministrada por el fabricante y el cuadro \ref{MabuchiResultados} presenta los resultados de las mediciones realizadas al motor para la caracterización de su resistencia de armadura.
 
 \begin{figure}[H]
 	\centering
@@ -70,24 +70,42 @@ Los motores empleados en el diseño del robot fueron 4 motores con escobillas Ma
 		\hline
 		No Load Current [Amps] & 0.15 \\ \hline
 		Resistance [Ohms] & 15 \\ \hline
-		Stall Current [amps] & 1.6 \\ \hline
+		Stall Current [Amps] & 1.6 \\ \hline
 		No Load Speed [rpm] & 3500 \\ \hline
 	\end{tabular}
 	\label{MabuchiResultados}
 \end{table}
 
 
-
-
-Entre los datos relevantes en estos cuadros destacan la corriente del motor cuando es aplicado el máximo torque (Stall Current), la cual es utilizada para el diseño de las protecciones y de los puntos de referencia de los drivers, el máximo torque aplicado por el motor (Stall Torque)  y velocidad sin carga (No Load Speed), las cuales son utilizadas para el criterio de selección de la relación de reducción en el sistema de engranajes.
+Entre los datos relevantes en estos cuadros destacan la corriente del motor cuando es aplicado el máximo torque (denominada en inglés "Stall Current"), la cual es utilizada para el diseño de las protecciones y de los puntos de referencia de los drivers; el máximo torque aplicado por el motor (denominada en inglés "Stall Torque");  y  la velocidad sin carga (denominada en inglés "No Load Speed"). Estos 3 parámetros fueron  utilizados para el criterio de selección de la relación de reducción en el sistema de engranajes.
 
 \subsection{Caja de velocidad}
 
 
-El cuadro \ref{TablaPruebaEngranajes} presenta los resultados estimados  de torque máximo y velocidad máxima del robot para una relación de engranajes específica. En este caso la velocidad máxima del motor fue aproximada en 3000 rpm ya que la medición sin carga fue cercana a los 3500 rpm, y estas revoluciones bajan al presentar carga en el sistema de transferencia. El torque máximo inicial representa el aproximado de la suma del torque máximo de dos motores, cuyo valor se tomó cercano a 30 N-cm, respecto al valor de de 28.7 N-cm proveido por el fabricante en el cuadro \ref{MabuchiDatasheet}.
+El diseño de la caja de velocidad está centrado en la elección de la relación de reducción, que a su vez depende de la velocidad máxima y el torque máximo del robot. Para el cálculo del torque final${ T }_{ F }$ en función de la relación de reducción $R$ se emplea la ecuación \ref{eq:Torque}, donde el ${ T }_{ I }$ es el torque inicial del motor.
+
+
+\begin{equation}
+\label{eq:Torque}
+{ T }_{ F }\quad =\quad { T }_{ I }.R
+\end{equation}
+
+
+En el caso del cálculo de la velocidad final de la rueda ${ V }_{ F }$ se emplea la ecuación \ref{eq:VelocidadFinal}, donde el ${ V }_{ I }$ es la velocidad inicial del motor.
+
+\begin{equation}
+\label{eq:VelocidadFinal}
+{ V }_{ F }\quad =\quad \frac { { V }_{ I } }{ R } 
+\end{equation}
+
+
+El cuadro \ref{TablaPruebaEngranajes} presenta los resultados estimados  de torque máximo y velocidad máxima del robot para una relación de engranajes específica. En este caso la velocidad máxima del motor fue aproximada a 3000 rpm a pesar de que la medición sin carga fue cercana a los 3500 rpm, ya que las revoluciones sin carga bajan al presentar carga en el sistema de transferencia.
+
+Cabe destacar que las ecuaciones \ref{eq:VelocidadFinal} y \ref{eq:Torque} presentan que el torque y la velocidad final son inversamente proporcionales, por lo que la relación de reducción se elije para el par más adecuado.
 
 \begin{table}[htbp]
 	\caption{Pruebas de diferentes relaciones de engranajes}
+	\centering
 	\begin{tabular}{|l|r|r|r|r|}
 		\hline
 		\textbf{Relación final de engranajes} & \textbf{20} & \textbf{15} & \textbf{12} & \textbf{8} \\ \hline
@@ -95,16 +113,18 @@ El cuadro \ref{TablaPruebaEngranajes} presenta los resultados estimados  de torq
 		Radio de la rueda (cm) & 3.74 & 3.74 & 3.74 & 3.74 \\ \hline
 		Velocidad máxima de la rueda (rpm) & 150 & 200 & 250 & 375 \\ \hline
 		Velocidad máxima de la rueda (rev/s) & 15.708 & 20.944 & 26.18 & 39.27 \\ \hline
-		Torque máximo del Motor (N-cm) & 60 & 60 & 60 & 60 \\ \hline
+		Torque máximo del motor (N-cm) & 60 & 60 & 60 & 60 \\ \hline
 		\textbf{Torque máximo final (N-cm)} & \textbf{1200} & \textbf{900} & \textbf{720} & \textbf{480} \\ \hline
 		\textbf{Velocidad máxima del robot (m/s)} & \textbf{0.59} & \textbf{0.78} & \textbf{0.98} & \textbf{1.47} \\ \hline
 	\end{tabular}
 	\label{TablaPruebaEngranajes}
 \end{table}
 
+El torque máximo inicial representa el aproximado de la suma del torque máximo de dos motores, cuyo valor se tomó cercano a 30 N-cm, respecto al valor de de 28.7 N-cm proveido por el fabricante en el cuadro \ref{MabuchiDatasheet}. La suma de torque se debe a la configuración mecánica seleccionada en la que dos motores se encuentran fijos a un mismo engranaje transmisor.
 
+Con los resultados obtenidos para diferentes relaciones de engranajes, se utilizó Unity para simular las propiedades dinámicas del robot y de esta manera seleccionar la relación de engranajes con la mejor relación torque-velocidad. 
 
-Con los resultados obtenidos para diferentes relaciones de engranajes, se utilizó Unity para simular las propiedades dinámicas del robot y de esta manera seleccionar la relación de engranajes con la mejor relación torque-velocidad. En la figura \ref{imagen:prototipo/SimulacionUnity} se presenta una captura de esta simulación, en la cual el robot debía ser capaz de mover a un robot con un peso de 3kg con características similares.
+En la figura \ref{imagen:prototipo/SimulacionUnity} se presenta una captura de esta simulación, en la cual el prototipo debía ser capaz de mover a un robot  de un peso de 3kg con características similares.
 
 
 
@@ -115,7 +135,11 @@ Con los resultados obtenidos para diferentes relaciones de engranajes, se utiliz
 	\label{imagen:prototipo/SimulacionUnity}
 \end{figure}
 
-La relación final de reducción seleccionada fue de  15:1. De esta forma, el sistema de engranajes fue diseñado para cumplir esta relación. La figura \ref{imagen:disenoEngranajesAutocad} presenta el diseño realizado. En éste, se tiene un engranaje de 20 dientes acoplado a un engranaje de 60 dientes, el cual se encuentra acoplado en su mismo eje a un engranaje de 20 dientes. Posterioremente se tiene un engranajes de transmision de 20 dientes que se encarga de transmitir la velocidad al engranaje de la rueda, el cual fue diseñado para tener 100 dientes. Este engranaje es el de mayor tamaño en la figura \ref{imagen:disenoEngranajesAutocad}. De esta forma se garantizó la relación de reducción a 15.
+La relación final de reducción seleccionada fue de  15:1. De esta forma, el sistema de engranajes fue diseñado para cumplir esta relación.
+
+La figura \ref{imagen:disenoEngranajesAutocad} presenta el diseño realizado. En éste, se tiene un engranaje de 20 dientes acoplado a otro de 60 dientes, el cual se encuentra conexo a un engranaje de 20 dientes. Esta primera reducción es de 3:1.
+
+Posteriormente, se tiene un engranajes de transmisión de 20 dientes que se encarga de transmitir la velocidad al engranaje de la rueda. Este último fue diseñado para tener 100 dientes y es el engranaje de mayor tamaño en la figura \ref{imagen:disenoEngranajesAutocad}. Esta última reducción es de 5:1. De esta forma la relación de reducción final es de $3*5 = 15$, garantizando el diseño requerido de 15:1.
 
 \begin{figure}[H]
 	\centering
@@ -125,7 +149,8 @@ La relación final de reducción seleccionada fue de  15:1. De esta forma, el si
 \end{figure}
 
 
-Las imágenes oresentadas en la figura \ref{imagen:construccionFinalRobot} presentan parte del proceso de construcción de la caja de velocidades. Los engranajes presentados fueron impresos utilizando el diseño 3D previamente realizado, y utilizando como material de impresión el polímero PLA. Cabe acotar que el empleo de dos motores por cada sistema de engranajes fue realizado para aumentar el torque de la caja de velocidad.
+Las imágenes presentadas en la figura \ref{imagen:construccionFinalRobot} presentan parte del proceso de construcción de la caja de velocidades. Los engranajes fueron impresos utilizando el diseño 3D previamente realizado en Autocad, y empleando como material de impresión el polímero PLA.  Por su parte la caja de ensamblaje está construido con acrílico.
+
 
 \begin{figure}[H]
 	\centering		\includegraphics[width=0.7\linewidth]{imagenes/prototipo/Motores}
@@ -136,11 +161,11 @@ Las imágenes oresentadas en la figura \ref{imagen:construccionFinalRobot} prese
 	\label{imagen:construccionFinalRobot}
 \end{figure}
 
-
+Cabe acotar que el empleo de dos motores por cada sistema de engranajes fue realizado para aumentar el torque de la caja de velocidad.
 
 \subsection{Drivers}
 
-Los drivers empleados en el diseño del robot fueron los STA6940M, los cuales soportan motores con escobillas con voltajes de operación de hasta 44V y 4 amperios de corriente promedio, y son compatibles con la tensión de alimentación lógica de 5V. La figura \ref{imagen:Driver} presenta el empaquetado 18-pin ZIP del driver empleado.
+Los drivers empleados en el diseño del robot fueron el modelo STA6940M, los cuales soportan motores con escobillas con voltajes de operación de hasta 44V y 4 amperios de corriente promedio, y son compatibles con la tensión de alimentación lógica de 5V. La figura \ref{imagen:Driver} presenta el empaquetado 18-pin ZIP del driver empleado.
 
 \begin{figure}[H]
 	\centering		\includegraphics[width=0.3\linewidth]{imagenes/prototipo/Driver}
@@ -163,12 +188,12 @@ La configuración utilizada en el robot es similar a la recomendada por el fabri
 	\label{imagen:DriverTabla}
 \end{figure}
 
-Cabe destacar que la protección de sobrecorriente que presenta el driver ($OCP\_ REF$) es colacada manualmente con un arreglo de resisitencias ,al igual que la referencia del PWM ($PWM\_ REF$). En particular, el voltaje de $OCP\_ REF$ debe ser igual al voltaje de la resistencia de sensado cuando el motor presenta su punto de máximo torque, que en este caso es cuando se alcanza la corriente de Stall a 1.6 Amperios. En la configuración final se utilizan dos motores en paralelo para cada driver por lo que el ajuste se realizó para 3.2 Amperios.
+Cabe destacar que la protección de sobrecorriente que presenta el driver ($OCP\_ REF$) es cooacada manualmente con un arreglo de resistencias ,al igual que la referencia del PWM ($PWM\_ REF$). En particular, el voltaje de $OCP\_ REF$ debe ser igual al voltaje de la resistencia de sensado cuando el motor presenta su punto de máximo torque, que en este caso es cuando se alcanza la corriente de Stall a 1.6 amperios. En la configuración final se utilizan dos motores en paralelo para cada driver por lo que el ajuste se realizó para 3.2 amperios.
 
 
 \subsection{Encoders}
 
-El sistema de encoders también fue diseñado desde cero. La figura \ref{imagen:RuedaEncoders} presenta el modelaje 3D de la rueda del encoder y la disposición final sobre el eje de la rueda del robot.
+El sistema de encoders también fue diseñado desde cero. La figura \ref{imagen:RuedaEncoders} presenta el modelaje 3D de la rueda del encoder y la disposición final sobre el eje de la rueda del robot. Los encoders diseñados son encoders incrementales circulares utilizando fotointerruptores.
 
 \begin{figure}[H]
 	\centering		\includegraphics[width=0.3\linewidth]{imagenes/prototipo/Ruedaencoder}
@@ -215,8 +240,11 @@ Las figura \ref{imagen:PlacaMotoresFrontal} presenta la vista frontal de las cap
 
 \subsection{Sistema de alimentación y autonomía}
 
-El robot es alimentado por dos paquetes de baterías de 12V, los cuales fueron construidos con baterías de litio Sony G5 18650 de 2200mAh. Cada paquete dispone de 6 baterias de litio, para un total de 12 baterías.  Estas baterías se disponen en serie para lograr el voltaje de 24V de funcionamiento de los motores del robot, con una capacidad de 4400mAh. Se aprovecha la toma de 12V para alimentar la placa de control de los motores y la raspberry utilizando dos conversores del tipo Buck independientes. Los conversores empleados son del tipo MP2307, y su voltaje de salida es fijado a  5V.
-La figura \ref{imagen:BuckCurva} presenta la curva de eficiencia del conversor utilizado.
+El robot es alimentado por dos paquetes de baterías de 12V, los cuales fueron construidos con baterías de litio Sony G5 18650 de 2200mAh.
+
+Cada paquete dispone de 6 baterias de litio, para un total de 12 baterías.  Estas baterías se disponen en serie para lograr el voltaje de 24V de funcionamiento de los motores del robot, con una capacidad de 4400mAh. 
+
+La toma de 12V se utiliza para alimentar la placa de control de los motores y la Raspberry utilizando dos conversores del tipo Buck independientes. Los conversores empleados son del tipo MP2307, y su voltaje de salida es fijado a  5V. La figura \ref{imagen:BuckCurva} presenta la curva de eficiencia del conversor utilizado.
 
 
 \begin{figure}[H]
@@ -227,7 +255,7 @@ La figura \ref{imagen:BuckCurva} presenta la curva de eficiencia del conversor u
 \end{figure}
 
 
-En la figura \ref{imagen:Bateria} se presenta el proceso de carga de uno de los paquetes de batería de 12V. En este caso se utilizan 3 circuitos de cargadores de batería de litio de 3.7V HW-107 que emplean el controlador de carga TC4056. Estos circuitos se encuentran eléctricamente aislados ya que utilizan cargadores independientes de la red eléctrica nacional a 5V@1A. El tiempo aproximado de carga de cada paquete de batería es de 6 horas.
+En la figura \ref{imagen:Bateria} se presenta el proceso de carga de uno de los paquetes de batería de 12V. En este caso se utilizan 3 circuitos de cargadores de batería de litio de 3.7V HW-107 que emplean el controlador de carga TC4056. Estos circuitos se encuentran eléctricamente aislados ya que utilizan cargadores independientes y convierten la alimentación de la red eléctrica nacional a 5V@1A. El tiempo aproximado de carga de cada paquete de batería es de 6 horas.
 
 \begin{figure}[H]
 	\centering	
@@ -238,10 +266,11 @@ En la figura \ref{imagen:Bateria} se presenta el proceso de carga de uno de los 
 
 También se presenta el cálculo de autonomía del robot en función de la eficiencia de los conversores tipo Buck y del consumo de los componentes del robot.
 
-La tabla \ref{Buck1} presenta el consumo de carga promedio del conversor Buck 1. En este caso la corriente de carga aproximada es de 115.2 mA, y debido a que el voltaje de salida es de 5V, la potencia de consumo es 0.58 W. En esta caso se aproxima la eficiencia del conversor a 90\% para el cálculo de las perdidas de conversión. La tabla \ref{Buck1Perdidas} presenta la corriente de alimentación suminastrada por el arreglo de baterías de 12V en el proceso de conversión, la cual es la potencia total consumida por el conversor entre 12V.
+La tabla \ref{Buck1} presenta el consumo de carga promedio del conversor Buck 1. En este caso la corriente de carga aproximada es de 115.2 mA, y debido a que el voltaje de salida es de 5V, la potencia de consumo es 0.58 W. En esta caso se aproxima la eficiencia del conversor a 90\% para el cálculo de las perdidas de conversión. La tabla \ref{Buck1Perdidas} presenta la corriente de alimentación suministrada por el arreglo de baterías de 12V en el proceso de conversión, la cual es la potencia total consumida por el conversor entre 12V.
 
 \begin{table}[htbp]
 	\caption{Consumo de carga del conversor Buck 1}
+	\centering
 	\begin{tabular}{|l|c|c|c|c|}
 		\hline
 		\multicolumn{1}{|c|}{\textbf{Componente}} & \textbf{Cantidad} & \textbf{ Vin (V)} & \textbf{ Ipr (mA)} & \textbf{Itotal (mA)} \\ \hline
@@ -259,21 +288,23 @@ La tabla \ref{Buck1} presenta el consumo de carga promedio del conversor Buck 1.
 
 \begin{table}[htbp]
 	\caption{Consumo conversor Buck 1}
+	\centering
 	\begin{tabular}{|l|c|}
 		\hline
 		Consumo Buck 1 (W) & 0.58 \\ \hline
 		Perdidas por Conversión (W) & 0.06 \\ \hline
 		Consumo Total (W) & 0.64 \\ \hline
-		Corriente de Alimentación Equivalente (mA) & \multicolumn{1}{r|}{53.3333333333} \\ \hline
+		Corriente de Alimentación Equivalente (mA) & \multicolumn{1}{r|}{53.3} \\ \hline
 	\end{tabular}
 	\label{Buck1Perdidas}
 \end{table}
 
 
-En el caso del consumo del conversor Buck 2, se calcula  en función del consumo promedio de la Raspberry Pi 3 utilizando sus cuatro núcleos al 100\%, el consumo de la cámara y el de la IMU. La tabla \ref{} presenta estos resultados.
+En el caso del consumo del conversor Buck 2, se calcula  en función del consumo promedio de la Raspberry Pi 3 utilizando sus cuatro núcleos al 100\%, el consumo de la cámara y el de la IMU. La tabla \ref{Buck2} presenta estos resultados.
 
 \begin{table}[htbp]
 	\caption{Consumo conversor Buck 2}
+		\centering
 	\begin{tabular}{|l|c|c|c|c|}
 		\hline
 		\multicolumn{1}{|c|}{\textbf{Componente}} & \textbf{Cantidad} & \textbf{ Vin (V)} & \textbf{ Ipr (mA)} & \textbf{Itotal (mA)} \\ \hline
@@ -287,6 +318,7 @@ En el caso del consumo del conversor Buck 2, se calcula  en función del consumo
 
 \begin{table}[htbp]
 	\caption{Consumo conversor Buck 2}
+		\centering
 	\begin{tabular}{|l|c|}
 		\hline
 		Consumo Buck 2 (W) & 1.3 \\ \hline
@@ -297,14 +329,14 @@ En el caso del consumo del conversor Buck 2, se calcula  en función del consumo
 	\label{Buck2Perdidas}
 \end{table}
 
-Por tanto el consumo de corriente total de los Bucks es de  503mA, a lo cual se le debe sumar los 250mA estimados que consume en promedio cada motor del robot. Por tanto el consumo total del robot es de 1.5A, por paquete de baterías. Como cada paquete presente una capacidad de 4400 mAh, la autonomía estimada es de aproximadametne 2 horas. Sin embargo, la autonomía real del robot es de aproximadamente 1 hora debido a que las baterías empleadas son recicladas.
+Por tanto el consumo de corriente total de los Bucks es de  503mA, a lo cual se le debe sumar los 250mA estimados que consume en promedio cada motor del robot. Por tanto el consumo total del robot es de 1.5A, por paquete de baterías. Como cada paquete presente una capacidad de 4400 mAh, la autonomía estimada es de aproximadamente 2 horas. Sin embargo, la autonomía real del robot es de aproximadamente 1 hora debido a que las baterías empleadas son recicladas.
 
 
 
 \section{Componentes de hardware}
 En la figura \ref{imagen:HardwareRobot} se presenta el hardware base utilizado para la creación del dataset visual inercial.
 
-La cámara y la imu forman parte de los sensores empleados para la recopilación de información, mientra que el microcontrolador Arduino forma parte de la placa de control del robot y posee información de odometría del mismo. La Raspberry es utilizada para guardar la información suminstrada por los sensores y como medio de interconexión del control de mando.
+La cámara y la imu forman parte de los sensores empleados para la recopilación de información, mientra que el microcontrolador Arduino forma parte de la placa de control del robot y posee información de odometría del mismo. La Raspberry es utilizada para guardar la información suministrada por los sensores y como medio de interconexión con el control de mando.
 
 \begin{figure}[H]
 	\centering
@@ -315,7 +347,7 @@ La cámara y la imu forman parte de los sensores empleados para la recopilación
 
 \subsection{Joystick}
 
-En la figura \ref{imagen:Joystick} se presenta el mapa de los botones del robot. En esta implementación el control de mando es utilizado para el movimiento del robot y para el inicio y finalización de las secuencias del dataset local visual-inercial.
+En la figura \ref{imagen:Joystick} se presenta el mapa de los botones del control de mando de \textit{PlayStation}. En esta implementación el control de mando es utilizado para el movimiento del robot y para el inicio y finalización de las secuencias del dataset local visual-inercial.
 
 \begin{figure}[H]
 	\centering	
@@ -324,15 +356,24 @@ En la figura \ref{imagen:Joystick} se presenta el mapa de los botones del robot.
 	\label{imagen:Joystick}
 \end{figure}
 
+El diagrama flujo para conectar el control de mando a la Raspberry es presentado en la figura \ref{imagen:DiagramaSaid}.
+
+\begin{figure}[H]
+	\centering	
+	\includegraphics[width=0.7\linewidth]{imagenes/prototipo/DiagramaSaid}
+	\caption{Diagrama flujo para conectar el control de mando a la Raspberry. Obtenido de \cite{said}.}
+	\label{imagen:DiagramaSaid}
+\end{figure}
+
 \subsection{Cámara}
 
-La cámara utilizada para el prototipo fue la Pi Camera v1.2, la cual se conecta a la Raspberry P utiilzando la interfaz CSI, la cual provee un ancho de banda de 2Gbps .Esta cámara permite capturar imágenes con resoluciones de hasta 2592x1944 a 15Hz, y capturar movimientos rápidos a 90Hz con una resolución de 640x480.
+La cámara utilizada para el prototipo fue la Pi Camera v1.2, la cual se conecta a la Raspberry Pi utiilzando la interfaz CSI, la cual provee un ancho de banda de 2Gbps .Esta cámara permite capturar imágenes con resoluciones de hasta 2592x1944 a 15Hz, y capturar movimientos rápidos a 90Hz con una resolución de 640x480.
 
-La cámara es controlada por la GPU de la Raspberry. Las funciones de postprocesamiento como el balance de blancos, ganancia digital, procesamiento de color, redimensionamiento de la imagen, entre otras, son ejecutadas en la GPU en su propio sistema de tiempo real ThreadX. La configuración de la frecuencia de muestreo de la cámara y funciones de postprocesamiento se coloca mediante la configuración de registros.La GPU posee una memoria asignada de 128MB en la memoria ram de la Raspberry, la cual es utilizada como buffer de imágenes. 
+La cámara es controlada por la GPU de la Raspberry. Las funciones de postprocesamiento como el balance de blancos, ganancia digital, procesamiento de color, redimensionamiento de la imagen, entre otras, son ejecutadas en la GPU en su propio sistema de tiempo real ThreadX. La configuración de la frecuencia de muestreo de la cámara y funciones de postprocesamiento se coloca mediante la configuración de registros. La GPU posee una memoria asignada de 128MB en la memoria RAM de la Raspberry, la cual es utilizada como buffer de imágenes. 
 
 El CPU uiliza el VCHI (del inglés: VideoCore Host Interface) para comunicarse con la GPU mediante el envio de mensajes. Para utilizar la GPU y la cámara de la Raspberry lenguajes como Python y C++ utilizan la librería MMAL (del inglés: Multimedia Abstraction Layer) la cual es diseñada por Broadcom para utilizar la GPU Videocore IV de la Raspberry Pi de una forma más sencilla para programadores. De esta forma, los mensajes de configuración y de lectura de datos son gestionados por la MMAL que utiliza el VCHI para enviarlos a la GPU.
 
-La figura \ref{imagen:ArquitecturaCamara} presenta la flujo de la arquitectura para capturar imagen o video en Python. Cabe destacar que el puerto MMAL genera una excepción (callback en la figura) cuando una nueva imagen se encuentra disponible en RAM. Esto fue de vital importancia para la generación del dataset, ya que esta excepción se utiliza como disparo para realizar los demás procesos involucrados como por ejemplo la lectura de la imu, manteniendo la sincronización.
+La figura \ref{imagen:ArquitecturaCamara} presenta el flujo de la arquitectura para capturar imagen o video en Python. Cabe destacar que el puerto MMAL genera una excepción (callback en la figura) cuando una nueva imagen se encuentra disponible en RAM. Esto fue de vital importancia para la generación del dataset, ya que esta excepción se utiliza como disparo para realizar los demás procesos involucrados como por ejemplo la lectura de la IMU, manteniendo la sincronización.
 
 
 \begin{figure}[H]
@@ -343,7 +384,9 @@ La figura \ref{imagen:ArquitecturaCamara} presenta la flujo de la arquitectura p
 \end{figure}
 \footnotetext{\url{https://picamera.readthedocs.io/en/release-1.13/fov.html}}
 
-El código empleado para la gestión de la camera en el dataset se realizó en  utilizando un API en C++ desarrollado por el grupo de investigacion AVA\protect\footnotemark. En este caso, la máxima resolución disponible es de 1280x960.
+El código empleado para la gestión de la camera en el dataset se realizó en  utilizando un API en C++ desarrollado por el grupo de investigacion AVA\protect\footnotemark. En este caso, la máxima resolución disponible es de 1280x960, y también se encuentran disponibles resoluciones de 960x640, 640x480 y 320x240.
+
+Entre los formatos de escritura disponibles se encuentran YUV420 y ppm (formato crudo) y las imágenes pueden ser obtenidas en formato BGR, RGB y en escala de grises. En particular en esta implementación se utiliza el formato .ppm y las imágenes se registran en escala de grises, ya que es el formato básico utilizado por los detectores  de características, además de que utiliza menor espacio en memoria.
 
 \footnotetext{\url{https://github.com/cedricve/raspicam}}
 
@@ -380,15 +423,21 @@ El diagrama de la figura \ref{imagen:diagramaMultithread} presenta el esquema ba
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=1.0\linewidth]{imagenes/Implementacion/DiagramaMultithread}
-	\caption{Diagrama de la programación multihilo del dataset visual inercial}
+	\caption{Diagrama básico de la programación multihilo del dataset visual inercial.}
 	\label{imagen:diagramaMultithread}
 \end{figure}
 
+Como se observa ene l diagrama, el comienzo de grabación de dataset es iniciado por el Joystick cuando se pulsa el botón "Start". Luego se procede al cuadro de "Esperar Captura de Imagen" el cual está relacionado con la espera de la excepción generada por el MMLA cuando se encuentra disponible una nueva imagen. Esta excepción ocurre a la frecuencia de muestreo a la que se ha configurado la cámara (20 Hz en nuestro caso) y está encargado de generar la señal de captura de los datos de la IMU y de odometría del robot. La finalización del dataset ocurre cuando se presiona el botón "Start" nuevamente.
+
+En este punto es importante acotar que la velocidad de escritura del disco empleado tiene gran importancia para el correcto guardado de los datos de imagen, imu y odometría. En este caso se utilizó una memoria microSD clase 10  U1, que permite velocidades de escritura de hasta 10 MB/s. Sin embargo, se utiliza un hilo dedicado a la escritura en memoria y un buffer dinámico de guardo temporal de los datos en RAM, como medida de solución a posibles retrasos en la respuesta del disco.
+
+
 \subsection{Presupuesto de datasets visuales inerciales}
 
+En la tabla \ref{PresupuestoRobot} se presenta el presupuesto total de la generación del prototipo y del desarrollo del dataset visual inercial.
 
 
-\begin{table}[htbp]
+\begin{table}[H]
 	\caption{Presupuesto del robot prototipo}
 	\begin{tabular}{|l|c|c|c|}
 		\hline
@@ -420,6 +469,73 @@ El diagrama de la figura \ref{imagen:diagramaMultithread} presenta el esquema ba
 	\label{PresupuestoRobot}
 \end{table}
 
+\section{Odometría del robot}
+
+Para obtener la trayectoria recorrida por el robot es necesario realizar la lectura a intervalos periódicos de tiempo de los encoders. Esto permite obtener el desplazamiento y la velocidad lineal y angular. 
+
+En primer lugar presentaremos el modelo cinemático directo del robot el cual es un resumen de lo expuesto en \cite{cinematicaDirecta}. Para esto se tienen en cuenta las dimensiones del robot: L, que es la longitud entra las ruedas del vehículo; y r que es el radio de las ruedas, como se ve en la figura \ref{imagen:RobotRL}.
+
+
+
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\linewidth]{imagenes/prototipo/RobotRL}
+	\caption{Radio $r$ de la rueda y distancia entre ruedas $L$.}
+	\label{imagen:RobotRL}
+\end{figure}
+
+Para este modelo se supone que el desplazamiento del robot es en dos dimensiones. La figura \ref{imagen:RobotPlano} muestra la localización del robot en un punto $(x, y) $, donde $v$ es la velocidad lineal del móvil y ${ V }_{ L}$ y ${ V }_{ R}$ la velocidad tangencial de cada una de las ruedas. Estas ultimas se obtienen mediante el empleo de la ecuación , donde ${ \omega }_{ L}$ y ${ \omega}_{ R}$  son las velocidades angulares de cada rueda. 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.5\linewidth]{imagenes/prototipo/RobotPlano}
+	\caption{Plano de movimiento del robot.}
+	\label{imagen:RobotPlano}
+\end{figure}
+
+\begin{equation}
+{ V }_{ L }={ \omega  }_{ L }.r\quad ;\quad { V }_{ R }={ \omega  }_{ R }.r
+\end{equation}
+
+
+Las velocidades angulares y lineales se obtienen mediante las siguientes ecuaciones.
+
+\begin{equation}
+\label{eq:velocidadLineal}
+v=\frac { { \omega  }_{ L }+{ \omega  }_{ L } }{ L } .r
+\end{equation}
+
+
+\begin{equation}
+\label{eq:velocidadAngular}
+\omega =\frac { { \omega  }_{ L }-{ \omega  }_{ L } }{ L } .
+\end{equation}
+
+Sabiendo que el robot se mueve en una superficie plana, sin deslizamiento y que los ejes de las ruedas son perpendiculares a la superficie plana, se puede demostrar que si
+$p = [x, y, \theta ]$ es el vector de coordenadas del punto guía del robot y la orientación del mismo y si $q= [ v, \omega]$ es el vector de velocidad lineal y angular del móvil, se puede escribir la siguiente ecuación.
+
+\begin{equation}
+\label{eq:CineDirecto}
+\begin{bmatrix} \dot { x }  \\ \dot { y }  \\ \dot { \theta  }  \end{bmatrix}\quad =\quad \begin{bmatrix} -\sin { (\theta )\quad  }  & 0 \\ \cos { (\theta ) }  & 0 \\ 0 & 1 \end{bmatrix}\quad \times \begin{bmatrix} v \\ { \omega  } \end{bmatrix}
+\end{equation}
+
+Sustituyendo la ecuación \ref{eq:velocidadLineal} y \ref{eq:velocidadAngular} en la ecuación \ref{eq:CineDirecto} se obtiene la ecuación \ref{eq:CineDirectoDerivada}.
+
+\begin{equation}
+\label{eq:CineDirectoDerivada}
+\begin{bmatrix} \dot { x }  \\ \dot { y }  \\ \dot { \theta  }  \end{bmatrix}\quad =\quad \begin{bmatrix} -r.\sin { (\theta )/2\quad  }  & -r.\sin { (\theta )/2\quad  }  \\ r.\cos { (\theta )/2 }  & r.\cos { (\theta )/2 }  \\ -r/L & r/L \end{bmatrix}\quad \times \begin{bmatrix} { \omega  }_{ l } \\ { \omega  }_{ r } \end{bmatrix}
+\end{equation}
+
+Integrando la ecuación anterior con el periodo de muestreo $T$ de los encoders se puede obtener el incremento del vector posición como:
+
+\begin{equation}
+\label{eq:CineDirectoDelta}
+\begin{bmatrix} \Delta x \\ \Delta y \\ \Delta \theta  \end{bmatrix}\quad =\quad \begin{bmatrix} -r.\sin { ({ \theta  }_{ p })/2\quad  }  & -r.\sin { ({ \theta  }_{ p })/2\quad  }  \\ r.\cos { ({ \theta  }_{ p })/2 }  & r.\cos { ({ \theta  }_{ p })/2 }  \\ -r/L & r/L \end{bmatrix}\quad \times \begin{bmatrix} { 2\pi .\Delta e }_{ l }/N \\ { 2\pi .\Delta e }_{ r }/N \end{bmatrix}
+\end{equation}
+
+Donde ${ \theta  }_{ p }$ representa la ultima posición angular obtenida. N es el número de rejillas del encoder circular por revolución, y $\Delta e$ es el incremento del número de rejillas del encoder de la rueda en un tiempo $T$. De esta forma se puede obtener el vector posición mediante la suma de incrementos, partiendo de una posición inicial dada.
 
 
 
