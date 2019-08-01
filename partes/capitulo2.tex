@@ -4,12 +4,39 @@
 
 En este capítulo se presenta una revisión teórica del estado actual de las investigaciones que se han realizado en el área de Odometría visual, SLAM visual, y sus vertientes en las que se fusionan los datos inerciales.
 
-\section{Estado del arte}
+\section{Odometría}
 
-En los últimos años se han presentado diferentes alternativas para estimar de forma efectiva el movimiento que efectúa un robot y además lograr realizar un mapa de su entorno.
+En los últimos años se han presentado diferentes alternativas para estimar de forma efectiva el movimiento que efectúa un robot dentro de un entorno desconocido, lo cual se conoce como odometría.
+
+En general, la odometría se encarga de estimar el movimiento de un agente (vehículo, humano, robot) utilizando sensores que pueden medir cambios del movimiento del mismo, tales como unidades de medición inerciales, láseres, cámaras, etc.
+
+El caso más simple de odometría es obtener la trayectoria recorrida por un robot diferencial a través de la lectura de los encoders del robot. Los encoders miden el desplazamiento de cada rueda, con lo que es posible obtener la orientación y el desplazamiento del robot considerando el movimiento en un plano.
+
+Cuando se utiliza un sensor láser, la odometría se obtiene estimando el movimiento del robot mediante y escaneo y seguimiento de las medidas realizadas por el sensor (figura \ref{imagen:Antecedentes/octomaps}).
+
+Cuando el sensor utilizado es una cámara se habla de odometría visual (VO) y en este caso se tiene la configuración monocular, en la cual se utiliza una cámara, y la configuración estéreo, en la que se emplean dos cámaras para la estimación de movimiento. VO tiene ventajas respecto a la odometría estimada mediante encoders, ya que no es afectada por deslizamientos de la rueda sobre la superficie en la que se desplaza el robot, y en general provee trayectorias mas precisas con errores relativos de posición de 0.1 a 2 porciento. Esto hace a la odemetría visual un suplemento incluso a otros sistemas de navegación como el sistema de posicionamiento global (GPS), y odometría láser.
+
+En el caso de la IMU, la orientación del robot puede obtenerse mediante la fusión de los datos del giroscopio y el acelerómetro y generalmente es utilizada en complemento con otro sensor para obtener los cambios de desplazamiento. 
+
+\section{SLAM}
+
+El SLAM comparte el objetivo en común con la odometría el cual estimar la trayectoria del robot. Sin embargo, la estimación del movimiento del movimiento del robot se hace en conjunto con la construcción del mapa del entorno en el que se mueve el mismo, ya que ambos se encuentran estrechamente relacionados.
+
+Esta relación entre mapa  y localización del robot  fue inicialmente establecida en un artículo presentado en el \textit{International Symposium on Robotics Research}() cuando inicialmente se estableció que integrar la estimación de la localización y el mapeado del entorno de forma simultánea en un mismo problema, tenía un resultado convergente, cuya convergencia además aumentaba al existir un número mayor de puntos de referencia. 
+
+Respecto a los metodos de estimación, durante el periodo 1986-2004, se introdujeron métodos de estimación probabilistas  como los filtros extendidos de Kalman (EKF, del inglés: \textit{Extended Kalman Filter}), filtros de partículas Rao-Blackwell y estimaciones de máxima verosimilitud.
+
+También se tienen vertientes de SLAM ligadas a la inteligencia artificial, toma de decisiones de robots y teoría de control, la cual es conocida como SLAM activo en la que resaltan ().
 
 
-\section{SLAM visual}
+
+
+
+
+
+
+
+
 
 \section{Fusión visual-inercial }
 A lo largo de los años se han utilizado diferentes tipos de sensores y sus combinaciones para realizar la localización y mapeo simultáneo (SLAM) de un robot móvil en su entorno. Entre éstos se encuentran láseres de rango, sonares, sistemas de posicionamiento global (GPS), unidades de medición inercial (IMU) y cámaras monoculares, estereoscópicas, y RGB-D.\\
@@ -26,10 +53,18 @@ El núcleo de esta fusión se encuentra basado en la complementariedad que tiene
 
 Por otro lado,  las frecuencias de muestreo de las cámaras convencionales están el orden de las decenas de Hertz, mientras que las de la IMU pueden alcanzar las centenas de Hertz, con lo que se  obtiene información inercial adicional entre dos imágenes, que al ser integrada permite establecer restricciones de movimiento,  logrando de esta forma alcanzar una mejor estimación del estado del robot frente a su entorno., requiriendo un menor tiempo de cómputo. \\
 \section{Odometría visual}
-\section{SLAM}
+
 
 
 \subsection{OKVIS}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{EstadoDelArte/Rovio/RovioEstimacion.png}
+	\caption{Captura del entorno de trabajo de la odometría visual-inercial. Las elipses encierran la zona donde se predice la localización de las características. Las elipses estrechas corresponden a las características de mayor incertidumbre, entre las que se encuentran las características nuevas. Luego de la estimación efectuada por el EKF, la localización de la característica es mostrada como un punto verde. Los números en color verde corresponden al número de veces que ha sido seguida la características (1 si es una nueva característica).}
+	\label{fig:RovioEstimacion}
+\end{figure}
+
 
 El sistema de SLAM visual-inercial basado en keyframes y optimización no lineal (OKVIS)  es un enfoque desarrollado en 2013 en el laboratorio d de sistemas autónomos de la Escuela Politécnica Federal de Zúrich (ETH), en Suiza.
 
@@ -45,20 +80,7 @@ Debido a que se utiliza keyframes, se pueden tener frames separados arbitrariame
 En este trabajo comparan las estimaciones realizadas entre los diferentes acoples: el visual, el ligeramente acoplado y el estrechamente acoplado.
 
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.4]{EstadoDelArte/Rovio/RovioEstimacion.png}
-	\caption{Captura del entorno de trabajo de la odometría visual-inercial. Las elipses encierran la zona donde se predice la localización de las características. Las elipses estrechas corresponden a las características de mayor incertidumbre, entre las que se encuentran las características nuevas. Luego de la estimación efectuada por el EKF, la localización de la característica es mostrada como un punto verde. Los números en color verde corresponden al número de veces que ha sido seguida la características (1 si es una nueva característica).}
-	\label{fig:RovioEstimacion}
-\end{figure}
 
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.4]{EstadoDelArte/Rovio/RovioEstimacion.png}
-	\caption{Captura del entorno de trabajo de la odometría visual-inercial. Las elipses encierran la zona donde se predice la localización de las características. Las elipses estrechas corresponden a las características de mayor incertidumbre, entre las que se encuentran las características nuevas. Luego de la estimación efectuada por el EKF, la localización de la característica es mostrada como un punto verde. Los números en color verde corresponden al número de veces que ha sido seguida la características (1 si es una nueva característica).}
-	\label{fig:RovioEstimacion}
-\end{figure}
 
 
 

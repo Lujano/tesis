@@ -540,20 +540,26 @@ Donde ${ \theta  }_{ p }$ representa la ultima posición angular obtenida. N es 
 
 \section{Calibración de la cámara}
 
-Para utilizar el modelo pinhole de la cámara deben ser conocidos los parámetros intrísecos de la cámara como la distancia focal y el punto principal. Una forma básica de realizar una aproximación de estos parámetros es suponer que el centro de la imagen es el punto principal, de forma que :
+Para utilizar el modelo pinhole de la cámara deben ser conocidos los parámetros intrísecos de la ésta como la distancia focal y el punto principal. Una forma básica de realizar una aproximación de estos parámetros es suponer que el centro de la imagen es el punto principal, de forma que :
 \begin{equation}
 { c }_{ x }\quad =\quad w/2\quad ;\quad { c }_{ x }\quad =\quad h/2
 \end{equation}
 
-Donde w y h son las dimensiones horizontal y vertical de la imagen, respectivamente. De la misma forma, la distancia focal puede ser aproximada como:
+Donde w y h son las dimensiones horizontal y vertical de la imagen, respectivamente. De la misma forma, la distancia focal en píxeles puede ser aproximada como:
 
 \begin{equation}
 	{ f }_{ x }\quad =\quad \frac { F }{ W } w\quad ;\quad { f }_{ y }\quad =\quad \frac { F }{ H } h\quad ;
 \end{equation}
 
-Donde $F$ es la distancia focal (generalmente en milímetros )  del sensor de la cámara y $W$ y $H$ el ancho y altura del sensor en unidades métricas. Estos valores son proveídos por el fabricante.
+Donde $F$ es la distancia focal en milímetros del sensor de la cámara y $W$ y $H$ el ancho y altura del sensor en unidades métricas. Estos valores son proveídos por el fabricante.
 
-Sin embargo, para tareas como reconstrucción 3D, estas aproximaciones no son los suficientemente precisas. Por tanto, la calibración de la cámara es un proceso en el cual son analizadas las imágenes u observaciones  realizadas a un mismo patrón u objeto en diferentes perspectivas. Un proceso de optimización determinará los parámetros intrínsecos óptimos  que mejor se ajustan a las observaciones. Este es un proceso complejo, pero es facilitado utilizando las funciones de calibración de OpenCV.
+Sin embargo, para tareas como reconstrucción 3D, estas aproximaciones no son los suficientemente precisas. Por tanto, la calibración de la cámara es un proceso en el cual son analizadas las imágenes u observaciones  realizadas a un mismo patrón u objeto en diferentes perspectivas, donde utilizando un método de optimización se determinaran los parámetros intrínsecos óptimos  que mejor se ajustan a las observaciones. Este es un proceso complejo, pero es facilitado utilizando las funciones de calibración de OpenCV.
+
+
+
+La idea básica de este proceso es utilizar puntos de la escena cuya posición 3D es conocida y determinar la proyección de estos puntos en la imagen.
+
+OpenCV propone utilizar un patrón de ajedrez para generar los puntos 3D. La figura \ref{imagen:CalibracionCamara} muestra parte de las imágenes de entrada tomadas por  la cámara de la Raspberry utilizadas en este proceso. 
 
 \begin{figure}[H]
 	\centering
@@ -562,6 +568,44 @@ Sin embargo, para tareas como reconstrucción 3D, estas aproximaciones no son lo
 	\caption{Patrón de ajedrez utilizado para calibrar los parámetros intrínsecos de la  cámara.}
 	\label{imagen:CalibracionCamara}
 \end{figure}
+
+La función \textit{findChessboardCorners} de OpenCV automáticamente detecta las esquinas del patrón de ajedrez y retorna su ubicación en la imagen. La ubicación 3D inicial del tablero de ajedrez se asume en $Z=0·$ La figura \ref{imagen:CalibracionAjedrez} presenta el patrón detectado.
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\linewidth]{imagenes/prototipo/Calibracion/cal1}
+		
+	\caption{Puntos detectados por la función \textit{findChessboardCorners} de OpenCV.}
+	\label{imagen:CalibracionAjedrez}
+\end{figure}
+
+
+El proceso de calibración consiste entonces en tomar de 10 a 20 imágenes de este patrón con diferentes puntos de vista y profundidades. El programa de calibración de OpenCV genera como resultado la matriz de parámetros intrínsecos y los parámetros de distorsión de la cámara.
+
+En este punto es importante mencionar que los parámetros de distorsión de las cámaras son importantes de calibrar en casos de cámaras con lentes de baja calidad o que tengan una longitud focal corta. 
+
+OpenCV toma en cuenta los factores radiales y tangenciales de distorsión. Para el factor radial utiliza la siguiente formula:
+
+\begin{align}
+{ x }_{ corrected }=x(1+k_{ 1 }{ r }^{ 2 }+k_{ 2 }{ r }^{ 4 }+k_{ 3 }{ r }^{ 6 })\\ { y }_{ corrected }=y(1+k_{ 1 }{ r }^{ 2 }+k_{ 2 }{ r }^{ 4 }+k_{ 3 }{ r }^{ 6 })
+\end{align}
+
+En el caso de la distorsiona tangencial, esta ocurre debido a que la imagen tomada por el lento no es perfectamente paralela al plano de la imagen. Esto es corregido mediante:
+
+
+\begin{align}
+{ x }_{ corrected }=x+2p_{ 1 }xy+p_{ 2 }({ r }^{ 2 }+2x^{ 2 })\\ { y }_{ corrected }=y+2p_{ 2 }xy+p_{ 1 }({ r }^{ 2 }+2y^{ 2 })
+\end{align}
+
+
+De esta forma los coeficientes de distorsión son de la forma :
+
+\begin{equation}
+Coef =\quad (\quad { k }_{ 1 }\quad { k }_{ 2 }\quad p_{ 1 }\quad p_{ 2 }\quad { k }_{ 3 })\quad 
+\end{equation}
+
+	
 
 
 
