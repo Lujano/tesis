@@ -8,34 +8,63 @@ En este capítulo se presenta una revisión teórica del estado actual de las in
 
 En los últimos años se han presentado diferentes alternativas para estimar de forma efectiva el movimiento que efectúa un robot dentro de un entorno desconocido, lo cual se conoce como odometría.
 
-En general, la odometría se encarga de estimar el movimiento de un agente (vehículo, humano, robot) utilizando sensores que pueden medir cambios del movimiento del mismo, tales como unidades de medición inerciales, láseres, cámaras, etc.
+En general, la odometría se encarga de estimar el movimiento de un agente (vehículo, humano, robot) utilizando sensores que pueden medir los cambios del movimiento del mismo, tales como unidades de medición inercial, láseres, cámaras, etc.
 
 El caso más simple de odometría es obtener la trayectoria recorrida por un robot diferencial a través de la lectura de los encoders del robot. Los encoders miden el desplazamiento de cada rueda, con lo que es posible obtener la orientación y el desplazamiento del robot considerando el movimiento en un plano.
 
-Cuando se utiliza un sensor láser, la odometría se obtiene estimando el movimiento del robot mediante y escaneo y seguimiento de las medidas realizadas por el sensor (figura \ref{imagen:Antecedentes/octomaps}).
+Cuando se utiliza un sensor láser, la odometría se obtiene estimando el movimiento del robot mediante el escaneo y seguimiento de las medidas realizadas por el sensor (figura \ref{imagen:Antecedentes/octomaps}).
 
-Cuando el sensor utilizado es una cámara se habla de odometría visual (VO) y en este caso se tiene la configuración monocular, en la cual se utiliza una cámara, y la configuración estéreo, en la que se emplean dos cámaras para la estimación de movimiento. VO tiene ventajas respecto a la odometría estimada mediante encoders, ya que no es afectada por deslizamientos de la rueda sobre la superficie en la que se desplaza el robot, y en general provee trayectorias mas precisas con errores relativos de posición de 0.1 a 2 porciento. Esto hace a la odemetría visual un suplemento incluso a otros sistemas de navegación como el sistema de posicionamiento global (GPS), y odometría láser.
+Cuando el sensor utilizado es una cámara se denomina odometría visual (VO, del inglés Visual Odometry) y en este caso se puede tener la configuración monocular, en la cual se utiliza una cámara, y la configuración estéreo, en la que se emplean dos cámaras para la estimación de movimiento. VO tiene ventajas respecto a la odometría estimada mediante encoders, ya que no es afectada por deslizamientos de la rueda sobre la superficie en la que se desplaza el robot, y en general provee trayectorias mas precisas con errores relativos de posición de 0.1 a 2 \%. Esto hace a la odometría visual un suplemento incluso a otros sistemas de navegación como el sistema de posicionamiento global (GPS), y odometría láser.
 
-En el caso de la IMU, la orientación del robot puede obtenerse mediante la fusión de los datos del giroscopio y el acelerómetro y generalmente es utilizada en complemento con otro sensor para obtener los cambios de desplazamiento. 
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{EstadoDelArte/Odo/ResultadosOdo.png}
+	\caption{Trayectorías estimadas por métodos de fusión de datos de encoders y una unidad de medición inercial en un vehículo móvil en \cite{odo}. La trayectoría \textit{physical model} es la obtenida directamente por los encoders del vehiculo. La trayectoria \textit{corrected model} es la que se obtiene a través de la fusión de los datos}
+	\label{fig:OdoEstimacion}
+\end{figure}
+
+En el caso de sensores inerciales, la orientación del robot puede obtenerse mediante la fusión de los datos del giroscopio y el acelerómetro y generalmente es utilizada en complemento con otro sensor para obtener los cambios de desplazamiento. También se utiliza fusión de los datos inerciales en conjunto con otro sensor como cámaras o encoders. Este último caso se presenta en la figura \ref{fig:OdoEstimacion} donde la trayectoria recorrida por un vehículo es estimado mediante la integración de los datos de desplazamiento de las ruedas del vehículo en conjunto con los cambios de orientación obtenidos con la IMU.
 
 \section{SLAM}
 
-El SLAM comparte el objetivo en común con la odometría el cual estimar la trayectoria del robot. Sin embargo, la estimación del movimiento del movimiento del robot se hace en conjunto con la construcción del mapa del entorno en el que se mueve el mismo, ya que ambos se encuentran estrechamente relacionados.
+El SLAM comparte un objetivo en común con la odometría el cual estimar la trayectoria del robot. Sin embargo, la estimación  del movimiento del robot se hace en conjunto con la construcción del mapa del entorno en el que se mueve el mismo, ya que ambos se encuentran estrechamente relacionados.
 
-Esta relación entre mapa  y localización del robot  fue inicialmente establecida en un artículo presentado en el \textit{International Symposium on Robotics Research}() cuando inicialmente se estableció que integrar la estimación de la localización y el mapeado del entorno de forma simultánea en un mismo problema, tenía un resultado convergente, cuya convergencia además aumentaba al existir un número mayor de puntos de referencia. 
+Esta relación entre mapa  y localización del robot  fue inicialmente establecida en un artículo presentado en el \textit{International Symposium on Robotics Research}\cite{HarrisAndStephens} cuando inicialmente se estableció que integrar la estimación de la localización y el mapeado del entorno de forma simultánea en un mismo problema, tenía un resultado convergente, cuya convergencia además aumentaba al existir un número mayor de puntos de referencia. 
 
-Respecto a los metodos de estimación, durante el periodo 1986-2004, se introdujeron métodos de estimación probabilistas  como los filtros extendidos de Kalman (EKF, del inglés: \textit{Extended Kalman Filter}), filtros de partículas Rao-Blackwell y estimaciones de máxima verosimilitud.
+Durante el periodo 1986-2004, se introdujeron métodos de estimación probabilistas  como los filtros extendidos de Kalman (EKF, del inglés: \textit{Extended Kalman Filter}), filtros de partículas Rao-Blackwell y estimaciones de máxima verosimilitud.
 
-También se tienen vertientes de SLAM ligadas a la inteligencia artificial, toma de decisiones de robots y teoría de control, la cual es conocida como SLAM activo en la que resaltan ().
-
-
+También se tienen vertientes de SLAM ligadas a la inteligencia artificial, toma de decisiones de robots y teoría de control, la cual es conocida como SLAM activo en la que resaltan \cite{Feder, Smith, Makarenko, Stachniss}.
 
 
+\section{Odometría  y SLAM visual}
+
+Los métodos de Odometría y SLAM visual, se dividen en los métodos directos e indirectos. A continuación se presentan algunos trabajos en el área.
+
+\subsection{Métodos indirectos}
+
+Los métodos indirectos son aquellos que se basan en detectar puntos de interés en las imágenes, y en estimar el movimiento del robot en función de las parejas de correspondencias entre imágenes de dichos puntos de interés.
+
+En general, estos métodos utilizan detectores y extractores de puntos de interés (FAST, ORB, SIFT, SURF, KAZE ó AKAZE), los cuales se encargan de clasificar una región de la imagen como punto de interés, y de dar la ubicación en píxeles del punto característico. Posteriormente se utilizan emparejadores, los cuales comparan los puntos de interés entre imágenes y generan las mejores parejas entre los conjuntos. Las parejas correctas poseen puntos característicos de diferentes imágenes, que representan a la misma región u objeto dentro de las imágenes (por ejemplo, esquinas similares). 
+
+La estimación de movimiento se realiza en función de estas parejas, utilizando el modelo de la cámara. Para ello pueden ser utilizados métodos de optimización que minimizan del error de reproyección entre parejas, o métodos como RANSAC, que permite hallar la transformación de movimiento que reduce el error de un subconjunto de las parejas y ademas permite el filtrado de las correspondencias erróneas.
+
+Los métodos de SLAM visual indirectos hacen un seguimiento de las correspondencias a través de múltiples imágenes para realizar una construcción del mapa del entorno del robot. En general se utilizan grafos para estimar la mejor relación entre mapa y movimiento del robot a medida que se introducen nuevas observaciones. Un sistema de localización y mapeo simultáneo destacado se presenta a continuación:
+
+\subsubsection{ORB-SLAM}
+
+En el año 2015 Tardos et al. \cite{orbSlam}, pertenecientes al Instituto de Investigación de Ingeniería de Aragón, en la Universidad de Zaragoza,  desarrollaron ORB-SLAM, el cual es el sistema de código abierto de SLAM visual más robusto basado en métodos indirectos.
+
+Su nombre se debe a la utilización del detector ORB para garantizar la ejecución en tiempo real, ya que es el detector con el tiempo de extracción de características más corto, con 33 ms.
+
+ORB-SLAM utiliza tres hilos en CPU para resolver de forma simultánea la estimación de movimiento, el mapeado local y el cierre de lazo.
+
+En los sistemas monoculares, un problema común es la estimación del mapa inicial, el cual se basa en escoger un par de imágenes con suficiente disparidad entre ellas, para triangular sus correspondencias. En algunos sistemas esta selección inicial de imágenes se realiza de forma manual. En el caso de ORB-SLAM, se utiliza un algoritmo de inicialización automática del mapa, el cual es capaz de discernir movimientos en escenas planas y no planas mediantes el cálculo de la matríz esencial y de homografia. Cuando se detecta movimiento sobre una escena plana, la estimación de movimiento entre las dos imágenes se realiza utilizando la matríz de homografía. Cuando el movimiento es sobre una escena con objetos de diferentes profundidades, la estimación se realiza mediante el empleo de la matriz esencial.  De esta forma, con el movimiento estimado entre el par de imágenes, es posible obtener el mapa inicial sin necesidad de intervención humana.
+
+Posteriormente se elaboró ORB-SLAM2 \cite{orbSlam2}, el cual permite la implementación de cámaras estereoscópicas y cámaras RGB-D,
+lo cual permitió aumentar de forma considerable la información disponible del entorno, aumentando la densidad de los mapas generados y mejorando la precisión de las estimaciones del mapa y del movimiento del robot.
 
 
-
-
-
+\subsection{Métodos directos}
 
 
 \section{Fusión visual-inercial }
@@ -52,50 +81,50 @@ Es por ello que con el objetivo de generar un sistema más robusto en el que se 
 El núcleo de esta fusión se encuentra basado en la complementariedad que tienen estos sensores. Por ejemplo, las cámaras son precisas en movimientos lentos, en los cuales las medidas aceleración y velocidad angular provenientes de la IMU tienen mayor incertidumbre. En el caso de movimientos rápidos, sucede justo lo contrario: la IMU presenta menor incertidumbre en sus medidas mientras que las imágenes captadas por la cámara se distorsionan por efectos como el blur. \\
 
 Por otro lado,  las frecuencias de muestreo de las cámaras convencionales están el orden de las decenas de Hertz, mientras que las de la IMU pueden alcanzar las centenas de Hertz, con lo que se  obtiene información inercial adicional entre dos imágenes, que al ser integrada permite establecer restricciones de movimiento,  logrando de esta forma alcanzar una mejor estimación del estado del robot frente a su entorno., requiriendo un menor tiempo de cómputo. \\
-\section{Odometría visual}
 
 
+
+\section{SLAM visual inercial}
+
+Los sistemas de SLAM y de odometría tienden a ser más robustos a medida que se añaden más sensores al sistema. Este es el caso del SLAM visual inercial, donde se utiliza visión estéreo o monocular en conjunto con una unidad de medición inercial, para estimar el movimiento del robot y el mapa de su entorno.  La complementariedad de los sensores permite que puedan ser implementados metodos visuales directos en conjunto con las mediciones de la imu, las cuales se relacionan directamente con la orientación del robot y los cambios de rotación. Además, al utilizar las medidas de aceleración de la IMU es posible obtener el factor de escala absoluta  del mapa estimado y de la trayectoria del robot, la cual no es posible de obtener en los sistemas meramente monoculares. Esto fue demostrado a través a través de un filtro EKF que permite la fusión de los datos inerciales y visuales en el artículo de  Scaramuzza et al. \cite{scaramuzza}.
+
+A continuación se presentan los trabajos más destacados en Odometría y SLAM visual inercial.
 
 \subsection{OKVIS}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.4]{EstadoDelArte/Rovio/RovioEstimacion.png}
-	\caption{Captura del entorno de trabajo de la odometría visual-inercial. Las elipses encierran la zona donde se predice la localización de las características. Las elipses estrechas corresponden a las características de mayor incertidumbre, entre las que se encuentran las características nuevas. Luego de la estimación efectuada por el EKF, la localización de la característica es mostrada como un punto verde. Los números en color verde corresponden al número de veces que ha sido seguida la características (1 si es una nueva característica).}
-	\label{fig:RovioEstimacion}
-\end{figure}
+El sistema de SLAM visual-inercial basado en keyframes y optimización no lineal (OKVIS)  es un enfoque desarrollado en 2013 en el laboratorio d de sistemas autónomos de la Escuela Politécnica Federal de Zúrich (ETH), en Suiza, por  Leutenegger S. et al \cite{okvis}.
 
 
-El sistema de SLAM visual-inercial basado en keyframes y optimización no lineal (OKVIS)  es un enfoque desarrollado en 2013 en el laboratorio d de sistemas autónomos de la Escuela Politécnica Federal de Zúrich (ETH), en Suiza.
-
-Este enfoque integra de forma estrecha las medidas de la IMU y los keyframes provenientes de visión estéreo, utilizando optimización de Gauss-Newton para minimizar el error . El detector que se empleó es el detector de Harriz multiescala con optimización en el espacio SSE , combinado con el descriptor BRISK. 
+Este enfoque integra de forma estrecha las medidas de la IMU y los keyframes provenientes de visión estéreo, utilizando optimización de Gauss-Newton donde los estados del sistema incluyen la posición, velocidad y orientación del robot, así como también los sesgos de la IMU. El detector que se empleó es el detector de Harriz multiescala con optimización en el espacio SSE , combinado con el descriptor BRISK. 
 
 La visión estereo es utilizada para realizar la triangulación de los puntos característicos en cada frame, los cuales son insertados a un mapa local. Luego se aplica el algoritmo de fuerza bruta para encontrar la correspondecia con el mapa global de landmarks. En este caso, se utiliza outlier rejection aplicnado es test de chi-cuadrado a las coordenadas de la imagen utilizando las poses obtenidas previamente mediante la integración de las medidas de la IMU.
 En este enfoque se utiliza una ventana deslizante para mantener los frames más reciente, y la selección de keyframes se basa en una medida heuristica: si la razón entre el area ocupado por todo los puntos emparejados contra el area ocupaa por todos los puntos detectados está entre 50 a 60, el frame es considerado como keyframe.
 
+Debido a que se utiliza keyframes, se pueden tener frames separados arbitrariamente en tiempo. 
 
+En este trabajo comparan las estimaciones realizadas entre los diferentes acoples: el visual, el ligeramente acoplado y el estrechamente acoplado. la figura \ref{fig:RovioEstimacion} y \ref{fig:RovioEstimacionMapa} presenta los resultados obtenidos.
 
-Debido a que se utiliza keyframes, se pueden tener frames separados arbitrariamente en tiempo. Los keyfra
-
-En este trabajo comparan las estimaciones realizadas entre los diferentes acoples: el visual, el ligeramente acoplado y el estrechamente acoplado.
-
-
-
-
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{EstadoDelArte/Okvis/OkvisResultados.png}
+	\caption{Resultados comparativos de la estimación del recorrido de un vehículo  en . El enfoque Tighly-couple representa el método implementado en Okvis. El enfoque Loosely-Coupled representa un acople en menor grado de las medidas de IMU y cámara. Visión-only representa el enfoque basado sólo en cámara. El groundtruth es mostrado en gris.}
+	\label{fig:RovioEstimacion}
+\end{figure}
 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.4]{EstadoDelArte/Rovio/RovioEstimacion.png}
-	\caption{Captura del entorno de trabajo de la odometría visual-inercial. Las elipses encierran la zona donde se predice la localización de las características. Las elipses estrechas corresponden a las características de mayor incertidumbre, entre las que se encuentran las características nuevas. Luego de la estimación efectuada por el EKF, la localización de la característica es mostrada como un punto verde. Los números en color verde corresponden al número de veces que ha sido seguida la características (1 si es una nueva característica).}
-	\label{fig:OkvisResultados}
+	\includegraphics[scale=0.4]{EstadoDelArte/Okvis/OkvisMapa.png}
+	\caption{Vista ortonormal de la reconstrucción del camino realizo en un edificio. Las trayectorias se encuentran manualmente alineada con el plano de la estructura.}
+	\label{fig:RovioEstimacionMapa}
 \end{figure}
+
 
 \subsection{ROVIO}
 
 La Odometría Visual-Inercial Robusta (ROVIO, del inglés: Robust Visual Inertial Odometry) es un algoritmo desarrollado en 2015 en el laboratorio de sistemas autónomos del ETH.
 
-Este algoritmo utilizan directamente como error la intensidad de los píxeles, utilizando parches en las  imágenes y aplicando la estructura piramidal de 4 niveles y manteniendo un alto nivel de robustez. Los parches utilizados están fuertemente acoplados con un filtro Kalman Extendido (EKF, del inglés: Extended Kalman Filters) y los landmarks 3D son siempre estimados con respecto a la pose actual de la cámara. lo que es conocido como el enfoque robocéntrico. Además, estos landmarks son parametrizados para lograr una na forma compacta de representación y de esa forma mejorar el desempeño computacional del algoritmo. 
+Este algoritmo utiliza directamente como error la intensidad de los píxeles, utilizando parches en las  imágenes y aplicando la estructura piramidal de 4 niveles y manteniendo un alto nivel de robustez. Los parches utilizados están fuertemente acoplados con un filtro Kalman Extendido (EKF, del inglés: Extended Kalman Filters) y los landmarks 3D son siempre estimados con respecto a la pose actual de la cámara. lo que es conocido como el enfoque robocéntrico. Además, estos landmarks son parametrizados para lograr una na forma compacta de representación y de esa forma mejorar el desempeño computacional del algoritmo. 
 
 El filtro empleado fusiona los datos de aceleración y velocidad angular de la IMU, y los parámetros extrinsecos de la cámara y los biases de la IMU son coestimados. 
 
@@ -135,21 +164,6 @@ Para evaluar la robustez de este algoritmo, el laboratorio utilizo su propio veh
 
 
 
-
-\section{Fusión visual-inercial }
-A lo largo de los años se han utilizado diferentes tipos de sensores y sus combinaciones para realizar la localización y mapeo simultáneo (SLAM) de un robot móvil en su entorno. Entre éstos se encuentran láseres de rango, sonares, sistemas de posicionamiento global (GPS), unidades de medición inercial (IMU) y cámaras monoculares, estereoscópicas, y RGB-D.\\
-
-Cada tipología en la que son empleados estos sensores tiene sus limitaciones. Por ejemplo, los sistemas en que los se utiliza GPS están restringidos a ser utilizados al aire libre, lo que conlleva a que no puedan ser implementados en vehículos submarinos. Los láseres ofrecen información precisa del entorno pero tienen problemas en superficies reflectivas o absorbentes, además que pueden representar un alto costo,  y  ser lo suficientemente pesados como para ser descartados en aplicaciones con  vehículos aéreos. Por su parte, las medidas de sonares que son aplicados en espacios terrestres pueden tener alta incertidumbre ya que depende de la forma de las superficies y de su orientación relativa al sensor, mientras que las unidades de medición inercial presentan deriva y ruido en sus mediciones. En el caso de las cámaras, la  calidad de sus datos tienen una alta dependencia a las condiciones de iluminación. \\
-
-La implementación de estas últimas en sistemas de localización y mapeo simultáneo ha tenido gran atención en los últimos años debido a su capacidad para capturar una gran cantidad de información sobre el entorno. Es por esto que se han desarrollado métodos de SLAM visual basados tanto en cámaras monoculares como estereoscópicas, utilizando para ello métodos directos, a través de la detección y emparejamiento de características en las imágenes; método indirectos, basados en el calculo del error fotométrico entre imágenes; y semi-directos, utilizando una combinación de métodos directos e indirectos.\\
-
-Sin embargo, estos sistemas presentan debilidades. Los métodos de SLAM con cámaras monoculares presentan problemas de ambiguedad ante la escala, mientras que  los estereoscópicos están limitados por la relación entre la profundidad de la escena y la distancia entre las cámaras. \\
-
-Es por ello que con el objetivo de generar un sistema más robusto en el que se puede complementar la información disponible entre sensores y compensar sus debilidades, se han propuesto esquemas basados en la fusión visual-inercial, en la que se pueden emplear cámaras estéreos o monoculares junto a una unidad de medición inercial, ofreciendo además una buena relación entre costo, peso, espacio ocupado y consumo de energía, que permite que puedan ser empleados en robots terrestres, aéreos y submarinos.\\
-
-El núcleo de esta fusión se encuentra basado en la complementariedad que tienen estos sensores. Por ejemplo, las cámaras son precisas en movimientos lentos, en los cuales las medidas aceleración y velocidad angular provenientes de la IMU tienen mayor incertidumbre. En el caso de movimientos rápidos, sucede justo lo contrario: la IMU presenta menor incertidumbre en sus medidas mientras que las imágenes captadas por la cámara se distorsionan por efectos como el blur. \\
-
-Por otro lado,  las frecuencias de muestreo de las cámaras convencionales están el orden de las decenas de Hertz, mientras que las de la IMU pueden alcanzar las centenas de Hertz, con lo que se  obtiene información inercial adicional entre dos imágenes, que al ser integrada permite establecer restricciones de movimiento,  logrando de esta forma alcanzar una mejor estimación del estado del robot frente a su entorno., requiriendo un menor tiempo de cómputo. \\
 \section{EuRoC MAV Dataset}
 El conjunto de datos de prueba empleado en este trabajo corresponde al al EuRoC MAV Dataset \cite{0}, el cual es un dataset de referencia que es utilizado para evaluar diferentes algoritmos de SLAM visual-inercial y que dispone de 11 secuencias de datos. \\
 
@@ -226,7 +240,6 @@ En la figura \ref{fig:vicon} se muestra el segundo ambiente correspondiente a un
 	\label{fig:pointcloudEuroc}
 \end{figure}
 
-.
 
 
 \section{Librería de desarrollo}

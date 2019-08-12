@@ -10,7 +10,7 @@ En este sentido el Grupo de Investigación y Desarrollo en Mecatrónica de la US
 
 En el \textit{GIDM} se han realizado grandes avances en el empleo de vehículos operados remotamente \textit{ROV} (del inglés: Remotely Operated Vehicles) y de vehículos autónomos submarinos \textit{AUV} (del inglés: Automated Underwater Vehicles) para actividades de investigación, exploración e inspección de ambientes no estructurados.
 
-En este sentido, en el año \textit{Certad, N.} \cite{novel} propuso en el 2013 como proyecto de maestría, un algoritmo de localización y mapeo simultáneo ppara un vehículo terrestre de locomoción diferencial instrumentado con sensores exteroceptivos, realimentado por odometría, el cual utilizó Webots como herramienta de simulación y fue implementado utlizando Matlab.
+En este sentido, en el año \textit{Certad, N.} \cite{novel} propuso en el 2013 como proyecto de maestría, un algoritmo de localización y mapeo simultáneo para un vehículo terrestre de locomoción diferencial instrumentado con sensores exteroceptivos, realimentado por odometría, el cual utilizó Webots como herramienta de simulación y fue implementado utlizando Matlab.
 
 
 \begin{figure}[H]
@@ -20,7 +20,7 @@ En este sentido, en el año \textit{Certad, N.} \cite{novel} propuso en el 2013 
 	\label{imagen:Antecedentes/Certad}
 \end{figure}
 
-En el 2017, \textit{Gonzáles M.} \cite{manuel} desarrolló un sistema de reconstrucción de modelos de ambiente utiliznado un sensor de Detección y Localización por Láser (LIDAR, del inglés: Laser Imaging Detection and Ranging). Esta implementación se realizó utilizando ROS como núcleo de control y procesamiento de datos y \textit{Cartographer} como herramienta de manejo de la localización y mapeo del prototipo empleado. Los modelos reconstruidos como el presentado en la figura \ref{imagen:Antecedentes/octomaps} se realizaron utilizando estructuras probabilísticas de ocupación llamadas \textit{octomaps}, las cuales permitieron la disminución del uso de recursos de memoria en la reconstrucción de grandes entornos.
+En el 2017, \textit{Gonzáles M.} \cite{manuel} desarrolló un sistema de reconstrucción de modelos de ambiente utilizando un sensor de Detección y Localización por Láser (LIDAR, del inglés: Laser Imaging Detection and Ranging). Esta implementación se realizó utilizando ROS como núcleo de control y procesamiento de datos y \textit{Cartographer} como herramienta de manejo de la localización y mapeo del prototipo empleado. Los modelos reconstruidos como el presentado en la figura \ref{imagen:Antecedentes/octomaps} se realizaron utilizando estructuras probabilísticas de ocupación llamadas \textit{octomaps}, las cuales permitieron la disminución del uso de recursos de memoria en la reconstrucción de grandes entornos.
 
 
 \begin{figure}[H]
@@ -59,7 +59,8 @@ Sturm de la Universidad Tecnológica de Múnich.
 	\caption{Prototipo UAV desarrollado en  \cite{said}}
 	\label{imagen:said}
 \end{figure}
-Adicionala estos prototipos,  el \textit{GIDM} cuentan con otras plataformas móviles como \textit{Roomba}, \textit{AmigoBot}, y un vehículo submarino OpenROV\footnote{ \url{https://www.openrov.com/products/openrov28/}}, el cual es un robot maniobrado remotamente de baja envergadura, diseñado especialmente operaciones de exploración y está dotado, entre otras cosas, con una cámara de video HD y una unidad de medición inercial.
+
+Adicional a estos prototipos,  el \textit{GIDM} cuentan con otras plataformas móviles como \textit{Roomba}, \textit{AmigoBot}, y un vehículo submarino OpenROV\footnote{ \url{https://www.openrov.com/products/openrov28/}}, el cual es un robot maniobrado remotamente de baja envergadura, diseñado especialmente operaciones de exploración y está dotado, entre otras cosas, con una cámara de video HD y una unidad de medición inercial.
 
 \begin{figure}[H]
 	\centering
@@ -95,7 +96,7 @@ Analizar e implementar un sistema automatizado que permita la localización de u
 
 El presente trabajo se encuentra estructurado en 7 capítulos. El \textit{\textbf{Capítulo 1}} describe el problema a resolver, y los antecedentes y objetivos del proyecto.
 
-El estado del arte de la odometría visual inercial es detallado en el \textit{\textbf{Capítulo 2}} donde se presentan los trabajos recientes y avances importantes en esta área de investigación. Posteriormente , en base a las técnicas y algoritmos estudiados, se propone un esquema de odometría visual inercial.
+El estado del arte de la odometría y el SLAM visual inercial es detallado en el \textit{\textbf{Capítulo 2}} donde se presentan los trabajos recientes y avances importantes en esta área de investigación. Posteriormente , en base a las técnicas y algoritmos estudiados, se propone un esquema de odometría visual inercial.
 
 
 El \textit{\textbf{Capítulo 3}} inicia una revisión teórica en la que se describe el modelo de la cámara utilizado, las transformaciones de cuerpo rígido, 
