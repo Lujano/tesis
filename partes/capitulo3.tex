@@ -8,8 +8,8 @@
 En esta sección se presentarán las bases teóricas que sustentan la implementación realizada en este trabajo. Se definirá el modelo de cámara utilizado, las transformaciones de cuerpo rígido, los detectores y descriptores de características, la extracción y filtrado de correspondencias, y los filtros de fusión inercial.
 
 
-\section{Modelo pinhole de la cámara}
-El modelo pinhole o de pequeña apertura de la cámara es una aproximación proyectiva en la que la medición tomada por la cámara (imagen) es el resultado de una transformación del espacio en tres dimensiones del mundo  al espacio en dos dimensiones de una imagen (${\rm I\!R}^3 \to {\rm I\!R}^2$). Este modelo de cámara es el modelo más simple y utilizado en las aplicaciones de odometría y SLAM visual.
+\section{Modelo de apertura pequeña de la cámara}
+El modelo \textit{pinhole} o de pequeña apertura de la cámara es una aproximación proyectiva en la que la medición tomada por la cámara (imagen) es el resultado de una transformación del espacio en tres dimensiones del mundo  al espacio en dos dimensiones de una imagen (${\rm I\!R}^3 \to {\rm I\!R}^2$). Este modelo de cámara es el modelo más simple y utilizado en las aplicaciones de odometría y SLAM visual.
 
 La figura  \ref{imagen:modelo_pinhole}  presenta esta aproximación. En primer lugar se observa el sistema de referencia de la cámara el cual es presentado con los ejes $X_{c}$, $Y_{c}$ y $Z_{c}$. El eje $Z_{c}$ también es conocido como el eje óptico o principal de la cámara. Además, se presenta el plano de la imagen en la figuras \ref{imagen:modelo_pinhole} y \ref{imagen:modelo_pinhole2}, el cual es un plano que se encuentra ubicado en $z= f$, donde $f$ es la distancia focal de la cámara en unidades de píxeles. En dicho plano se puede observar el sistema de referencia de la imagen, el cual se representa con los ejes punteados $u$ y $v$. En la figura \ref{imagen:coordenadas_imagen} se puede apreciar este sistema de referencia y su correspondencia con la imagen.
 
@@ -84,6 +84,15 @@ En este sentido, los detectores de características son los algoritmos que clasi
 
 La imagen \ref{imagen:features} muestra un ejemplo de esto. En ésta se puede observar que se toman seis áreas de interés. Analizando estos segmentos, vemos las regiones que \textbf{\textit{A}} y \textbf{\textit{B}} corresponden con superficies planas, lo que hace difícil  identificar a que región de la imagen original corresponde ya que pueden existir más de una correspondencia. Por otro lado, tenemos las regiones \textbf{\textit{C}} y \textbf{\textit{D}}, las cuales corresponden con bordes en la imagen, que si bien es posible limitar en gran medida el área de búsqueda hacia toda las regiones del mismo bordes, sigue siendo difícil acertar con la ubicación correcta en la imagen. Por el contrario, en las regiones \textbf{\textit{E}} y \textbf{\textit{F}} observamos esquinas de la imagen original, en cuyo caso se puede identificar  la ubicación exacta de la región en la imagen con relativa facilidad.
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.7\textwidth]{features}
+	\caption[Caracterización de regiones en una imagen]{Caracterización de regiones en una imagen\protect\footnotemark}
+	\label{imagen:features}
+\end{figure}
+\footnotetext{\url{https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_feature2d/py_features_meaning/py_features_meaning.html}}
+%https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_feature2d/py_features_meaning/py_features_meaning.html
+
 De esta forma, se puede evidenciar que deben un detector de características de tener ciertas propiedades que garanticen la generación de puntos característicos confiables bajo distintas condiciones y que además permitan la posibilidad de ser emparejados en diferentes imágenes.
 
 
@@ -108,14 +117,7 @@ Para alcanzar este objetivo los detectores y extractores de puntos característi
 
 
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.7\textwidth]{features}
-	\caption[Caracterización de regiones en una imagen]{Caracterización de regiones en una imagen\protect\footnotemark}
-	\label{imagen:features}
-\end{figure}
-\footnotetext{\url{https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_feature2d/py_features_meaning/py_features_meaning.html}}
-%https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_feature2d/py_features_meaning/py_features_meaning.html
+
 
 Basados en estas definiciones es necesario exponer el funcionamiento de los algoritmos detectores.  Siguiendo el ejemplo de la imagen \ref{imagen:features}, y basado en la detección de esquinas como regiones facilmente identificables,  en \textit{1988} nace el primer algoritmo de detección de puntos de interés llamado Detector de esquinas de Harris \cite{harris} (nombre original en inglés: Harris Corner Detector).
 
@@ -186,7 +188,7 @@ Finalmente para crear el vector descriptor por cada punto clave se crea una matr
 
 En el año 2006, un grupo de tres personas: Bay, H., Tuytelaars, T. and Van Gool, L. desarrollan \textit{SURF} \cite{surf}, el cual es un detector y descriptor de características basado en SIFT, pero con modificaciones que aumentan su velocidad de detección. Estos cambios sacrifican un poco de rendimiento y precisión, pero sin embargo lo hace mas provechoso para aplicaciones embebidas que demanden mayor velocidad de cómputo y menor uso de recursos, como por ejemplo \textit{SLAM}. El proceso para la extracción de características por parte de este algoritmo se compone de los siguientes pasos:
 
-Como primer paso, en lugar de aproximar el laplaciano de Gauss \textit{LoG} (del inglés: Laplacian of Gaussians) con la diferencia de Gaussianas (DoG) como lo hace SIFT, este algoritmo aproxima LoG con cuadrados para promediar la imagen. La ventaja de aplicar filtros con cuadrados es que con la ayuda de imágenes integrales el cálculo computacional se reduce en gran medida.
+Este algoritmo en lugar de aproximar el laplaciano de Gauss \textit{LoG} (del inglés: Laplacian of Gaussians) con la diferencia de Gaussianas (DoG) como lo hace SIFT, aproxima LoG con cuadrados para promediar la imagen. La ventaja de aplicar filtros con cuadrados es que con la ayuda de imágenes integrales el cálculo computacional se reduce en gran medida.
 
 \begin{figure}[H]
 	\centering
@@ -203,7 +205,7 @@ Como se mencionó utiliza el algoritmo FAST, el cual consiste en encontrar esqui
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.9\textwidth]{orb}
+	\includegraphics[width=0.9\textwidth]{orb2}
 	\caption[Detector y descriptor ORB]{izquierda: detección de esquinas usando FAST, de \cite{fast}. derecha: descriptor basado en BRIEF, adaptado de\protect\footnotemark }
 	\label{imagen:orb}
 \end{figure}
@@ -215,7 +217,7 @@ El descriptor utilizado para BRIEF es un descriptor binario y no vectorial. El m
 
 Los algoritmos de detección que se mencionaron hasta este momento tienen una característica en común, y es que cuando trabajan con el esquema piramidal lo hacen bajo el espacio de escala Gaussiano, el cual es una instancia particular de difusión lineal. De esta forma, al utilizar este filtro no se respetan los limites naturales de los objetos y se difumina del mismo nivel toda la región de la imagen cuando se avanza entre niveles de escala.
 
-Enfocándose en esta característica, en el año de \textit{2012} se desarrolla el detector y descriptor llamado KAZE \cite{kaze} por parte de \textit{Pablo Fernández Alcantarilla}. Este novedoso algoritmo opera completamente en un espacio de escala no lineal, y para ello utilizan un esquema de división de operadores aditivos (\textit{AOS}, del inglés: Additive Operator Splitting), que les permite obtener espacios de escala no lineales de forma eficiente. De este modo se puede realizar un difuminado localmente adaptativo, posibilitando que se remueva el ruido en las imágenes, manteniendo información importante sobre los bordes de los objetos al avanzar en el espacio de escala. En la figura \ref{imagen:kaze} se puede observar como afecta en los bordes de los objetos el aplicar un filtro de difusión lineal, y uno que no lo es, bajo el esquema propuesto por este algoritmo.
+Enfocándose en esta característica, en el año de \textit{2012} se desarrolla el detector y descriptor llamado KAZE \cite{kaze} por parte de \textit{Alcantarilla P. }. Este novedoso algoritmo opera completamente en un espacio de escala no lineal, y para ello utilizan un esquema de división de operadores aditivos (\textit{AOS}, del inglés: Additive Operator Splitting), que les permite obtener espacios de escala no lineales de forma eficiente. De este modo se puede realizar un difuminado localmente adaptativo, posibilitando que se remueva el ruido en las imágenes, manteniendo información importante sobre los bordes de los objetos al avanzar en el espacio de escala. En la figura \ref{imagen:kaze} se puede observar como afecta en los bordes de los objetos el aplicar un filtro de difusión lineal, y uno que no lo es, bajo el esquema propuesto por este algoritmo.
 
 \begin{figure}[H]
 	\centering
@@ -466,12 +468,12 @@ Por tanto colocamos el sistema de la imagen 1 como el sistema de referencia glob
 conociendo la transformación de cuerpo rígido que existe de la imagen 1 a la imagen 2:
 
 \begin{equation}
-\begin{matrix} \overset { \rightarrow  }{ { f }_{ 2,\quad 1 } } \quad =\quad { R }_{ 1 }^{ 2 }.\overset { \rightarrow  }{ { f }_{ 2 } } +{ P }_{ 1 }^{ 2 } \end{matrix}
+\begin{matrix} \overset { \rightarrow  }{ { f }_{ 2, 1 } } \quad =\quad { R }_{ 1 }^{ 2 }.\overset { \rightarrow  }{ { f }_{ 2 } } +{ P }_{ 1 }^{ 2 } \end{matrix}
 \end{equation}
 
-Donde $\overset { \rightarrow  }{ { f }_{ 2,\quad 1 } } \quad $ significa el vector $\overset { \rightarrow  }{ { f }_{ 2 } } $ respecto al sistema de referencia de la imagen 1.
+Donde $\overset { \rightarrow  }{ { f }_{ 2,1} } \quad $ significa el vector $\overset { \rightarrow  }{ { f }_{ 2 } } $ respecto al sistema de referencia de la imagen 1.
 
-Sin embargo, debido a que sólo es necesaria la dirección de los vectores para el calculo del vector normal, y considerando que la traslación de los sistemas ${ P }_{ 1 }^{ 2 }$ no varia la dirección del vector $\overset { \rightarrow  }{ { f }_{ 2,\quad 1 } }$, el vector normal al plano epipolar puede ser calculado como:
+Sin embargo, debido a que sólo es necesaria la dirección de los vectores para el calculo del vector normal, y considerando que la traslación de los sistemas ${ P }_{ 1 }^{ 2 }$ no varia la dirección del vector $\overset { \rightarrow  }{ { f }_{ 2, 1 } }$, el vector normal al plano epipolar puede ser calculado como:
 
 
 \begin{equation}
@@ -544,93 +546,93 @@ El filtro de Madgwick se encuentra dividido en cuator partes: el cálculo de la 
 \subsection{ Filtro complementario }
 Este filtro también utiliza la representación en cuaterniones. Fusiona la estimación del cuaternion de orientación con el delta de cuaternion obtenido del acelerómetro. Este último sirve sólo como corrección de las componentes de roll y pitch, estimando el ángulo de yaw a partir de las mediciones del giroscopio. Si se provee medidas del magnetómetro, se estima otro delta de cuaternion mediante las lecturas del campo  magnético, el cual se utiliza para las correcciones de la estimación del yaw.\\
 
-El termino de filtro complemenetario se debe al uso del analisis en el domino de la frecuencia de las señales para tener una mejor estimación de una cantidad en particular. Si se tienen señales afectadas por  ruidos de diferentes frecuencias, se utilizan dos filtros con un ancho de banda apropiado. Para estimación de la orientación de las medidas de la IMU, un filtro complementario utiliza un filtro pasa altas para la orientación estimada del giroscopio, la cual es afectada por  ruido de baja frecuencia , y un filtro pasa bajo para las medidas del acelerómetro, las cuales poseen rudio de alta frecuencia. Idealmente, la fusión de los dos filtros genera un filtro pasa todo con medidas libres de ruido. El termino complementeario deriva debido a que la frecuencia de corte es la misma para ambos filtros. \\
+El termino de filtro complementario se debe al uso del análisis en el domino de la frecuencia de las señales para tener una mejor estimación de una cantidad en particular. Si se tienen señales afectadas por  ruidos de diferentes frecuencias, se utilizan dos filtros con un ancho de banda apropiado. Para estimación de la orientación de las medidas de la IMU, un filtro complementario utiliza un filtro pasa altas para la orientación estimada del giroscopio, la cual es afectada por  ruido de baja frecuencia , y un filtro pasa bajo para las medidas del acelerómetro, las cuales poseen rudio de alta frecuencia. Idealmente, la fusión de los dos filtros genera un filtro pasa todo con medidas libres de ruido. El término complementario deriva debido a que la frecuencia de corte es la misma para ambos filtros. \\
 
 
 %
-\subsection{Metodología}
-
-El proceso planteado para la comparación consiste en evaluar los parámetros antes mencionados para todas las combinaciones de extractores y emparejadores que se tienen, tal y como se ilustra en la figura \ref{imagen:comparacion}.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=14cm]{comparacion.pdf}
-	\caption[Combinación de algoritmos para el analisis de rendimiento]{Combinaciones posibles del módulo comparativo}
-	\label{imagen:comparacion}
-\end{figure}
-
-Cuando se utiliza un algoritmo para emparejar características, es muy común que existan parejas erróneas, puesto que al tener una gran cantidad de datos, varios pares de descriptores pueden tener la similitud necesaria para ser considerados como el mismo punto. Por esta razón es importante emplear una etapa que permita filtrar dichas parejas. Como ya se mencionó, se tienen distintos tipos de emparejadores, y en función a cada uno es necesario realizar el descarte de manera distinta. A continuación se describe el proceso asociado a cada caso.
-
-En el caso del algoritmo de fuerza bruta: Se obtiene la distancia de la mejor pareja, luego se descartan todas las parejas cuya distancia sea mayor que la mejor obtenida multiplicada por un factor de umbral. El proceso planteado se muestra en el algoritmo \ref{fuerzabruta}.
-
-\begin{figure}[h]
-	\centering
-	\begin{minipage}{.7\linewidth}
-		\begin{algorithm}[H] %or another one check
-			\caption{Selección de buenas parejas - Fuerza bruta}
-			\label{fuerzabruta}
-			\SetAlgoLined
-			$P{i}$ $\equiv$  $i$-ésima pareja\\
-			$D_{i}$ $\equiv$ Distancia de la $i$-ésima pareja\\
-			$N$ $\equiv$ Número de puntos emparejados\\
-			$U$ $\equiv$ Umbral para descartar erróneos\\
-			\Begin{
-				$U = 0.8$\;
-				\ForEach{i $\in$ n=1,2,$\cdots$,N}{
-					\If{$D_{i} < mejorDistancia$}{
-						$mejorDistancia = Dp_{i}$\;
-					}
-				}
-				\ForEach{i $\in$ n=1,2,$\cdots$,N}{
-					\If{$D_{i} > mejor distancia \cdot U$}{
-						eliminar $P_{i}$\;
-					}
-				}
-			}
-		\end{algorithm}
-	\end{minipage}
-\end{figure}
-
-En el caso del algoritmo bajo el esquema de vecinos mas cercanos: Se descarta cada pareja cuya distancia esté muy cercana a la distancia del vecino mas próximo. El proceso planteado se muestra en el algoritmo \ref{vecinosmascercanos}.
-
-\begin{figure}[h]
-	\centering
-	\begin{minipage}{.75\linewidth}
-		\begin{algorithm}[H] %or another one check
-			\caption{Selección de buenas parejas - Vecinos mas cercanos}
-			\label{vecinosmascercanos}
-			\SetAlgoLined
-			$P{i}$ $\equiv$ $i$-ésima pareja\\
-			$D_{i}$ $\equiv$ Distancia de la $i$-ésima pareja\\
-			$V_{i}$ $\equiv$ Distancia del vecino mas cercano de la $i$-ésima pareja\\
-			$N$ $\equiv$ Número de puntos emparejados\\
-			$U$ $\equiv$ Umbral para descartar erróneos\\
-			\Begin{
-				$U = 0.5$\;
-				\ForEach{i $\in$ n=1,2,$\cdots$,N}{
-					\If{$D_{i} > V_{i} \cdot U$}{
-						eliminar $P_{i}$\;
-					}
-				}
-			}
-		\end{algorithm}
-	\end{minipage}
-\end{figure}
-
-En segundo lugar, con el objetivo de mejorar la detección se implementa una etapa de pre-procesamiento en las imágenes de entrada. Tal y como se estudió en la sección teórica, para que un punto característico sea detectado, éste debe contener información que lo diferencie de su entorno cercano, en este caso esta diferencia es medida en función a su intensidad. En base a esta definición, se propone un algoritmo que permite mejorar el contraste en la imagen mediante la técnica de estirar su histograma. De esta forma cada imagen tendrá el máximo rango de excursión sobre las intensidades de sus puntos, permitiendo que los valores de umbral al detectar regiones, se superen con más facilidad.
-
-Es importante destacar que en proceso todas las imágenes fueron almacenadas usando variables de 8 bits, es decir, que cada valor es representado en un rango comprendido entre 0 y 255.
-
-Para el calculo del histograma se obtiene la frecuencia de aparición de cada valor de intensidad en la imagen. Luego, se obtiene el valor de la intensidad para la cual, la cantidad de píxeles cuyo valor sea menor o igual a ésta, no supere el 1\% de la cantidad total de píxeles en la imagen, este punto es llamado percentil bajo. A continuación se repite este proceso par ubicar el percentil alto, el cual corresponde con la intensidad para la cual la cantidad de píxeles inferiores a ésta, no supera el 99\% de la cantidad total de píxeles. Al tener estos valores se aplican los siguientes criterios:
-
-\begin{itemize}
-	\item Todos los píxeles cuyo valor se encuentre por debajo del percentil bajo es igualado a 0.
-	\item Todos los píxeles cuyo valor se encuentre por encima del percentil alto es igualado a 255.
-	\item Todos los valores cuyo valor se encuentre entre el percentil bajo y el alto, es reescalado usando la siguiente ecuación: 
-	\begin{displaymath}
-		I_{pixel} = \frac{(I_{pixel} - P_{bajo}) \cdot 255}{P_{alto} - P_{bajo}}
-	\end{displaymath}
-\end{itemize}
-
-
+%\subsection{Metodología}
+%
+%El proceso planteado para la comparación consiste en evaluar los parámetros antes mencionados para todas las combinaciones de extractores y emparejadores que se tienen, tal y como se ilustra en la figura \ref{imagen:comparacion}.
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=14cm]{comparacion.pdf}
+%	\caption[Combinación de algoritmos para el analisis de rendimiento]{Combinaciones posibles del módulo comparativo}
+%	\label{imagen:comparacion}
+%\end{figure}
+%
+%Cuando se utiliza un algoritmo para emparejar características, es muy común que existan parejas erróneas, puesto que al tener una gran cantidad de datos, varios pares de descriptores pueden tener la similitud necesaria para ser considerados como el mismo punto. Por esta razón es importante emplear una etapa que permita filtrar dichas parejas. Como ya se mencionó, se tienen distintos tipos de emparejadores, y en función a cada uno es necesario realizar el descarte de manera distinta. A continuación se describe el proceso asociado a cada caso.
+%
+%En el caso del algoritmo de fuerza bruta: Se obtiene la distancia de la mejor pareja, luego se descartan todas las parejas cuya distancia sea mayor que la mejor obtenida multiplicada por un factor de umbral. El proceso planteado se muestra en el algoritmo \ref{fuerzabruta}.
+%
+%\begin{figure}[h]
+%	\centering
+%	\begin{minipage}{.7\linewidth}
+%		\begin{algorithm}[H] %or another one check
+%			\caption{Selección de buenas parejas - Fuerza bruta}
+%			\label{fuerzabruta}
+%			\SetAlgoLined
+%			$P{i}$ $\equiv$  $i$-ésima pareja\\
+%			$D_{i}$ $\equiv$ Distancia de la $i$-ésima pareja\\
+%			$N$ $\equiv$ Número de puntos emparejados\\
+%			$U$ $\equiv$ Umbral para descartar erróneos\\
+%			\Begin{
+%				$U = 0.8$\;
+%				\ForEach{i $\in$ n=1,2,$\cdots$,N}{
+%					\If{$D_{i} < mejorDistancia$}{
+%						$mejorDistancia = Dp_{i}$\;
+%					}
+%				}
+%				\ForEach{i $\in$ n=1,2,$\cdots$,N}{
+%					\If{$D_{i} > mejor distancia \cdot U$}{
+%						eliminar $P_{i}$\;
+%					}
+%				}
+%			}
+%		\end{algorithm}
+%	\end{minipage}
+%\end{figure}
+%
+%En el caso del algoritmo bajo el esquema de vecinos mas cercanos: Se descarta cada pareja cuya distancia esté muy cercana a la distancia del vecino mas próximo. El proceso planteado se muestra en el algoritmo \ref{vecinosmascercanos}.
+%
+%\begin{figure}[h]
+%	\centering
+%	\begin{minipage}{.75\linewidth}
+%		\begin{algorithm}[H] %or another one check
+%			\caption{Selección de buenas parejas - Vecinos mas cercanos}
+%			\label{vecinosmascercanos}
+%			\SetAlgoLined
+%			$P{i}$ $\equiv$ $i$-ésima pareja\\
+%			$D_{i}$ $\equiv$ Distancia de la $i$-ésima pareja\\
+%			$V_{i}$ $\equiv$ Distancia del vecino mas cercano de la $i$-ésima pareja\\
+%			$N$ $\equiv$ Número de puntos emparejados\\
+%			$U$ $\equiv$ Umbral para descartar erróneos\\
+%			\Begin{
+%				$U = 0.5$\;
+%				\ForEach{i $\in$ n=1,2,$\cdots$,N}{
+%					\If{$D_{i} > V_{i} \cdot U$}{
+%						eliminar $P_{i}$\;
+%					}
+%				}
+%			}
+%		\end{algorithm}
+%	\end{minipage}
+%\end{figure}
+%
+%En segundo lugar, con el objetivo de mejorar la detección se implementa una etapa de pre-procesamiento en las imágenes de entrada. Tal y como se estudió en la sección teórica, para que un punto característico sea detectado, éste debe contener información que lo diferencie de su entorno cercano, en este caso esta diferencia es medida en función a su intensidad. En base a esta definición, se propone un algoritmo que permite mejorar el contraste en la imagen mediante la técnica de estirar su histograma. De esta forma cada imagen tendrá el máximo rango de excursión sobre las intensidades de sus puntos, permitiendo que los valores de umbral al detectar regiones, se superen con más facilidad.
+%
+%Es importante destacar que en proceso todas las imágenes fueron almacenadas usando variables de 8 bits, es decir, que cada valor es representado en un rango comprendido entre 0 y 255.
+%
+%Para el calculo del histograma se obtiene la frecuencia de aparición de cada valor de intensidad en la imagen. Luego, se obtiene el valor de la intensidad para la cual, la cantidad de píxeles cuyo valor sea menor o igual a ésta, no supere el 1\% de la cantidad total de píxeles en la imagen, este punto es llamado percentil bajo. A continuación se repite este proceso par ubicar el percentil alto, el cual corresponde con la intensidad para la cual la cantidad de píxeles inferiores a ésta, no supera el 99\% de la cantidad total de píxeles. Al tener estos valores se aplican los siguientes criterios:
+%
+%\begin{itemize}
+%	\item Todos los píxeles cuyo valor se encuentre por debajo del percentil bajo es igualado a 0.
+%	\item Todos los píxeles cuyo valor se encuentre por encima del percentil alto es igualado a 255.
+%	\item Todos los valores cuyo valor se encuentre entre el percentil bajo y el alto, es reescalado usando la siguiente ecuación: 
+%	\begin{displaymath}
+%		I_{pixel} = \frac{(I_{pixel} - P_{bajo}) \cdot 255}{P_{alto} - P_{bajo}}
+%	\end{displaymath}
+%\end{itemize}
+%
+%
 

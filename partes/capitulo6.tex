@@ -4,15 +4,15 @@
 
 \section{Pruebas en el EuRoC MAV Dataset}
 A continuación se presentan los resultados obtenidos
-utilizando secuencias de datos  $MH\_ 01\_ easy$,  $MH\_ 05\_ difficult$,  $V1\_ 01\_ easy$,
+utilizando las secuencias de datos  $MH\_ 01\_ easy$,  $MH\_ 05\_ difficult$,  $V1\_ 01\_ easy$,
 $V1\_ 02\_ medium$ y  $V1\_ 03\_ difficult$, pertenecientes al EuRoC MAV Dataset.
 
-En primera instancia se presentan los resultados directos del método iterativo de Gauss-Newton, y posteriormente los resultados obtenidos con la inicialización del método utilizando los residuales de rotación provenientes del filtro inercial. Posteriormente se presentan los resultados obtenidos mediante el método RANSAC para la estimación del vector unitario de traslación.
+En primera instancia se presentan los resultados directos del método iterativo de Gauss-Newton, y posteriormente los resultados obtenidos con la inicialización de este método utilizando los residuales de rotación provenientes del filtro inercial. Posteriormente se presentan los resultados obtenidos mediante el método RANSAC para la estimación del vector unitario de traslación.
 
 
-\subsection{Prueba del método de optimización de Gauss-Newton }
+\subsection{Evaluación del método de optimización de Gauss-Newton }
 
-Para evaluar la estimación del método de Gauss-Newton se utilizó la secuencia $V1\_ 01\_ easy$ debido a que es una de las secuencias que presentan movimientos lentos y con mayor solapamiento entre imágenes, lo cual era un requisito para el método utilizado ya que este utiliza un método directo para estimar la rotación y la traslación del robot. La figura \ref{imagen:Resultados/GaussNewton/Posicion} muestra los resultados de la posición estimada, la cual se encuentra escala con el desplazamiento real obtenido del groundtruth. También se muestran los resultados respecto a la orientación de la cámara estimada en la figura \ref{imagen:Resultados/GaussNewton/Orientacion}. En esta prueba se utilizó el detector SIFT y se utilizaron 4 escalas piramidales con un máximo numero de iteraciones fijado a 10 para cada nivel. El tiempo promedio de estimación fue de 0.573243 s.
+Para evaluar la estimación del método de Gauss-Newton se utilizó la secuencia $V1\_ 01\_ easy$ debido a que es una secuencia que presenta movimientos lentos y con mayor solapamiento entre imágenes, lo cual era un requisito para el método utilizado, ya que este utiliza un método directo para estimar la rotación y la traslación del robot. Los resultados de la orientación estimada de la cámara se presentan en la figura \ref{imagen:Resultados/GaussNewton/Orientacion}. En esta prueba se utilizó el detector SIFT y se utilizaron 4 escalas piramidales con un máximo número de iteraciones fijado a 10 para cada nivel. El tiempo promedio de estimación entre cada par de imágenes fue de 0.573243 s.
 
 \begin{figure}[H]
 	\centering
@@ -21,8 +21,8 @@ Para evaluar la estimación del método de Gauss-Newton se utilizó la secuencia
 	\label{imagen:Resultados/GaussNewton/Orientacion}
 \end{figure}
 
-Con estos resultados es posible concluir que el método empleado diverge, ya que la orientación estimada no posee cambios, lo cual también se evidencia en la estimación de la posición de la cámara en el espacio de la figura \ref{imagen:Resultados/GaussNewton/Posicion}.
-
+ La figura \ref{imagen:Resultados/GaussNewton/Posicion} muestra los resultados de la posición estimada, la cual se encuentra escalada con el desplazamiento real obtenido del groundtruth. 
+ 
 
 \begin{figure}[H]
 	\centering
@@ -31,13 +31,12 @@ Con estos resultados es posible concluir que el método empleado diverge, ya que
 	\label{imagen:Resultados/GaussNewton/Posicion}
 \end{figure}
 
-Posteriormente se presentan los resultados de inicializar cada estimacion con el cambio de rotación estimado con el filtro inercial.
+Con estos resultados es posible concluir que el método empleado diverge, ya que la orientación estimada no posee cambios, lo cual también se evidencia en la estimación de la posición de la cámara  en la figura \ref{imagen:Resultados/GaussNewton/Posicion}.
 
-En primer lugar se presenta en la figura \ref{imagen:Resultados/GaussNewtonConResiduales1/ResidualOrientacionHistograma} los residuales inerciales utilizados en la inicialización. En la figura \ref{imagen:Resultados/GaussNewtonConResiduales1/ErrorResidualOrientacion} se observa el error del residual.
+\subsubsection{Inicialización con residuales inerciales}
+Debido a la divergencia del método de Gauss-Newton, se evaluaron nuevamente los resultados del método utilizando los residuales inerciales,  bajo la premisa de obtener estimaciones convergentes al inicializar el método en una estimación del movimiento rotacional más cercana a la real.
 
-También se muestra la posición estimada en la figura \ref{imagen:Resultados/GaussNewtonConResiduales1/Posicion} y el error de la orientación estimada en la figura \ref{imagen:Resultados/GaussNewtonConResiduales1/ErrorOrientacion} .
-
-
+Los residuales inerciales y la orientación del robot provienen del filtro inercial. En la figura \ref{imagen:Resultados/GaussNewtonConResiduales1/ResidualOrientacionHistograma} se presentan los residuales inerciales utilizados en la inicialización. La figura \ref{imagen:Resultados/GaussNewtonConResiduales1/ErrorResidualOrientacion} muestra el error del residual y el error de orientación  se presenta en la figura \ref{imagen:Resultados/GaussNewtonConResiduales1/ErrorOrientacion}.
 
 \begin{figure}[H]
 	\centering
@@ -59,6 +58,8 @@ También se muestra la posición estimada en la figura \ref{imagen:Resultados/Ga
 	\caption{Posición estimada de la cámara con el método de optimización de Gauss-Newton en secuencia $V1\_ 01\_ easy$ empleando residuales inerciales. }
 	\label{imagen:Resultados/GaussNewtonConResiduales1/ErrorOrientacion}
 \end{figure}
+
+Finalmente los resultados de la estimación de la posición se presentan en la figura \ref{imagen:Resultados/GaussNewtonConResiduales1/Posicion}.
 
 \begin{figure}[H]
 	\centering
@@ -95,9 +96,33 @@ También es posible observar en los histogramas de las figuras \ref{imagen:Resul
 
 En esta prueba se tuvo un tiempo promedio de 0.739407 s y se puedo observar que el error porcentual de los residuales es más pequeño. Esto indicó que los residuales de orientación tendían a ser más exactos a mayores rangos de movimiento rotacional, lo cual los hace incompatibles con el método de optimización empleado ya que este requiere rangos mínimos de movimiento, lo cual se comprueba nuevamente con la divergencia de la estimación de la posición.
 
-\subsection{Machine Hall Easy}
+\subsection{Evaluación del método RANSAC}
 
-\begin{table}[htbp]
+En la evaluación del metodo de dos puntos se utilizaron secuencias lentas $MH\_ 01\_ easy$ y $V1\_ 01\_ easy$ y la secuencia rápida $V1\_ 02\_ medium$, para comparar el desempeño de los diferentes detectores ante cambios bruscos de movimiento. 
+
+En este caso se utilizaron los detectores KAZE, AKAZE, ORB, SIFT y SURF en la evaluación. Las siguente secciones presentan los resultados de rendimiento de cada detector.
+
+ Además se presentan las gráficas de posición, error de orientación y residuales de velocidad del detector con mejor estimación del conjunto y del detector con mejor eficiencia computacional. Esto, a manera de resumen debido a que la orientación y los residuales de velocidad en general son similares en cada detector empleado, ya que dependen en mayor medida del filtro inercial.  El conjunto total de gráficas de resultados para cada detector pueden ser visualizadas en la sección de resultados del  \href{https://github.com/Lujano/tesis/tree/master/imagenes/Resultados/}{\underline{repositorio del libro de tesis}}.
+ 
+ 
+En cada sección se presentan los parámetros de configuración utilizados para la ejecución del sistema, como el umbral del RANSAC, el número de frames estáticos, el umbral para las disparidades euclidiana, rotacional y traslacional, y el umbral definido al detector utilizado. 
+ 
+ El umbral del RANSAC representa el valor absoluto del máximo valor permisible del resultado del producto punto del vector de traslación estimado y el vector normal al plano epipolar de un punto característico, para ser clasificado como inlier. Es decir, si el valor absuluto del resultado es menor al umbral, el vector normal generado por la pareja de puntos característicos es clasificado dentro del modelo (inlier).
+ 
+ La disparidad euclidiana es el promedio de distancia en unidades de píxeles de las parejas de puntos característicos en cada imagen. Un frame es considerado estático cuando no es keyframe y la disparidad euclidiana se encuentra por debajo del valor del umbral.
+ 
+ El número de frames estáticos representa el número mínimo de imágenes seguidas que deben ser clasificadas como frame estático para que el movimiento del robot sea clasificado como estático. Cuando esto ultimo ocurre, el bias de la imu es calculado.
+
+ Por su parte, una imagen es considerada como keyframe cuando la disparidad rotacional o traslacional excede su umbral.
+ 
+ En el caso del umbral del detector es el valor de umbral de cada detector en las funciones de Opencv, el cual afecta el número de features detectados. En este caso, este valor umbral es seleccionado de forma tal que el número de features promedio detectados en la secuencia sea similar en todos los detectores. De esta forma, el análisis de datos de los resultados se puede realizar bajo condiciones similares.
+
+\subsubsection{Secuencia Machine Hall Easy}
+
+
+La tabla \ref{Tabla/Parametros/MH_01_easy} presenta los parámetros de configuración inicial del sistema empleados en esta secuencia. Los umbrales seleccionados fueron seleccionados de forma empírica. En particular, el umbral de los detectores es eligido para generar un aproximado de 100 puntos característicos o features por imagen.
+
+\begin{table}[H]
 	\caption{Parámetros de configuración en Secuencia $MH\_ 01\_ easy$.}
 	\begin{tabular}{|l|c|c|c|c|c|}
 		\hline
@@ -113,12 +138,10 @@ En esta prueba se tuvo un tiempo promedio de 0.739407 s y se puedo observar que 
 \end{table}
 
 
+La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos para la secuencia Machine Hall Easy. Se puede observar que los det
 
 
-
-
-
-\begin{table}[htbp]
+\begin{table}[H]
 	\caption{Resultados en Secuencia $MH\_ 01\_ easy$.}
 	\begin{tabular}{|l|c|c|c|c|c|}
 		\hline
@@ -160,7 +183,6 @@ En esta prueba se tuvo un tiempo promedio de 0.739407 s y se puedo observar que 
 \end{figure}
 
 
-
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.6]{Resultados/MH_01_easy/KAZE/ResidualVelocidad2}
@@ -169,33 +191,33 @@ En esta prueba se tuvo un tiempo promedio de 0.739407 s y se puedo observar que 
 \end{figure}
 
 
-
-\subsubsection{AKAZE}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/AKAZE/Posicion}
-	\caption{Posición de la cámara AKAZE}
-	\label{imagen:Resultados/MH_01_easy/AKAZE/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/AKAZE/Orientacion}
-	\caption[Error de Orientación AKAZE]{Error de Orientación AKAZE.}
-	\label{imagen:Resultados/MH_01_easy/AKAZE/Orientacion}
-\end{figure}
-
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/AKAZE/ResidualVelocidad2}
-	\caption{Residual de velocidad AKAZE}
-	\label{imagen:Resultados/MH_01_easy/AKAZE/ResidualVelocidad}
-\end{figure}
+%
+%\subsubsection{AKAZE}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/MH_01_easy/AKAZE/Posicion}
+%	\caption{Posición de la cámara AKAZE}
+%	\label{imagen:Resultados/MH_01_easy/AKAZE/Posicion}
+%\end{figure}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/MH_01_easy/AKAZE/Orientacion}
+%	\caption[Error de Orientación AKAZE]{Error de Orientación AKAZE.}
+%	\label{imagen:Resultados/MH_01_easy/AKAZE/Orientacion}
+%\end{figure}
+%
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/MH_01_easy/AKAZE/ResidualVelocidad2}
+%	\caption{Residual de velocidad AKAZE}
+%	\label{imagen:Resultados/MH_01_easy/AKAZE/ResidualVelocidad}
+%\end{figure}
 
 \subsubsection{ORB}
 
@@ -208,79 +230,79 @@ En esta prueba se tuvo un tiempo promedio de 0.739407 s y se puedo observar que 
 \end{figure}
 
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/ORB/Orientacion}
-	\caption[Error de Orientación ORB]{Error de Orientación ORB.}
-	\label{imagen:Resultados/MH_01_easy/ORB/Orientacion}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/ORB/ResidualVelocidad2}
-	\caption{Residual de velocidad ORB}
-	\label{imagen:Resultados/MH_01_easy/ORB/ResidualVelocidad}
-\end{figure}
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/MH_01_easy/ORB/Orientacion}
+%	\caption[Error de Orientación ORB]{Error de Orientación ORB.}
+%	\label{imagen:Resultados/MH_01_easy/ORB/Orientacion}
+%\end{figure}
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/MH_01_easy/ORB/ResidualVelocidad2}
+%	\caption{Residual de velocidad ORB}
+%	\label{imagen:Resultados/MH_01_easy/ORB/ResidualVelocidad}
+%\end{figure}
 
 
-\subsubsection{SIFT}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SIFT/Posicion}
-	\caption{Posición de la cámara SIFT}
-	\label{imagen:Resultados/MH_01_easy/SIFT/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SIFT/Orientacion}
-	\caption[Error de Orientación SIFT]{Error de Orientación SIFT.}
-	\label{imagen:Resultados/MH_01_easy/SIFT/Orientacion}
-\end{figure}
-
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SIFT/ResidualVelocidad2}
-	\caption{Residual de velocidad SIFT}
-	\label{imagen:Resultados/MH_01_easy/SIFT/ResidualVelocidad}
-\end{figure}
-
-\subsubsection{SURF}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SURF/Posicion}
-	\caption{Posición de la cámara SURF}
-	\label{imagen:Resultados/MH_01_easy/SURF/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SURF/Orientacion}
-	\caption[Error de Orientación SURF]{Error de Orientación SURF.}
-	\label{imagen:Resultados/MH_01_easy/SURF/Orientacion}
-\end{figure}
-
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SURF/ResidualVelocidad2}
-	\caption{Residual de velocidad SURF}
-	\label{imagen:Resultados/MH_01_easy/SURF/ResidualVelocidad}
-\end{figure}
-
+%\subsubsection{SIFT}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SIFT/Posicion}
+%	\caption{Posición de la cámara SIFT}
+%	\label{imagen:Resultados/MH_01_easy/SIFT/Posicion}
+%\end{figure}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SIFT/Orientacion}
+%	\caption[Error de Orientación SIFT]{Error de Orientación SIFT.}
+%	\label{imagen:Resultados/MH_01_easy/SIFT/Orientacion}
+%\end{figure}
+%
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SIFT/ResidualVelocidad2}
+%	\caption{Residual de velocidad SIFT}
+%	\label{imagen:Resultados/MH_01_easy/SIFT/ResidualVelocidad}
+%\end{figure}
+%
+%\subsubsection{SURF}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SURF/Posicion}
+%	\caption{Posición de la cámara SURF}
+%	\label{imagen:Resultados/MH_01_easy/SURF/Posicion}
+%\end{figure}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SURF/Orientacion}
+%	\caption[Error de Orientación SURF]{Error de Orientación SURF.}
+%	\label{imagen:Resultados/MH_01_easy/SURF/Orientacion}
+%\end{figure}
+%
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/MH_01_easy/SURF/ResidualVelocidad2}
+%	\caption{Residual de velocidad SURF}
+%	\label{imagen:Resultados/MH_01_easy/SURF/ResidualVelocidad}
+%\end{figure}
+%
 
 
 \subsection{Vicon Room Easy}
 
-\begin{table}[htbp]
+\begin{table}[H]
 	\caption{Parámetros de configuración en secuencia $V1\_01\_easy$.}
 	\begin{tabular}{|l|c|c|c|c|c|}
 		\hline
@@ -295,7 +317,7 @@ En esta prueba se tuvo un tiempo promedio de 0.739407 s y se puedo observar que 
 	\label{Tabla/Parametros/V1_01_easy}
 \end{table}
 
-\begin{table}[htbp]
+\begin{table}[H]
 	\caption{Resultados en secuencia $V1\_ 01\_ easy$.}
 	\begin{tabular}{|l|c|c|c|c|c|}
 		\hline
@@ -347,32 +369,32 @@ En esta prueba se tuvo un tiempo promedio de 0.739407 s y se puedo observar que 
 
 
 
-\subsubsection{AKAZE}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/AKAZE/Posicion}
-	\caption{Posición de la cámara AKAZE}
-	\label{imagen:Resultados/V1_01_easy/AKAZE/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/AKAZE/Orientacion}
-	\caption[Error de Orientación AKAZE]{Error de Orientación AKAZE.}
-	\label{imagen:Resultados/V1_01_easy/AKAZE/Orientacion}
-\end{figure}
-
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/AKAZE/ResidualVelocidad2}
-	\caption{Residual de velocidad AKAZE}
-	\label{imagen:Resultados/V1_01_easy/AKAZE/ResidualVelocidad}
-\end{figure}
+%\subsubsection{AKAZE}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_01_easy/AKAZE/Posicion}
+%	\caption{Posición de la cámara AKAZE}
+%	\label{imagen:Resultados/V1_01_easy/AKAZE/Posicion}
+%\end{figure}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_01_easy/AKAZE/Orientacion}
+%	\caption[Error de Orientación AKAZE]{Error de Orientación AKAZE.}
+%	\label{imagen:Resultados/V1_01_easy/AKAZE/Orientacion}
+%\end{figure}
+%
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_01_easy/AKAZE/ResidualVelocidad2}
+%	\caption{Residual de velocidad AKAZE}
+%	\label{imagen:Resultados/V1_01_easy/AKAZE/ResidualVelocidad}
+%\end{figure}
 
 \subsubsection{ORB}
 
@@ -385,81 +407,81 @@ En esta prueba se tuvo un tiempo promedio de 0.739407 s y se puedo observar que 
 \end{figure}
 
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/ORB/Orientacion}
-	\caption[Error de Orientación ORB]{Error de Orientación ORB.}
-	\label{imagen:Resultados/V1_01_easy/ORB/Orientacion}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/ORB/ResidualVelocidad2}
-	\caption{Residual de velocidad ORB}
-	\label{imagen:Resultados/V1_01_easy/ORB/ResidualVelocidad}
-\end{figure}
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_01_easy/ORB/Orientacion}
+%	\caption[Error de Orientación ORB]{Error de Orientación ORB.}
+%	\label{imagen:Resultados/V1_01_easy/ORB/Orientacion}
+%\end{figure}
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_01_easy/ORB/ResidualVelocidad2}
+%	\caption{Residual de velocidad ORB}
+%	\label{imagen:Resultados/V1_01_easy/ORB/ResidualVelocidad}
+%\end{figure}
 
+%
+%\subsubsection{SIFT}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SIFT/Posicion}
+%	\caption{Posición de la cámara SIFT}
+%	\label{imagen:Resultados/V1_01_easy/SIFT/Posicion}
+%\end{figure}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SIFT/Orientacion}
+%	\caption[Error de Orientación SIFT]{Error de Orientación SIFT.}
+%	\label{imagen:Resultados/V1_01_easy/SIFT/Orientacion}
+%\end{figure}
+%
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SIFT/ResidualVelocidad2}
+%	\caption{Residual de velocidad SIFT}
+%	\label{imagen:Resultados/V1_01_easy/SIFT/ResidualVelocidad}
+%\end{figure}
 
-\subsubsection{SIFT}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SIFT/Posicion}
-	\caption{Posición de la cámara SIFT}
-	\label{imagen:Resultados/V1_01_easy/SIFT/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SIFT/Orientacion}
-	\caption[Error de Orientación SIFT]{Error de Orientación SIFT.}
-	\label{imagen:Resultados/V1_01_easy/SIFT/Orientacion}
-\end{figure}
-
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SIFT/ResidualVelocidad2}
-	\caption{Residual de velocidad SIFT}
-	\label{imagen:Resultados/V1_01_easy/SIFT/ResidualVelocidad}
-\end{figure}
-
-\subsubsection{SURF}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SURF/Posicion}
-	\caption{Posición de la cámara SURF}
-	\label{imagen:Resultados/V1_01_easy/SURF/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SURF/Orientacion}
-	\caption[Error de Orientación SURF]{Error de Orientación SURF.}
-	\label{imagen:Resultados/V1_01_easy/SURF/Orientacion}
-\end{figure}
-
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SURF/ResidualVelocidad2}
-	\caption{Residual de velocidad SURF}
-	\label{imagen:Resultados/V1_01_easy/SURF/ResidualVelocidad}
-\end{figure}
-
+%\subsubsection{SURF}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SURF/Posicion}
+%	\caption{Posición de la cámara SURF}
+%	\label{imagen:Resultados/V1_01_easy/SURF/Posicion}
+%\end{figure}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SURF/Orientacion}
+%	\caption[Error de Orientación SURF]{Error de Orientación SURF.}
+%	\label{imagen:Resultados/V1_01_easy/SURF/Orientacion}
+%\end{figure}
+%
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_01_easy/SURF/ResidualVelocidad2}
+%	\caption{Residual de velocidad SURF}
+%	\label{imagen:Resultados/V1_01_easy/SURF/ResidualVelocidad}
+%\end{figure}
+%
 
 
 
 \subsection{Vicon Room Medium}
 
 
-\begin{table}[htbp]
+\begin{table}[H]
 	\caption{Parámetros de configuración  en secuencia $V1\_ 02\_ medium$.}
 	\begin{tabular}{|l|c|c|c|c|c|}
 		\hline
@@ -474,7 +496,7 @@ En esta prueba se tuvo un tiempo promedio de 0.739407 s y se puedo observar que 
 	\label{Tabla/Parametros/V1_02_medium}
 \end{table}
 
-\begin{table}[htbp]
+\begin{table}[H]
 	\caption{Resultados  en secuencia $V1\_02\_medium$.}
 	\begin{tabular}{|l|c|c|c|c|c|}
 		\hline
@@ -495,34 +517,34 @@ En esta prueba se tuvo un tiempo promedio de 0.739407 s y se puedo observar que 
 	\end{tabular}
 	\label{Tabla/Resultados/V1_02_medium}
 \end{table}
-
-\subsubsection{KAZE}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/KAZE/Posicion}
-	\caption{Posición de la cámara KAZE}
-	\label{imagen:Resultados/V1_02_medium/KAZE/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/KAZE/Orientacion}
-	\caption[Error de Orientación KAZE]{Error de Orientación KAZE.}
-	\label{imagen:Resultados/V1_02_medium/KAZE/Orientacion}
-\end{figure}
-
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/KAZE/ResidualVelocidad2}
-	\caption{Residual de velocidad KAZE}
-	\label{imagen:Resultados/V1_02_medium/KAZE/ResidualVelocidad}
-\end{figure}
-
+%
+%\subsubsection{KAZE}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_02_medium/KAZE/Posicion}
+%	\caption{Posición de la cámara KAZE}
+%	\label{imagen:Resultados/V1_02_medium/KAZE/Posicion}
+%\end{figure}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_02_medium/KAZE/Orientacion}
+%	\caption[Error de Orientación KAZE]{Error de Orientación KAZE.}
+%	\label{imagen:Resultados/V1_02_medium/KAZE/Orientacion}
+%\end{figure}
+%
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_02_medium/KAZE/ResidualVelocidad2}
+%	\caption{Residual de velocidad KAZE}
+%	\label{imagen:Resultados/V1_02_medium/KAZE/ResidualVelocidad}
+%\end{figure}
+%
 
 
 \subsubsection{AKAZE}
@@ -563,70 +585,70 @@ En esta prueba se tuvo un tiempo promedio de 0.739407 s y se puedo observar que 
 \end{figure}
 
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/ORB/Orientacion}
-	\caption[Error de Orientación ORB]{Error de Orientación ORB.}
-	\label{imagen:Resultados/V1_02_medium/ORB/Orientacion}
-\end{figure}
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/ORB/ResidualVelocidad2}
-	\caption{Residual de velocidad ORB}
-	\label{imagen:Resultados/V1_02_medium/ORB/ResidualVelocidad}
-\end{figure}
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_02_medium/ORB/Orientacion}
+%	\caption[Error de Orientación ORB]{Error de Orientación ORB.}
+%	\label{imagen:Resultados/V1_02_medium/ORB/Orientacion}
+%\end{figure}
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_02_medium/ORB/ResidualVelocidad2}
+%	\caption{Residual de velocidad ORB}
+%	\label{imagen:Resultados/V1_02_medium/ORB/ResidualVelocidad}
+%\end{figure}
 
-
-\subsubsection{SIFT}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SIFT/Posicion}
-	\caption{Posición de la cámara SIFT}
-	\label{imagen:Resultados/V1_02_medium/SIFT/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SIFT/Orientacion}
-	\caption[Error de Orientación SIFT]{Error de Orientación SIFT.}
-	\label{imagen:Resultados/V1_02_medium/SIFT/Orientacion}
-\end{figure}
-
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SIFT/ResidualVelocidad2}
-	\caption{Residual de velocidad SIFT}
-	\label{imagen:Resultados/V1_02_medium/SIFT/ResidualVelocidad}
-\end{figure}
-
-\subsubsection{SURF}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SURF/Posicion}
-	\caption{Posición de la cámara SURF}
-	\label{imagen:Resultados/V1_02_medium/SURF/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SURF/Orientacion}
-	\caption[Error de Orientación SURF]{Error de Orientación SURF.}
-	\label{imagen:Resultados/V1_02_medium/SURF/Orientacion}
-\end{figure}
-
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SURF/ResidualVelocidad2}
-	\caption{Residual de velocidad SURF}
-	\label{imagen:Resultados/V1_02_medium/SURF/ResidualVelocidad}
-\end{figure}
+%
+%\subsubsection{SIFT}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SIFT/Posicion}
+%	\caption{Posición de la cámara SIFT}
+%	\label{imagen:Resultados/V1_02_medium/SIFT/Posicion}
+%\end{figure}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SIFT/Orientacion}
+%	\caption[Error de Orientación SIFT]{Error de Orientación SIFT.}
+%	\label{imagen:Resultados/V1_02_medium/SIFT/Orientacion}
+%\end{figure}
+%
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SIFT/ResidualVelocidad2}
+%	\caption{Residual de velocidad SIFT}
+%	\label{imagen:Resultados/V1_02_medium/SIFT/ResidualVelocidad}
+%\end{figure}
+%
+%\subsubsection{SURF}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SURF/Posicion}
+%	\caption{Posición de la cámara SURF}
+%	\label{imagen:Resultados/V1_02_medium/SURF/Posicion}
+%\end{figure}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SURF/Orientacion}
+%	\caption[Error de Orientación SURF]{Error de Orientación SURF.}
+%	\label{imagen:Resultados/V1_02_medium/SURF/Orientacion}
+%\end{figure}
+%
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SURF/ResidualVelocidad2}
+%	\caption{Residual de velocidad SURF}
+%	\label{imagen:Resultados/V1_02_medium/SURF/ResidualVelocidad}
+%\end{figure}

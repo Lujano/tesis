@@ -77,12 +77,12 @@ Los motores empleados en el diseño del robot fueron 4 motores con escobillas Ma
 \end{table}
 
 
-Entre los datos relevantes en estos cuadros destacan la corriente del motor cuando es aplicado el máximo torque (denominada en inglés "Stall Current"), la cual es utilizada para el diseño de las protecciones y de los puntos de referencia de los drivers; el máximo torque aplicado por el motor (denominada en inglés "Stall Torque");  y  la velocidad sin carga (denominada en inglés "No Load Speed"). Estos 3 parámetros fueron  utilizados para el criterio de selección de la relación de reducción en el sistema de engranajes.
+Entre los datos relevantes en estos cuadros destacan la corriente del motor cuando es aplicado el máximo torque (\textit{Stall Current}), la cual es utilizada para el diseño de las protecciones y de los puntos de referencia de los drivers; el máximo torque aplicado por el motor (\textit{Stall Torque});  y  la velocidad sin carga (\textit{No Load Speed}). Estos tres parámetros fueron  utilizados para el criterio de selección de la relación de reducción en el sistema de engranajes.
 
 \subsection{Caja de velocidad}
 
 
-El diseño de la caja de velocidad está centrado en la elección de la relación de reducción, que a su vez depende de la velocidad máxima y el torque máximo del robot. Para el cálculo del torque final${ T }_{ F }$ en función de la relación de reducción $R$ se emplea la ecuación \ref{eq:Torque}, donde el ${ T }_{ I }$ es el torque inicial del motor.
+El diseño de la caja de velocidad está centrado en la elección de la relación de reducción, que a su vez depende de la velocidad máxima y el torque máximo del robot. Para el cálculo del torque final ${ T }_{ F }$ en función de la relación de reducción $R$ se emplea la ecuación \ref{eq:Torque}, donde el ${ T }_{ I }$ es el torque inicial del motor.
 
 
 \begin{equation}
@@ -173,7 +173,9 @@ Los drivers empleados en el diseño del robot fueron el modelo STA6940M, los cua
 	\label{imagen:Driver}
 \end{figure}
 
-La configuración utilizada en el robot es similar a la recomendada por el fabricante en la figura \ref{imagen:DriverAplicacion}. El diagrama de pines se muestra en la tabla \ref{imagen:DriverTabla}.
+La configuración utilizada en el robot es similar a la recomendada por el fabricante en la figura \ref{imagen:DriverAplicacion}.
+
+% El diagrama de pines se muestra en la tabla \ref{imagen:DriverTabla}.
 
 \begin{figure}[H]
 	\centering		\includegraphics[width=0.7\linewidth]{imagenes/prototipo/InformacionDeAplicacion}
@@ -182,11 +184,11 @@ La configuración utilizada en el robot es similar a la recomendada por el fabri
 \end{figure}
 
 
-\begin{figure}[H]
-	\centering		\includegraphics[width=0.7\linewidth]{imagenes/prototipo/TablaDePines}
-	\caption{Lista de pines del driver STA6940M proveída por el fabricante. }
-	\label{imagen:DriverTabla}
-\end{figure}
+%\begin{figure}[H]
+%	\centering		\includegraphics[width=0.7\linewidth]{imagenes/prototipo/TablaDePines}
+%	\caption{Lista de pines del driver STA6940M proveída por el fabricante. }
+%	\label{imagen:DriverTabla}
+%\end{figure}
 
 Cabe destacar que la protección de sobrecorriente que presenta el driver ($OCP\_ REF$) es cooacada manualmente con un arreglo de resistencias ,al igual que la referencia del PWM ($PWM\_ REF$). En particular, el voltaje de $OCP\_ REF$ debe ser igual al voltaje de la resistencia de sensado cuando el motor presenta su punto de máximo torque, que en este caso es cuando se alcanza la corriente de Stall a 1.6 amperios. En la configuración final se utilizan dos motores en paralelo para cada driver por lo que el ajuste se realizó para 3.2 amperios.
 
@@ -393,17 +395,17 @@ Entre los formatos de escritura disponibles se encuentran YUV420 y ppm (formato 
 
 \subsection{IMU}
 
-La imu utilizada fue la MPU6050, la cual incorpora un giroscopio y acelerometro de 3 ejes. Posee un buffer FIFO de 1024 Bytes y es compatible con el protocolo  I2C. Utiliza conversores analogico-digitales de 16-bits para digitalizar las mediciones del giroscopio y del acelerómetro, empleando un conversor por eje, lo que da un tamaño base de paquete de 12 Bytes para las lecturas de velocidad angular y aceleración. También dispone de un sensor de temperatura que en este caso no es utilizado. 
-Cuando el sensor de temperatura no es utilizado, el buffer de la imu es capaz de guardar cerca de 85 medidas del giroscopio y acelerómetro que pueden ser posteriormente leidas en rafagas para su procesamiento. Esta característica es realmente importante a medida que la frecuencia de muestreo de la IMU aumenta, ya que permite el almacenamiento temporal de las medidas mientras el dispositivo maestro se encuentra realizando otras operaciones, lo cual es consistente en el caso de la Raspberry ya que al ejecutar un sistema operativo no es capaz de mantener el sincronismo de operaciones a frecuencias muy elevadas ( mayores a 100Hz).
+La IMU utilizada fue la MPU6050, la cual incorpora un giroscopio y acelerometro de 3 ejes. Posee un buffer FIFO de 1024 Bytes y es compatible con el protocolo  I2C. Utiliza conversores analogico-digitales de 16-bits para digitalizar las mediciones del giroscopio y del acelerómetro, empleando un conversor por eje, lo que da un tamaño base de paquete de 12 Bytes para las lecturas de velocidad angular y aceleración. También dispone de un sensor de temperatura que en este caso no es utilizado. 
+Cuando el sensor de temperatura no es utilizado, el buffer de la IMU es capaz de guardar cerca de 85 medidas del giroscopio y acelerómetro que pueden ser posteriormente leidas en rafagas para su procesamiento. Esta característica es realmente importante a medida que la frecuencia de muestreo de la IMU aumenta, ya que permite el almacenamiento temporal de las medidas mientras el dispositivo maestro se encuentra realizando otras operaciones, lo cual es consistente en el caso de la Raspberry ya que al ejecutar un sistema operativo no es capaz de mantener el sincronismo de operaciones a frecuencias muy elevadas ( mayores a 100Hz).
 
 La escala de medición es programable. El acelerómetro tiene rangos de $\pm$2g, $\pm$4g, $\pm$8g y $\pm$16g, mientras que el giroscópio tiene un escala de $\pm$250, $\pm$500, $\pm$1000, y $\pm$2000 °/s (DPS).
 
-La MPU6050 posee un oscilador interno que provee la fuente de la frecuencia de muestreo y no permite una fuente de reloj externa para sincronizar estas medidas con la cámara. Este es un punto a destacar con respecto al EuRoc MAV Dataset, ya que en este último si se utiliza una fuente global de reloj que permite el sincronismo de las lecturas de las imágenes de la cámara y de la unidad de medición inercial. Sin embargo, al elevar la frecuencia de muestreo de la IMU a 10 veces más que la de la cámara, se puede utilizar la aproximación de que la primera y ultima de las medidas se encuentran lo suficientemente cercanas en tiempo al momento de captura de la imágenes. De no cumplirse esto, existirian mayores errores de residuales de rotación y de aceleración  entre imágenes.
+La MPU6050 posee un oscilador interno que provee la fuente de la frecuencia de muestreo y no permite una fuente de reloj externa para sincronizar estas medidas con la cámara. Este es un punto a destacar con respecto al EuRoc MAV Dataset, ya que en este último si se utiliza una fuente global de reloj que permite el sincronismo de las lecturas de las imágenes de la cámara y de la unidad de medición inercial. Sin embargo, al elevar la frecuencia de muestreo de la IMU a 10 veces más que la de la cámara, se puede utilizar la aproximación de que la primera y ultima de las medidas se encuentran lo suficientemente cercanas en tiempo al momento de captura de la imágenes. De no cumplirse esto, existirían mayores errores de residuales de rotación y de aceleración  entre imágenes.
  
 
 \subsection{Disposición de sensores visuales inerciales}
 
-En la figura \ref{imagen:Raspbery} se presenta la   y la imu MPU6050 conectadas a la Raspberry Pi 3.  La matriz de transformación de la cámara a la imu fue calculada de forma aproximada.
+En la figura \ref{imagen:Raspbery} se presenta la   y la IMU MPU6050 conectadas a la Raspberry Pi 3.  La matriz de transformación de la cámara a la IMU fue calculada de forma aproximada.
 
 
 
@@ -416,7 +418,7 @@ En la figura \ref{imagen:Raspbery} se presenta la   y la imu MPU6050 conectadas 
 
 \subsection{Raspberry Pi 3 y dataset local}
 
-El dataset local realizado fue implementado utilizando C++ como lenguaje de programación, y empleando una Raspberry Pi 3 para la adquisición de los datos de la imu y de la cámara, y utilizando 4 hilos de ejecución.
+El dataset local realizado fue implementado utilizando C++ como lenguaje de programación, y empleando una Raspberry Pi 3 para la adquisición de los datos de la IMU y de la cámara, y utilizando 4 hilos de ejecución.
 
 El diagrama de la figura \ref{imagen:diagramaMultithread} presenta el esquema basico de la distribución de tareas entre hilos.
 
@@ -427,9 +429,9 @@ El diagrama de la figura \ref{imagen:diagramaMultithread} presenta el esquema ba
 	\label{imagen:diagramaMultithread}
 \end{figure}
 
-Como se observa ene l diagrama, el comienzo de grabación de dataset es iniciado por el Joystick cuando se pulsa el botón "Start". Luego se procede al cuadro de "Esperar Captura de Imagen" el cual está relacionado con la espera de la excepción generada por el MMLA cuando se encuentra disponible una nueva imagen. Esta excepción ocurre a la frecuencia de muestreo a la que se ha configurado la cámara (20 Hz en nuestro caso) y está encargado de generar la señal de captura de los datos de la IMU y de odometría del robot. La finalización del dataset ocurre cuando se presiona el botón "Start" nuevamente.
+Como se observa en el diagrama, el comienzo de grabación del dataset es iniciado por el Joystick cuando se pulsa el botón comienzo (\textit{Start}). Luego se procede al cuadro de ``Esperar Captura de Imagen'' el cual está relacionado con la espera de la excepción generada por el MMLA cuando se encuentra disponible una nueva imagen. Esta excepción ocurre a la frecuencia de muestreo a la que se ha configurado la cámara (20 Hz en nuestro caso) y está encargado de generar la señal de captura de los datos de la IMU y de odometría del robot. La finalización del dataset ocurre cuando se presiona el botón de comienzo nuevamente.
 
-En este punto es importante acotar que la velocidad de escritura del disco empleado tiene gran importancia para el correcto guardado de los datos de imagen, imu y odometría. En este caso se utilizó una memoria microSD clase 10  U1, que permite velocidades de escritura de hasta 10 MB/s. Sin embargo, se utiliza un hilo dedicado a la escritura en memoria y un buffer dinámico de guardo temporal de los datos en RAM, como medida de solución a posibles retrasos en la respuesta del disco.
+En este punto es importante acotar que la velocidad de escritura del disco empleado tiene gran importancia para el correcto guardado de los datos de imagen, IMU y odometría. En este caso se utilizó una memoria microSD clase 10  U1, que permite velocidades de escritura de hasta 10 MB/s. Sin embargo, se utiliza un hilo dedicado a la escritura en memoria y un buffer dinámico para almacenar temporalmente los datos  en RAM. Esto se emplea como medida de solución a posibles retrasos en la respuesta del disco.
 
 
 \subsection{Presupuesto de datasets visuales inerciales}
@@ -540,7 +542,7 @@ Donde ${ \theta  }_{ p }$ representa la ultima posición angular obtenida. N es 
 
 \section{Calibración de la cámara}
 
-Para utilizar el modelo pinhole de la cámara deben ser conocidos los parámetros intrísecos de la ésta como la distancia focal y el punto principal. Una forma básica de realizar una aproximación de estos parámetros es suponer que el centro de la imagen es el punto principal, de forma que :
+Para utilizar el modelo \textit{pinhole} de la cámara deben ser conocidos los parámetros intrísecos de la ésta como la distancia focal y el punto principal. Una forma básica de realizar una aproximación de estos parámetros es suponer que el centro de la imagen es el punto principal, de forma que :
 \begin{equation}
 { c }_{ x }\quad =\quad w/2\quad ;\quad { c }_{ x }\quad =\quad h/2
 \end{equation}
@@ -551,9 +553,9 @@ Donde w y h son las dimensiones horizontal y vertical de la imagen, respectivame
 	{ f }_{ x }\quad =\quad \frac { F }{ W } w\quad ;\quad { f }_{ y }\quad =\quad \frac { F }{ H } h\quad ;
 \end{equation}
 
-Donde $F$ es la distancia focal en milímetros del sensor de la cámara y $W$ y $H$ el ancho y altura del sensor en unidades métricas. Estos valores son proveídos por el fabricante.
+Donde $F$ es la distancia focal en milímetros del sensor de la cámara y $W$ y $H$ el ancho y altura del sensor en unidades métricas. Estos valores son proporcionados por el fabricante.
 
-Sin embargo, para tareas como reconstrucción 3D, estas aproximaciones no son los suficientemente precisas. Por tanto, la calibración de la cámara es un proceso en el cual son analizadas las imágenes u observaciones  realizadas a un mismo patrón u objeto en diferentes perspectivas, donde utilizando un método de optimización se determinaran los parámetros intrínsecos óptimos  que mejor se ajustan a las observaciones. Este es un proceso complejo, pero es facilitado utilizando las funciones de calibración de OpenCV.
+Sin embargo, para tareas como reconstrucción 3D, estas aproximaciones no son los suficientemente precisas. Por tanto, la calibración de la cámara es un proceso en el cual son analizadas las imágenes u observaciones  adquiridas de un mismo patrón u objeto en diferentes perspectivas, donde utilizando un método de optimización se determinaran los parámetros intrínsecos óptimos  que mejor se ajustan a las observaciones. Este es un proceso complejo, pero es facilitado utilizando las funciones de calibración de OpenCV.
 
 
 

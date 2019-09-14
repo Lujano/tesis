@@ -19,7 +19,7 @@ Cuando el sensor utilizado es una cámara se denomina odometría visual (VO, del
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{EstadoDelArte/Odo/ResultadosOdo.png}
-	\caption{Trayectorías estimadas por métodos de fusión de datos de encoders y una unidad de medición inercial en un vehículo móvil en \cite{odo}. La trayectoría \textit{physical model} es la obtenida directamente por los encoders del vehiculo. La trayectoria \textit{corrected model} es la que se obtiene a través de la fusión de los datos}
+	\caption{Trayectorías estimadas por métodos de fusión de datos de encoders y una unidad de medición inercial en un vehículo móvil en \cite{odo}. La trayectoría \textit{physical model} es la obtenida directamente por los encoders del vehiculo. La trayectoria \textit{corrected model} es la que se obtiene a través de la fusión de los datos.}
 	\label{fig:OdoEstimacion}
 \end{figure}
 
@@ -27,13 +27,49 @@ En el caso de sensores inerciales, la orientación del robot puede obtenerse med
 
 \section{SLAM}
 
-El SLAM comparte un objetivo en común con la odometría el cual estimar la trayectoria del robot. Sin embargo, la estimación  del movimiento del robot se hace en conjunto con la construcción del mapa del entorno en el que se mueve el mismo, ya que ambos se encuentran estrechamente relacionados.
+El SLAM comparte un objetivo en común con la odometría el cual comprende estimar la trayectoria del robot. Sin embargo, la estimación  del movimiento del robot se hace en conjunto con la construcción del mapa del entorno en el que se mueve el mismo, ya que ambos se encuentran estrechamente relacionados.
 
-Esta relación entre mapa  y localización del robot  fue inicialmente establecida en un artículo presentado en el \textit{International Symposium on Robotics Research}\cite{HarrisAndStephens} cuando inicialmente se estableció que integrar la estimación de la localización y el mapeado del entorno de forma simultánea en un mismo problema, tenía un resultado convergente, cuya convergencia además aumentaba al existir un número mayor de puntos de referencia. 
+EL proceso de creación del mapa consiste en adquirir la información por medio de los sensores del robot y procesarla correctamente para crear una representación 3D o 2D de su entorno. Por su parte, la localización se refiere a la estimación de la posición del robot relativo a un marco de referencia determinado. SLAM comprende a los sistemas que efectúan ambos procesos de forma simultánea.
 
-Durante el periodo 1986-2004, se introdujeron métodos de estimación probabilistas  como los filtros extendidos de Kalman (EKF, del inglés: \textit{Extended Kalman Filter}), filtros de partículas Rao-Blackwell y estimaciones de máxima verosimilitud.
+Esta relación entre mapa  y localización del robot  fue inicialmente establecida en un artículo presentado en el \textit{International Symposium on Robotics Research} \cite{HarrisAndStephens} cuando se estableció que integrar la estimación de la localización y el mapeado del entorno de forma simultánea en un mismo problema, tenía un resultado convergente, cuya convergencia además aumentaba al existir un número mayor de puntos de referencia. 
 
-También se tienen vertientes de SLAM ligadas a la inteligencia artificial, toma de decisiones de robots y teoría de control, la cual es conocida como SLAM activo en la que resaltan \cite{Feder, Smith, Makarenko, Stachniss}.
+
+Durante el periodo 1986-2004, se introdujeron métodos de estimación probabilistas  como los filtros extendidos de Kalman (EKF, del inglés: \textit{Extended Kalman Filter}), filtros de partículas Rao-Blackwell y estimaciones de máxima verosimilitud. Además surgieron vertientes de SLAM ligadas a la inteligencia artificial, toma de decisiones de robots y teoría de control, la cual es conocida como SLAM activo. Algunos trabajos resaltantes son \cite{Feder, Smith, Makarenko, Stachniss}.
+
+EL SLAM moderno se compone de dos módulos principales: el módulo de sensores (front end) y el módulo de optimización (back end). El front end se encarga de extraer la información de los sensores y realizar las estimaciones a \textit{priori} del movimiento. El modulo de back-end se encarga de refinar las estimaciones utilizando optimización no lineal para generar una solución mas robusta y consistente entre el mapa y el recorrido. Este último modulo comprende la estimación \textit{posteriori} (MAP, del inglés: \textit{Maximum a Posteriori}). Estos módulos se ilustran en la figura \ref{fig:SLAMStruct}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{EstadoDelArte/SLAM/FrontEndAndBackEnd.png}
+	\caption{Estructura general del SLAM. El \textit{front-end} representa el modulo de procesamiento de datos generando las estimaciones \textit{a priori} del movimiento. El modulo de back-end se encarga de realizar la optimización global del recorrido y del mapa \cite{Cadena}}.
+	\label{fig:SLAMStruct}
+\end{figure}
+
+%A lo largo de los años se ha mejorado la eficiencia y robustez en la optimización del problema, por ejemplo con métodos de suavizaje por factorización [20, 44],
+%filtrado para marginalizar estimaciones y resumir la información pasada [74], y op-
+%timización de redes de mapas y posiciones estimadas [37, 80]. Todos estos enfoques
+%utilizan MAP como método de estimación, y a menudo usan un grafo de factores
+%(factor graph) para representar la información conocida del problema, con nodos
+%que corresponden a las variables (las posiciones del robot y las posiciones de los
+%puntos de referencia) y factores que definen las dependencias existentes entre dis-
+%tintos nodos. La interpretación como un grafo de factores tiene como ventaja darle
+%organización, generalidad y perspectiva al problema de SLAM, además de permitir
+%la fácil inclusión de las restricciones existentes al problema de optimización.
+
+
+Como se muestra en la figura \ref{fig:SLAMGraph}, el problema de SLAM se puede considerar como un grafo de factores. Los círculos azules representan posiciones estimadas del robot en tiempos consecutivos, los círculos verdes representan las posiciones de los puntos de referencia y los círculos rojos representan las variables secundarias asociadas a la percepción de los puntos de referencia. Los factores están mostrados como cuadrados negros: donde las “u” representan restricciones correspondientes a odometría, “v” factores correspondientes a las observaciones, “c” cierres de lazo, y “p” factores pasados.
+
+
+%GTSAM [21], g2o [48], Ceres [2], iSAM [44] y SLAM++ [68]
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{EstadoDelArte/SLAM/Graph.png}
+	\caption{Problema de SLAM representado como un grafo de factores \cite{Cadena}}.
+    \label{fig:SLAMGraph}
+\end{figure}
+
 
 
 \section{Odometría  y SLAM visual}
@@ -49,6 +85,7 @@ En general, estos métodos utilizan detectores y extractores de puntos de inter�
 La estimación de movimiento se realiza en función de estas parejas, utilizando el modelo de la cámara. Para ello pueden ser utilizados métodos de optimización que minimizan del error de reproyección entre parejas, o métodos como RANSAC, que permite hallar la transformación de movimiento que reduce el error de un subconjunto de las parejas y ademas permite el filtrado de las correspondencias erróneas.
 
 Los métodos de SLAM visual indirectos hacen un seguimiento de las correspondencias a través de múltiples imágenes para realizar una construcción del mapa del entorno del robot. En general se utilizan grafos para estimar la mejor relación entre mapa y movimiento del robot a medida que se introducen nuevas observaciones. Un sistema de localización y mapeo simultáneo destacado se presenta a continuación:
+
 
 \subsubsection{ORB-SLAM}
 
@@ -66,6 +103,40 @@ lo cual permitió aumentar de forma considerable la información disponible del 
 
 \subsection{Métodos directos}
 
+Los métodos directos visuales utilizan la intensidad de luz capturada en la imagen de la cámara como para estimar el movimiento del robot basado en algún método que utilice como función de error la diferencia fotométrica entre imágenes. 
+
+Los métodos directos pueden utilizar toda la información disponible al utilizar toda la región de la imagen, o parte de ella al procesar sólo parches de la imagen. Las reconstrucciones generadas pueden ser densas, en los casos en que se utiliza la mayor cantidad de información posible, y semidensas cuando se utilizan parches. En las reconstrucciones densas los mapas generados presentan una reconstrucción bastante completa del entorno y de sus objetos, y en los mapas semidensos se genera una reconstruccion parcial.
+
+Por supuesto que el costo computacional es mayor al analizar mayor cantidad de regiones en la imagen, por lo que en general los metodos de SLAM utilizan reconstrucciones semidensas, mientras que los métodos de reconstrucción offline utilizan reconstrucción densa.
+
+Entre los métodos indirectos de SLAM visual más representativos en los últimos
+años están: 
+
+\subsubsection{DSO}
+
+%Newcombe et al. propusieron un método completamente directo de SLAM vi-
+%sual llamado DTAM [60]. DTAM utiliza la información de todos los pı́xeles de la
+%imagen (enfoque completamente denso) para generar reconstrucciones continuas
+%del entorno. La alta demanda computacional que esto exige hace posible la ejecu-
+%ción en tiempo real de DTAM si se emplea una unidad de procesamiento gráfico
+%(GPU, del inglés: Graphics Processing Unit).
+%La estimación de la posición de la cámara (con seis grados de libertad) es
+%obtenida a partir de la alineación densa de imágenes sintéticas generadas a partir
+%del mapa reconstruido, minimizando el error fotométrico entre ellas. De forma
+%paralela, a partir de imágenes nuevas se realiza un proceso de actualización yCapı́tulo 2. Revisión del estado del arte
+%23
+%expansión del modelo denso del mapa, que permite alcanzar precisión de sub-
+%pı́xeles en las reconstrucciones obtenidas.
+%Figura 2.7: Reconstrucciones de los mapas de profundidad densos utilizando
+%DTAM [60].
+%DTAM optimiza el mapa reconstruido asumiendo continuidad en el espacio,
+%por lo que las coordenadas en tres dimensiones de todos los pı́xeles pueden ser
+%calculadas. La inicialización del mapa se realiza usando mediciones entre pares de
+%imágenes, al igual que PTAM, usando el algoritmo de cinco-puntos. Al obtener
+%la primera imagen clave del sistema, la reconstrucción cambia al enfoque denso
+%explicado. En la Figura 2.7 se observan resultados de DTAM utilizando una GPU
+%NVIDIA GTX 480, un procesador i7 quad-core CPU y una cámara RGB con
+%resolución de 640 x 480.
 
 \section{Fusión visual-inercial }
 A lo largo de los años se han utilizado diferentes tipos de sensores y sus combinaciones para realizar la localización y mapeo simultáneo (SLAM) de un robot móvil en su entorno. Entre éstos se encuentran láseres de rango, sonares, sistemas de posicionamiento global (GPS), unidades de medición inercial (IMU) y cámaras monoculares, estereoscópicas, y RGB-D.\\
@@ -144,8 +215,6 @@ Este enfoque no requiere una etapa de inicialización, por lo que es posible uti
 
 
 Para evaluar la robustez de este algoritmo, el laboratorio utilizo su propio vehiculo aerio, equipado con dos cámaras con disparo global sincronizadas con el trigger de la imu. En el contexto del trabajo sólo fue utilizado una de las cámaras. El Ground truth fue proveido por un sistema externo de captura de movimiento. En esta configuración se fijó la tasa de las medidas de la IMU a 200Hz y la de las cámaras a 20Hz. Los resultados de la estimación se presentan en las figuras \ref{fig:RovioOrientacion} y  \ref{fig:RovioTrayectoria}.
-
-
 
 \begin{figure}[H]
 	\centering
