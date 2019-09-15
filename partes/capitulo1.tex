@@ -4,13 +4,13 @@
 
 En los últimos años se han logrado avances importantes en el área de navegación y exploración con robots móviles, lo que ha permitido ampliar las aplicaciones de éstos en espacios áereos, terrestres y acuáticos en diversas disciplinas, facilitando la extracción de información de estos entornos incluso en lugares de difícil acceso.
 
-En este sentido el Grupo de Investigación y Desarrollo en Mecatrónica de la USB \textit{(GIDM)} ha venido desarrollando un conjunto de proyectos relacionados con los sistemas de navegación de robots autónomos y de operación remota de éstos desde el año 2013, donde el área de odometría y SLAM se ha venido trabajando con profundo interés por ser fundamental en la recopilación de información de diferentes ambientes y por abrir la puerta a la automatización de la exploración y navegación de vehículos autónomos.
+En este sentido el Grupo de Investigación y Desarrollo en Mecatrónica de la USB \textit{(GIDM)} ha venido desarrollando un conjunto de proyectos relacionados con los sistemas de navegación de robots autónomos y de operación remota de éstos desde el año 2013, donde el área de odometría y SLAM (del inglés: \textit{Simultaneous Localization and Mapping}) se ha venido trabajando con profundo interés por ser fundamental en la recopilación de información de diferentes ambientes y por abrir la puerta a la automatización de la exploración y navegación de vehículos autónomos.
 
 \section{Antecedentes}
 
-En el \textit{GIDM} se han realizado grandes avances en el empleo de vehículos operados remotamente \textit{ROV} (del inglés: Remotely Operated Vehicles) y de vehículos autónomos submarinos \textit{AUV} (del inglés: Automated Underwater Vehicles) para actividades de investigación, exploración e inspección de ambientes no estructurados.
+En el \textit{GIDM} se han realizado grandes avances en el empleo de vehículos operados remotamente \textit{ROV} (del inglés: \textit{Remotely Operated Vehicles}) y de vehículos autónomos submarinos \textit{AUV} (del inglés: \textit{Automated Underwater Vehicles}) para actividades de investigación, exploración e inspección de ambientes no estructurados.
 
-En este sentido, en el año \textit{Certad, N.} \cite{novel} propuso en el 2013 como proyecto de maestría, un algoritmo de localización y mapeo simultáneo para un vehículo terrestre de locomoción diferencial instrumentado con sensores exteroceptivos, realimentado por odometría, el cual utilizó Webots como herramienta de simulación y fue implementado utlizando Matlab.
+En este sentido, en el año 2013 \textit{Certad, N.} \cite{novel} propuso como proyecto de maestría un algoritmo de localización y mapeo simultáneo para un vehículo terrestre de locomoción diferencial instrumentado con sensores exteroceptivos, realimentado por odometría, el cual utilizó Webots como herramienta de simulación y fue implementado utlizando Matlab \textregistered.
 
 
 \begin{figure}[H]
@@ -20,14 +20,14 @@ En este sentido, en el año \textit{Certad, N.} \cite{novel} propuso en el 2013 
 	\label{imagen:Antecedentes/Certad}
 \end{figure}
 
-En el 2017, \textit{Gonzáles M.} \cite{manuel} desarrolló un sistema de reconstrucción de modelos de ambiente utilizando un sensor de Detección y Localización por Láser (LIDAR, del inglés: Laser Imaging Detection and Ranging). Esta implementación se realizó utilizando ROS como núcleo de control y procesamiento de datos y \textit{Cartographer} como herramienta de manejo de la localización y mapeo del prototipo empleado. Los modelos reconstruidos como el presentado en la figura \ref{imagen:Antecedentes/octomaps} se realizaron utilizando estructuras probabilísticas de ocupación llamadas \textit{octomaps}, las cuales permitieron la disminución del uso de recursos de memoria en la reconstrucción de grandes entornos.
+En el 2017, \textit{Gonzales M.} \cite{manuel} desarrolló un sistema de reconstrucción de modelos de ambiente utilizando un sensor de Detección y Localización por Láser (LIDAR, del inglés: \textit{Laser Imaging Detection and Ranging}). Esta implementación se realizó utilizando ROS como núcleo de control y procesamiento de datos y \textit{Cartographer} como herramienta de manejo de la localización y mapeo del prototipo empleado. Los modelos reconstruidos como el presentado en la figura \ref{imagen:Antecedentes/octomaps} se realizaron utilizando estructuras probabilísticas de ocupación llamadas \textit{octomaps}, las cuales permitieron la disminución del uso de recursos de memoria en la reconstrucción de grandes entornos.
 
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.3\textwidth]{Antecedentes/mapa2D}
 	\includegraphics[width=0.3\textwidth]{Antecedentes/mapa2DReal}
-	\caption{Resultados de trayectoria y reconstrucción de mapas obtenidos en \cite{manuel}. A la izquierda se presenta el mapa original obtenido y a la derecha se presenta superpuesto al diagrama del edificio real.}
+	\caption[Resultados de trayectoria y reconstrucción de mapas obtenidos en \cite{manuel}] {Resultados de trayectoria y reconstrucción de mapas obtenidos en \cite{manuel}. A la izquierda se presenta el mapa original obtenido y a la derecha se presenta superpuesto al diagrama del edificio real.}
 	\label{imagen:Antecedentes/mapa2D}
 \end{figure}
 
@@ -35,8 +35,9 @@ En el 2017, \textit{Gonzáles M.} \cite{manuel} desarrolló un sistema de recons
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\textwidth]{Antecedentes/Octomaps}
-	\caption{Reconstrucción en tres dimensiones utilizando octomaps obtenidos
-		en  \cite{manuel}}
+	\caption[Reconstrucción en tres dimensiones utilizando octomaps obtenidos
+	en  \cite{manuel}]{Reconstrucción en tres dimensiones utilizando octomaps obtenidos
+		en  \cite{manuel}.}
 	\label{imagen:Antecedentes/octomaps}
 \end{figure}
 
@@ -46,8 +47,9 @@ Sturm de la Universidad Tecnológica de Múnich.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\textwidth]{Antecedentes/fabio}
-	\caption{Gráficas X vs Y del movimiento de la cámara de la secuencia
-		freiburg2 xyz. Izquierda: gráfica del movimiento real de la cámra en X y Y.
+	\caption[Gráficas X vs Y del movimiento de la cámara de la secuencia
+	freiburg2 xyz] {Gráficas X vs Y del movimiento de la cámara de la secuencia
+		freiburg2 xyz. Izquierda: gráfica del movimiento real de la cámara en X y Y.
 		Derecha: gráfica del movimiento estimado de la cámara en X y Y.}
 	\label{imagen:Antecedentes/fabio}
 \end{figure}
@@ -56,7 +58,7 @@ Sturm de la Universidad Tecnológica de Múnich.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\textwidth]{Antecedentes/said}
-	\caption{Prototipo UAV desarrollado en  \cite{said}}
+	\caption[Prototipo UAV desarrollado en  \cite{said}]{Prototipo UAV desarrollado en  \cite{said}}
 	\label{imagen:said}
 \end{figure}
 
@@ -64,8 +66,8 @@ Adicional a estos prototipos,  el \textit{GIDM} cuentan con otras plataformas m�
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=0.7\textwidth]{openrov}
-	\caption{Robot móvil OpenROV}
+	\includegraphics[width=0.7\textwidth]{openrov2}
+	\caption[Robot móvil OpenROV]{Robot móvil OpenROV}
 	\label{imagen:openrov}
 \end{figure}
 
@@ -73,7 +75,7 @@ Si bien se cuenta con un conjunto de plataformas robóticas adaptadas para tarea
 
 \section{Justificación y planteamiento del problema}
 
-El Grupo de Investigación y Desarrollo en Mecatrónica de la USB ha venido desarrollando un conjunto de proyectos relacionados con los sistemas de navegación de robots autónomos y de operación remota de estos. Actualmente cuentan con un vehículo submarino OpenROV 2.8 de operación remota (ROUV, por sus siglas en inglas - Remotely Operated Underwater Vehicle) el cual posee una IMU y tiene la capacidad de transmitir videos en alta definición. Es por ello que los trabajos más recientes de este grupo han estado enfocados al área de visión por computadora con la finalidad de mejorar el desempeño y las capacidades de los sistemas de control de vehículos como el OpenROV 2.8, y para realizar exploración submarina como reconstrucciones y muestreos de arrecifes, embarcaciones hundidas y fauna submarina. Entre estos trabajos se encuentra el proyecto de grado de Fabio Morales, en el cual se implementó un sistema de odometría visual para resolver el problema de SLAM en robots submarinos basado en una cámara monocular, y el proyecto de grado de  Armando Longart, en el cual se desarrollaron módulos de procesamiento de imágenes y video para aplicaciones subacuáticas.
+El Grupo de Investigación y Desarrollo en Mecatrónica de la USB ha venido desarrollando un conjunto de proyectos relacionados con los sistemas de navegación de robots autónomos y de operación remota de estos. Actualmente cuentan con un vehículo submarino OpenROV 2.8 de operación remota (ROUV, por sus siglas en inglés - Remotely Operated Underwater Vehicle) el cual posee una IMU y tiene la capacidad de transmitir videos en alta definición. Es por ello que los trabajos más recientes de este grupo han estado enfocados al área de visión por computadora con la finalidad de mejorar el desempeño y las capacidades de los sistemas de control de vehículos como el OpenROV 2.8, y para realizar exploración submarina como reconstrucción y muestreo de arrecifes, naufragios y fauna submarina. Entre estos trabajos se encuentra el proyecto de grado de Fabio Morales, en el cual se implementó un sistema de odometría visual para resolver el problema de SLAM en robots submarinos basado en una cámara monocular, y el proyecto de grado de  Armando Longart, en el cual se desarrollaron módulos de procesamiento de imágenes y video para aplicaciones subacuáticas.
 
 Dichos trabajos permiten la posibilidad de ser integrados  y optimizados en un nuevo sistema de SLAM visual más robusto, y que además permita ser extendido para robots en diferentes entornos, automatizando la generación de las operaciones de mapeo y localización del vehículo.
 
@@ -86,15 +88,15 @@ Analizar e implementar un sistema automatizado que permita la localización de u
 \subsection{Objetivos Específicos}
 
 \begin{itemize}
-	\item  Revisar la localización y mapeo simultáneo en robots móviles (aéreos, terrestres y submarinos) basados en cámara.
+	\item  Revisar la  bibliografía relacionada a la localización y mapeo simultáneo en robots móviles (aéreos, terrestres y submarinos) basados en cámara.
 	\item Revisar los métodos de procesamiento de imágenes convenientes para los algoritmos de SLAM visual en función del entorno del robot móvil.
 	\item Implementar un sistema de SLAM visual.
-	\item Generar la posición, trayectoria del robot móvil y  un mapa 3D aproximado de su entorno.
+	\item Obtener la posición, trayectoria del robot móvil y  un mapa 3D aproximado de su entorno.
 \end{itemize}
 
 \section{Estructura del trabajo}
 
-El presente trabajo se encuentra estructurado en 7 capítulos. El \textit{\textbf{Capítulo 1}} describe el problema a resolver, y los antecedentes y objetivos del proyecto.
+El presente trabajo se encuentra estructurado en 7 capítulos. El \textit{\textbf{Capítulo 1}} describe el problema a resolver, conjuntamente con los antecedentes más relevantes y los objetivos del proyecto.
 
 El estado del arte de la odometría y el SLAM visual inercial es detallado en el \textit{\textbf{Capítulo 2}} donde se presentan los trabajos recientes y avances importantes en esta área de investigación. Posteriormente , en base a las técnicas y algoritmos estudiados, se propone un esquema de odometría visual inercial.
 

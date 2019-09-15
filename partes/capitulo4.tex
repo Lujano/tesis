@@ -32,7 +32,7 @@ Por último, el módulo de filtrado se encarga de seleccionar las mejores pareja
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{Implementacion/DiagramaCPU2.png}
-	\caption{Esquema general del módulo de extracción de parejas en CPU.}
+	\caption[Esquema general del módulo de extracción de parejas en CPU]{Esquema general del módulo de extracción de parejas en CPU.}
 	\label{fig:my_label}
 \end{figure}
 
@@ -40,7 +40,7 @@ Por último, el módulo de filtrado se encarga de seleccionar las mejores pareja
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{Implementacion/DiagramaGPU2.png}
-	\caption{Esquema general del módulo de extracción de parejas en GPU.}
+	\caption[Esquema general del módulo de extracción de parejas en GPU]{Esquema general del módulo de extracción de parejas en GPU.}
 	\label{fig:my_label}
 \end{figure}
 
@@ -56,7 +56,7 @@ En la figura 15 se muestran la detección de puntos característicos  para una i
 	\includegraphics[scale=0.3]{Implementacion/DeteccionCaracteristicas/Imagen1KAZE.png}
 	\includegraphics[scale=0.3]{Implementacion/DeteccionCaracteristicas/Imagen1AKAZE.png}
 	\includegraphics[scale=0.3]{Implementacion/DeteccionCaracteristicas/Imagen1ORB.png}
-	\caption{Extracción de características.}
+	\caption[Extracción de características]{Extracción de características.}
 	\label{fig:my_label}
 \end{figure}
 
@@ -64,7 +64,7 @@ En la figura 15 se muestran la detección de puntos característicos  para una i
 \subsubsection{Filtrado de parejas}
 
 
-Una vez se han identificado los puntos característicos en la imagen i y la i+1, se calculan los descriptores de las características detectadas y se procede a encontrar las correspondencias entre las dos imágenes. Para esta tarea se utiliza el método de vecinos más cercanos (KNN, del inglés:K Nearest Neighbors), el cual puede a su vez puede implementarse con algoritmos del tipo fuerza bruta o FLANN (del inglés: Fast Library for Approximate Nearest Neighbors). Este método se encarga de comparar el descriptor de un punto de referencia presente en la imagen i con los descriptores de los puntos de referencia de la imagen i+1 y determinar los k descriptores más cercanos al descriptor de la imagen i . En este caso la métrica de distancia puede corresponder a la distancia euclidiana en el caso de descriptores vectoriales, o a la distancia Hamming en el caso de descriptores binarios.\\
+Una vez se han identificado los puntos característicos en la imagen i y la i+1, se calculan los descriptores de las características detectadas y se procede a encontrar las correspondencias entre las dos imágenes. Para esta tarea se utiliza el método de vecinos más cercanos (KNN, del inglés: \textit{K Nearest Neighbors}), el cual puede a su vez puede implementarse con algoritmos del tipo fuerza bruta o FLANN (del inglés: \textit{Fast Library for Approximate Nearest Neighbors}). Este método se encarga de comparar el descriptor de un punto de referencia presente en la imagen i con los descriptores de los puntos de referencia de la imagen i+1 y determinar los k descriptores más cercanos al descriptor de la imagen i . En este caso la métrica de distancia puede corresponder a la distancia euclidiana en el caso de descriptores vectoriales, o a la distancia Hamming en el caso de descriptores binarios.\\
 
 En esta implementación se utiliza k = 2, y se considera como una correspondencia aquellos casos donde la distancia entre el descriptor de la característica presente en la imagen i (D1) y su vecino más cercano en la imagen i+1 resulta 0.8 veces menor a la distancia entre D1 y el siguiente vecino de la imagen i+1. El valor de 0.8 se establece en correspondencia con el método de extracción de parejas de alta calidad establecido por David G. Lowe en \cite{Lowe}.\\
 
@@ -76,7 +76,7 @@ En la figura 16 se presenta un ejemplo del filtrado  utilizando el detector SIFT
 	
 	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1.png}
 	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen2.png}
-	\caption{Salida del modulo de filtrado luego de la prueba de simetría.}
+	\caption[Salida del modulo de filtrado luego de la prueba de simetría]{Salida del modulo de filtrado luego de la prueba de simetría.}
 	\label{fig:my_label}
 \end{figure}
 
@@ -91,7 +91,7 @@ tomando k = 12,  generando por tanto 144 celdas y teniendo un total de 112 parej
 	
 	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1Grid12.png}
 	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1Grid6.png}
-	\caption{División de la imagen en celdas.}
+	\caption[División de la imagen en celdas]{División de la imagen en celdas.}
 	\label{fig:my_label}
 \end{figure}
 
@@ -104,7 +104,7 @@ Las figuras 18 y 19 presentan el resultado final del modulo de filtrado de parej
 	
 	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1BEST12.png}
 	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen2BEST12.png}
-	\caption{Filtrado de parejas con 144 celdas.}
+	\caption[Filtrado de parejas con 144 celdas]{Filtrado de parejas con 144 celdas.}
 	\label{fig:my_label}
 \end{figure}
 
@@ -113,7 +113,7 @@ Las figuras 18 y 19 presentan el resultado final del modulo de filtrado de parej
 	
 	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1BEST6.png}
 	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen2BEST6.png}
-	\caption{Filtrado de parejas con 36 celdas.}
+	\caption[Filtrado de parejas con 36 celdas]{Filtrado de parejas con 36 celdas.}
 	\label{fig:my_label}
 \end{figure}
 
@@ -181,7 +181,7 @@ Donde $(X1, Y1, Z1)$ y $(X2, Y2, Z2)$ representan la ubicación en el espacio de
 Debemos recordar que a los puntos de la forma $s (X, Y, Z)$, donde $s$ es un factor de escala, le corresponden el mismo pixel de $(u,v)$ de proyección en la imagen de la cámara. Por tanto, la ecuación \ref{eq:TransformacionCAM1CAM2Reproyeccion} implica que incluso teniendo como medidas los valores de la ubicación  $(u1,v1)$ y $(u2,v2)$ de la ubicación de la pareja de puntos característicos, y conociendo la matriz de rotación ${ R }_{ 1 }^{ 2 }$, que representa el cambio de orientación de la cámara de la imagen 1 a la imagen 2, no es posible determinar la traslación real de la cámara ${ P }_{ 1 }^{ 2 }$, excepto por un factor de escala, sin conocer la profundidad $Z1$ o $Z2$ de la ubicación en el espacio de la característica.
 
 
-\section{Selección de keyframes}
+\section{Selección de \textit{keyframes}}
 
 La implementación de imágenes claves o \textit{keyframes} se hace debido a que la estimación de movimiento es más precisa cuando se tiene disparidad entre las imagenes, y debido a que la carga computacional es menor en procesar un numero selecto de imágenes que la totalidad de ellas.
 

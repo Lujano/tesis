@@ -8,18 +8,16 @@ En este capítulo se presenta una revisión teórica del estado actual de las in
 
 En los últimos años se han presentado diferentes alternativas para estimar de forma efectiva el movimiento que efectúa un robot dentro de un entorno desconocido, lo cual se conoce como odometría.
 
-En general, la odometría se encarga de estimar el movimiento de un agente (vehículo, humano, robot) utilizando sensores que pueden medir los cambios del movimiento del mismo, tales como unidades de medición inercial, láseres, cámaras, etc.
-
-El caso más simple de odometría es obtener la trayectoria recorrida por un robot diferencial a través de la lectura de los encoders del robot. Los encoders miden el desplazamiento de cada rueda, con lo que es posible obtener la orientación y el desplazamiento del robot considerando el movimiento en un plano.
+En general, la odometría se encarga de estimar el movimiento de un agente (vehículo, humano, robot) utilizando sensores que pueden medir los cambios del movimiento del mismo, tales como unidades de medición inercial, láseres, cámaras, etc. El caso más simple de odometría es obtener la trayectoria recorrida por un robot diferencial a través de la lectura de los encoders del robot. Los encoders miden el desplazamiento de cada rueda, con lo que es posible obtener la orientación y el desplazamiento del robot considerando el movimiento en un plano.
 
 Cuando se utiliza un sensor láser, la odometría se obtiene estimando el movimiento del robot mediante el escaneo y seguimiento de las medidas realizadas por el sensor (figura \ref{imagen:Antecedentes/octomaps}).
 
-Cuando el sensor utilizado es una cámara se denomina odometría visual (VO, del inglés Visual Odometry) y en este caso se puede tener la configuración monocular, en la cual se utiliza una cámara, y la configuración estéreo, en la que se emplean dos cámaras para la estimación de movimiento. VO tiene ventajas respecto a la odometría estimada mediante encoders, ya que no es afectada por deslizamientos de la rueda sobre la superficie en la que se desplaza el robot, y en general provee trayectorias mas precisas con errores relativos de posición de 0.1 a 2 \%. Esto hace a la odometría visual un suplemento incluso a otros sistemas de navegación como el sistema de posicionamiento global (GPS), y odometría láser.
+Cuando el sensor utilizado es una cámara se denomina odometría visual (VO, del inglés Visual Odometry) y en este caso se puede tener la configuración monocular, en la cual se utiliza una cámara, y la configuración estéreo, en la que se emplean dos cámaras para la estimación de movimiento. VO tiene ventajas respecto a la odometría estimada mediante encoders, ya que no es afectada por deslizamientos de la rueda sobre la superficie en la que se desplaza el robot, y en general provee trayectorias mas precisas con errores relativos de posición de 0.1 a 2 \%. Esto hace a la odometría visual un complemento incluso a otros sistemas de navegación como el sistema de posicionamiento global (GPS), y odometría láser.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{EstadoDelArte/Odo/ResultadosOdo.png}
-	\caption{Trayectorías estimadas por métodos de fusión de datos de encoders y una unidad de medición inercial en un vehículo móvil en \cite{odo}. La trayectoría \textit{physical model} es la obtenida directamente por los encoders del vehiculo. La trayectoria \textit{corrected model} es la que se obtiene a través de la fusión de los datos.}
+	\caption[Trayectorías estimadas por métodos de fusión de datos de encoders y una unidad de medición inercial en un vehículo móvil en \cite{odo}]{Trayectorías estimadas por métodos de fusión de datos de encoders y una unidad de medición inercial en un vehículo móvil en \cite{odo}. La trayectoría \textit{physical model} es la obtenida directamente por los encoders del vehiculo. La trayectoria \textit{corrected model} es la que se obtiene a través de la fusión de los datos.}
 	\label{fig:OdoEstimacion}
 \end{figure}
 
@@ -27,21 +25,21 @@ En el caso de sensores inerciales, la orientación del robot puede obtenerse med
 
 \section{SLAM}
 
-El SLAM comparte un objetivo en común con la odometría el cual comprende estimar la trayectoria del robot. Sin embargo, la estimación  del movimiento del robot se hace en conjunto con la construcción del mapa del entorno en el que se mueve el mismo, ya que ambos se encuentran estrechamente relacionados.
+El problema de localización y mapeado simultáneo plantea la estimación del movimiento de un cuerpo y la construcción de un mapa de su entorno. El SLAM comparte un objetivo en común con la odometría el cual comprende estimar la trayectoria del robot. Sin embargo, la estimación  del movimiento del robot se hace en conjunto con la construcción del mapa, ya que ambos se encuentran estrechamente relacionados.
 
-EL proceso de creación del mapa consiste en adquirir la información por medio de los sensores del robot y procesarla correctamente para crear una representación 3D o 2D de su entorno. Por su parte, la localización se refiere a la estimación de la posición del robot relativo a un marco de referencia determinado. SLAM comprende a los sistemas que efectúan ambos procesos de forma simultánea.
+El proceso de creación del mapa consiste en adquirir la información por medio de los sensores del robot y procesarla correctamente para crear una representación 3D o 2D de su entorno. Por su parte, la localización se refiere a la estimación de la posición del robot relativo a un marco de referencia determinado. SLAM comprende a los sistemas que efectúan ambos procesos de forma simultánea.
 
 Esta relación entre mapa  y localización del robot  fue inicialmente establecida en un artículo presentado en el \textit{International Symposium on Robotics Research} \cite{HarrisAndStephens} cuando se estableció que integrar la estimación de la localización y el mapeado del entorno de forma simultánea en un mismo problema, tenía un resultado convergente, cuya convergencia además aumentaba al existir un número mayor de puntos de referencia. 
 
 
 Durante el periodo 1986-2004, se introdujeron métodos de estimación probabilistas  como los filtros extendidos de Kalman (EKF, del inglés: \textit{Extended Kalman Filter}), filtros de partículas Rao-Blackwell y estimaciones de máxima verosimilitud. Además surgieron vertientes de SLAM ligadas a la inteligencia artificial, toma de decisiones de robots y teoría de control, la cual es conocida como SLAM activo. Algunos trabajos resaltantes son \cite{Feder, Smith, Makarenko, Stachniss}.
 
-EL SLAM moderno se compone de dos módulos principales: el módulo de sensores (front end) y el módulo de optimización (back end). El front end se encarga de extraer la información de los sensores y realizar las estimaciones a \textit{priori} del movimiento. El modulo de back-end se encarga de refinar las estimaciones utilizando optimización no lineal para generar una solución mas robusta y consistente entre el mapa y el recorrido. Este último modulo comprende la estimación \textit{posteriori} (MAP, del inglés: \textit{Maximum a Posteriori}). Estos módulos se ilustran en la figura \ref{fig:SLAMStruct}.
+El SLAM moderno se compone de dos módulos principales: el módulo de sensores (front end) y el módulo de optimización (back end). El front end se encarga de extraer la información de los sensores y realizar las estimaciones a \textit{priori} del movimiento. El modulo de back-end se encarga de refinar las estimaciones utilizando optimización no lineal para generar una solución mas robusta y consistente entre el mapa y el recorrido. Este último modulo comprende la estimación \textit{posteriori} (MAP, del inglés: \textit{Maximum a Posteriori}). Estos módulos se ilustran en la figura \ref{fig:SLAMStruct}.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{EstadoDelArte/SLAM/FrontEndAndBackEnd.png}
-	\caption{Estructura general del SLAM. El \textit{front-end} representa el modulo de procesamiento de datos generando las estimaciones \textit{a priori} del movimiento. El modulo de back-end se encarga de realizar la optimización global del recorrido y del mapa \cite{Cadena}}.
+	\caption[Estructura general del SLAM]{Estructura general del SLAM. El \textit{front-end} representa el modulo de procesamiento de datos generando las estimaciones \textit{a priori} del movimiento. El modulo de back-end se encarga de realizar la optimización global del recorrido y del mapa \cite{Cadena}}.
 	\label{fig:SLAMStruct}
 \end{figure}
 
@@ -57,7 +55,7 @@ EL SLAM moderno se compone de dos módulos principales: el módulo de sensores (
 %la fácil inclusión de las restricciones existentes al problema de optimización.
 
 
-Como se muestra en la figura \ref{fig:SLAMGraph}, el problema de SLAM se puede considerar como un grafo de factores. Los círculos azules representan posiciones estimadas del robot en tiempos consecutivos, los círculos verdes representan las posiciones de los puntos de referencia y los círculos rojos representan las variables secundarias asociadas a la percepción de los puntos de referencia. Los factores están mostrados como cuadrados negros: donde las “u” representan restricciones correspondientes a odometría, “v” factores correspondientes a las observaciones, “c” cierres de lazo, y “p” factores pasados.
+Como se muestra en la figura \ref{fig:SLAMGraph}, el problema de SLAM se puede considerar como un grafo de factores. Los círculos azules representan posiciones estimadas del robot en tiempos consecutivos, los círculos verdes representan las posiciones de los puntos de referencia y los círculos rojos representan las variables secundarias asociadas a la percepción de los puntos de referencia. Los factores están mostrados como cuadrados negros: donde  “u” representan las restricciones correspondientes a odometría, “v” factores correspondientes a las observaciones, “c” cierres de lazo, y “p” factores pasados.
 
 
 %GTSAM [21], g2o [48], Ceres [2], iSAM [44] y SLAM++ [68]
@@ -89,9 +87,7 @@ Los métodos de SLAM visual indirectos hacen un seguimiento de las correspondenc
 
 \subsubsection{ORB-SLAM}
 
-En el año 2015 Tardos et al. \cite{orbSlam}, pertenecientes al Instituto de Investigación de Ingeniería de Aragón, en la Universidad de Zaragoza,  desarrollaron ORB-SLAM, el cual es el sistema de código abierto de SLAM visual más robusto basado en métodos indirectos.
-
-Su nombre se debe a la utilización del detector ORB para garantizar la ejecución en tiempo real, ya que es el detector con el tiempo de extracción de características más corto, con 33 ms.
+En el año 2015 Tardos et al. \cite{orbSlam}, pertenecientes al Instituto de Investigación de Ingeniería de Aragón, en la Universidad de Zaragoza,  desarrollaron ORB-SLAM, el cual es el sistema de código abierto de SLAM visual más robusto basado en métodos indirectos. Su nombre se debe a la utilización del detector ORB para garantizar la ejecución en tiempo real.
 
 ORB-SLAM utiliza tres hilos en CPU para resolver de forma simultánea la estimación de movimiento, el mapeado local y el cierre de lazo.
 
@@ -113,6 +109,8 @@ Entre los métodos indirectos de SLAM visual más representativos en los último
 años están: 
 
 \subsubsection{DSO}
+
+En el año 2017 fue desarrollado DSO (\textit{Direct Sparse Odometry) \cite{DSO}, la cual es una implementación enfocada en reconstrucciones dispersas en tiempo real usando CPU, lo cual permite ser empleado en dispositivos como computadoras portátiles.
 
 %Newcombe et al. propusieron un método completamente directo de SLAM vi-
 %sual llamado DTAM [60]. DTAM utiliza la información de todos los pı́xeles de la
@@ -141,7 +139,7 @@ años están:
 \section{Fusión visual-inercial }
 A lo largo de los años se han utilizado diferentes tipos de sensores y sus combinaciones para realizar la localización y mapeo simultáneo (SLAM) de un robot móvil en su entorno. Entre éstos se encuentran láseres de rango, sonares, sistemas de posicionamiento global (GPS), unidades de medición inercial (IMU) y cámaras monoculares, estereoscópicas, y RGB-D.\\
 
-Cada tipología en la que son empleados estos sensores tiene sus limitaciones. Por ejemplo, los sistemas en que los se utiliza GPS están restringidos a ser utilizados al aire libre, lo que conlleva a que no puedan ser implementados en vehículos submarinos. Los láseres ofrecen información precisa del entorno pero tienen problemas en superficies reflectivas o absorbentes, además que pueden representar un alto costo,  y  ser lo suficientemente pesados como para ser descartados en aplicaciones con  vehículos aéreos. Por su parte, las medidas de sonares que son aplicados en espacios terrestres pueden tener alta incertidumbre ya que depende de la forma de las superficies y de su orientación relativa al sensor, mientras que las unidades de medición inercial presentan deriva y ruido en sus mediciones. En el caso de las cámaras, la  calidad de sus datos tienen una alta dependencia a las condiciones de iluminación. \\
+Cada tipología en la que son empleados estos sensores tiene sus limitaciones. Por ejemplo, los sistemas en que los se utiliza GPS están restringidos a ser utilizados al aire libre, lo que conlleva a que no puedan ser empleados en vehículos submarinos. Los láseres ofrecen información precisa del entorno pero tienen problemas en superficies reflectivas o absorbentes, además que pueden representar un alto costo,  y  ser lo suficientemente pesados como para ser descartados en aplicaciones con  vehículos aéreos. Por su parte, las medidas de sonares que son aplicados en espacios terrestres pueden tener alta incertidumbre ya que depende de la forma de las superficies y de su orientación relativa al sensor, mientras que las unidades de medición inercial presentan deriva y ruido en sus mediciones. En el caso de las cámaras, la  calidad de sus datos tienen una alta dependencia a las condiciones de iluminación. \\
 
 La implementación de estas últimas en sistemas de localización y mapeo simultáneo ha tenido gran atención en los últimos años debido a su capacidad para capturar una gran cantidad de información sobre el entorno. Es por esto que se han desarrollado métodos de SLAM visual basados tanto en cámaras monoculares como estereoscópicas, utilizando para ello métodos directos, a través de la detección y emparejamiento de características en las imágenes; método indirectos, basados en el calculo del error fotométrico entre imágenes; y semi-directos, utilizando una combinación de métodos directos e indirectos.\\
 
@@ -157,7 +155,7 @@ Por otro lado,  las frecuencias de muestreo de las cámaras convencionales está
 
 \section{SLAM visual inercial}
 
-Los sistemas de SLAM y de odometría tienden a ser más robustos a medida que se añaden más sensores al sistema. Este es el caso del SLAM visual inercial, donde se utiliza visión estéreo o monocular en conjunto con una unidad de medición inercial, para estimar el movimiento del robot y el mapa de su entorno.  La complementariedad de los sensores permite que puedan ser implementados metodos visuales directos en conjunto con las mediciones de la imu, las cuales se relacionan directamente con la orientación del robot y los cambios de rotación. Además, al utilizar las medidas de aceleración de la IMU es posible obtener el factor de escala absoluta  del mapa estimado y de la trayectoria del robot, la cual no es posible de obtener en los sistemas meramente monoculares. Esto fue demostrado a través a través de un filtro EKF que permite la fusión de los datos inerciales y visuales en el artículo de  Scaramuzza et al. \cite{scaramuzza}.
+Los sistemas de SLAM y de odometría tienden a ser más robustos a medida que se añaden más sensores al sistema. Este es el caso del SLAM visual inercial, donde se utiliza visión estéreo o monocular en conjunto con una unidad de medición inercial, para estimar el movimiento del robot y el mapa de su entorno.  La complementariedad de los sensores permite que puedan ser implementados metodos visuales directos en conjunto con las mediciones de la IMU, las cuales se relacionan directamente con la orientación del robot y los cambios de rotación. Además, al utilizar las medidas de aceleración de la IMU es posible obtener el factor de escala absoluta  del mapa estimado y de la trayectoria del robot, la cual no es posible de obtener en los sistemas meramente monoculares. Esto fue demostrado a través a través de un filtro EKF que permite la fusión de los datos inerciales y visuales en el artículo de  Scaramuzza et al. \cite{scaramuzza}.
 
 A continuación se presentan los trabajos más destacados en Odometría y SLAM visual inercial.
 
@@ -169,7 +167,7 @@ El sistema de SLAM visual-inercial basado en keyframes y optimización no lineal
 Este enfoque integra de forma estrecha las medidas de la IMU y los keyframes provenientes de visión estéreo, utilizando optimización de Gauss-Newton donde los estados del sistema incluyen la posición, velocidad y orientación del robot, así como también los sesgos de la IMU. El detector que se empleó es el detector de Harriz multiescala con optimización en el espacio SSE , combinado con el descriptor BRISK. 
 
 La visión estereo es utilizada para realizar la triangulación de los puntos característicos en cada frame, los cuales son insertados a un mapa local. Luego se aplica el algoritmo de fuerza bruta para encontrar la correspondecia con el mapa global de landmarks. En este caso, se utiliza outlier rejection aplicnado es test de chi-cuadrado a las coordenadas de la imagen utilizando las poses obtenidas previamente mediante la integración de las medidas de la IMU.
-En este enfoque se utiliza una ventana deslizante para mantener los frames más reciente, y la selección de keyframes se basa en una medida heuristica: si la razón entre el area ocupado por todo los puntos emparejados contra el area ocupaa por todos los puntos detectados está entre 50 a 60, el frame es considerado como keyframe.
+En este enfoque se utiliza una ventana deslizante para mantener las imágenes (\textit{frames}) más recientes, y la selección de imágenes claves (\textit{keyframes}) se basa en una medida heurística: si la razón entre el área ocupado por todo los puntos emparejados contra el area ocupa por todos los puntos detectados está entre 50 a 60, el frame es considerado como keyframe.
 
 Debido a que se utiliza keyframes, se pueden tener frames separados arbitrariamente en tiempo. 
 
@@ -178,7 +176,7 @@ En este trabajo comparan las estimaciones realizadas entre los diferentes acople
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{EstadoDelArte/Okvis/OkvisResultados.png}
-	\caption{Resultados comparativos de la estimación del recorrido de un vehículo  en . El enfoque Tighly-couple representa el método implementado en Okvis. El enfoque Loosely-Coupled representa un acople en menor grado de las medidas de IMU y cámara. Visión-only representa el enfoque basado sólo en cámara. El groundtruth es mostrado en gris.}
+	\caption[Resultados comparativos de la estimación del recorrido de un vehículo  en \cite{okvis}]{Resultados comparativos de la estimación del recorrido de un vehículo  en \cite{okvis} . El enfoque Tighly-couple representa el método implementado en Okvis. El enfoque Loosely-Coupled representa un acople en menor grado de las medidas de IMU y cámara. Visión-only representa el enfoque basado sólo en cámara. El groundtruth es mostrado en gris.}
 	\label{fig:RovioEstimacion}
 \end{figure}
 
@@ -186,16 +184,16 @@ En este trabajo comparan las estimaciones realizadas entre los diferentes acople
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{EstadoDelArte/Okvis/OkvisMapa.png}
-	\caption{Vista ortonormal de la reconstrucción del camino realizo en un edificio. Las trayectorias se encuentran manualmente alineada con el plano de la estructura.}
+	\caption[Vista ortonormal de la reconstrucción del camino realizado en un edificio utilizando OKVIS]{Vista ortonormal de la reconstrucción del camino realizado en un edificio utilizando OKVIS. Las trayectorias se encuentran manualmente alineada con el plano de la estructura.}
 	\label{fig:RovioEstimacionMapa}
 \end{figure}
 
 
 \subsection{ROVIO}
 
-La Odometría Visual-Inercial Robusta (ROVIO, del inglés: Robust Visual Inertial Odometry) es un algoritmo desarrollado en 2015 en el laboratorio de sistemas autónomos del ETH.
+La Odometría Visual-Inercial Robusta (ROVIO, del inglés: \textit{Robust Visual Inertial Odometry}) es un algoritmo desarrollado en 2015 en el laboratorio de sistemas autónomos del ETH.
 
-Este algoritmo utiliza directamente como error la intensidad de los píxeles, utilizando parches en las  imágenes y aplicando la estructura piramidal de 4 niveles y manteniendo un alto nivel de robustez. Los parches utilizados están fuertemente acoplados con un filtro Kalman Extendido (EKF, del inglés: Extended Kalman Filters) y los landmarks 3D son siempre estimados con respecto a la pose actual de la cámara. lo que es conocido como el enfoque robocéntrico. Además, estos landmarks son parametrizados para lograr una na forma compacta de representación y de esa forma mejorar el desempeño computacional del algoritmo. 
+Este algoritmo utiliza directamente como error la intensidad de los píxeles, utilizando parches en las  imágenes y aplicando la estructura piramidal de 4 niveles y manteniendo un alto nivel de robustez. Los parches utilizados están fuertemente acoplados con un filtro Kalman Extendido (EKF, del inglés: \textit{Extended Kalman Filters}) y los landmarks 3D son siempre estimados con respecto a la pose actual de la cámara. lo que es conocido como el enfoque robocéntrico. Además, estos landmarks son parametrizados para lograr una na forma compacta de representación y de esa forma mejorar el desempeño computacional del algoritmo. 
 
 El filtro empleado fusiona los datos de aceleración y velocidad angular de la IMU, y los parámetros extrinsecos de la cámara y los biases de la IMU son coestimados. 
 
@@ -206,20 +204,17 @@ Cuando la predicción de la ubicación del parche se encuentra fuera de la regi�
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{EstadoDelArte/Rovio/RovioEstimacion.png}
-	\caption{Captura del entorno de trabajo de la odometría visual-inercial. Las elipses encierran la zona donde se predice la localización de las características. Las elipses estrechas corresponden a las características de mayor incertidumbre, entre las que se encuentran las características nuevas. Luego de la estimación efectuada por el EKF, la localización de la característica es mostrada como un punto verde. Los números en color verde corresponden al número de veces que ha sido seguida la características (1 si es una nueva característica).}
+	\caption[Captura del entorno de trabajo de la odometría visual-inercial]{Captura del entorno de trabajo de la odometría visual-inercial. Las elipses encierran la zona donde se predice la localización de las características. Las elipses estrechas corresponden a las características de mayor incertidumbre, entre las que se encuentran las características nuevas. Luego de la estimación efectuada por el EKF, la localización de la característica es mostrada como un punto verde. Los números en color verde corresponden al número de veces que ha sido seguida la características (1 si es una nueva característica).}
 	\label{fig:RovioEstimacion}
 \end{figure}
 
 
-Este enfoque no requiere una etapa de inicialización, por lo que es posible utilizar este sistema de estimación de estados directamente.
-
-
-Para evaluar la robustez de este algoritmo, el laboratorio utilizo su propio vehiculo aerio, equipado con dos cámaras con disparo global sincronizadas con el trigger de la imu. En el contexto del trabajo sólo fue utilizado una de las cámaras. El Ground truth fue proveido por un sistema externo de captura de movimiento. En esta configuración se fijó la tasa de las medidas de la IMU a 200Hz y la de las cámaras a 20Hz. Los resultados de la estimación se presentan en las figuras \ref{fig:RovioOrientacion} y  \ref{fig:RovioTrayectoria}.
+Este enfoque no requiere una etapa de inicialización, por lo que es posible utilizar este sistema de estimación de estados directamente. Para evaluar la robustez de este algoritmo, el laboratorio utilizo su propio vehiculo aerio, equipado con dos cámaras con disparo global sincronizadas con el trigger de la IMU. En el contexto del trabajo sólo fue utilizado una de las cámaras. El Ground truth fue proveido por un sistema externo de captura de movimiento. En esta configuración se fijó la tasa de las medidas de la IMU a 200Hz y la de las cámaras a 20Hz. Los resultados de la estimación se presentan en las figuras \ref{fig:RovioOrientacion} y  \ref{fig:RovioTrayectoria}.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{EstadoDelArte/Rovio/RovioOrientacion.png}
-	\caption{Ángulos RPY estimados (rojo) del UAV comparado con los obtenidos mediante el sistema de captura de movimiento (azul). La incertidumbre de la estimación se muestra con lineas discontinuas. }
+	\caption[Ángulos RPY estimados utilizando ROVIO]{Ángulos RPY estimados (rojo) del UAV comparado con los obtenidos mediante el sistema de captura de movimiento (azul). La incertidumbre de la estimación se muestra con lineas discontinuas. }
 	\label{fig:RovioOrientacion}
 \end{figure}
 
@@ -227,14 +222,14 @@ Para evaluar la robustez de este algoritmo, el laboratorio utilizo su propio veh
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{EstadoDelArte/Rovio/RovioTrayectoria.png}
-	\caption{Trayectoria estimada (rojo) del UAV comparado con el groundtruth (azul) proveniente del sistema de captura de movimiento .}
+	\caption[Trayectoria estimada utilizando ROVIO]{Trayectoria estimada (rojo) del UAV comparado con el groundtruth (azul) proveniente del sistema de captura de movimiento .}
 	\label{fig:RovioTrayectoria}
 \end{figure}
 
 
 
 \section{EuRoC MAV Dataset}
-El conjunto de datos de prueba empleado en este trabajo corresponde al al EuRoC MAV Dataset \cite{0}, el cual es un dataset de referencia que es utilizado para evaluar diferentes algoritmos de SLAM visual-inercial y que dispone de 11 secuencias de datos. \\
+El conjunto de datos de prueba empleado en este trabajo corresponde al al EuRoC MAV Dataset \cite{euroc}, el cual es un dataset de referencia que es utilizado para evaluar diferentes algoritmos de SLAM visual-inercial y que dispone de 11 secuencias de datos. \\
 
 
 El EuRoC MAV Dataset contiene imágenes estéreo sincronizadas con las medidas de la IMU,  y un groundtruth preciso que es estimado utilizando el láser Leica y el sistema de captura de movimiento Vicon. Los datos fueron recolectados utilizando robot aéreo el cual se presenta en la figura \ref{fig:robotEuroc}. \\
@@ -242,7 +237,7 @@ El EuRoC MAV Dataset contiene imágenes estéreo sincronizadas con las medidas d
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{Implementacion/robotEuroc.png}
-	\caption{Robot aéreo empleado en la recolección de datos en el EuRoC MAV Dataset .}
+	\caption[Robot aéreo empleado en la recolección de datos en el EuRoC MAV Dataset]{Robot aéreo empleado en la recolección de datos en el EuRoC MAV Dataset.}
 	\label{fig:robotEuroc}
 \end{figure}
 
@@ -251,27 +246,27 @@ Las cámaras empleadas en estas secuencias capturan datos a 20Hz, mientras que l
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{Implementacion/DiagramaIMUCamara.png}
-	\caption{Sincronización entre la IMU y la cámara.}
+	\caption[Sincronización entre la IMU y la cámara]{Sincronización entre la IMU y la cámara.}
 	\label{fig:sincronizacionEuroc}
 \end{figure}
 
-También se dispone de la calibración de los parámetros intrísecos y extrinsecos del sistema. En la figura \ref{fig:extrinsecosEuroc} se muestran los parámetros extrínsecos relevantes para este trabajo. En este caso, se utiliza la transformación de cuerpo rígido $T{B-CAM0}$, que relaciona el sistema de referencia de la IMU (Body, B) y el sistema de referencia de la cámara CAM0. 
+También se dispone de la calibración de los parámetros intrísecos y extrinsecos del sistema. En la figura \ref{fig:extrinsecosEuroc} se muestran los parámetros extrínsecos relevantes para este trabajo. En este caso, se utiliza la transformación de cuerpo rígido $T_{BCAM0}$, que relaciona el sistema de referencia de la IMU (Body, B) y el sistema de referencia de la cámara CAM0. 
 
 
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{Euroc/Enlaces.png}
-	\caption{Parámetros extrínsecos del sistema}
+	\caption[Parámetros extrínsecos del sistema]{Parámetros extrínsecos del sistema.}
 	\label{fig:extrinsecosEuroc}
 \end{figure}
 
-Las secuencias de este conjuntos de datos se encuentran clasificadas en "fácil", "media", y "difícil",  en función de la media de la velocidad lineal y angular del robot utilizado y de las condiciones visuales y niveles de iluminación. En la figura \ref{fig:tablaDeCaracteristicas} se presentan las características de las secuencias. 
+Las secuencias de este conjuntos de datos se encuentran clasificadas en ``fácil'', ``media'', y ``difícil'',  en función de la media de la velocidad lineal y angular del robot utilizado y de las condiciones visuales y niveles de iluminación. En la figura \ref{fig:tablaDeCaracteristicas} se presentan las características de las secuencias. 
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{Euroc/TabladeCaracteristicas.png}
-	\caption{Características de las secuencias de datos del EuRoC MAV Dataset}
+	\caption[Características de las secuencias de datos del EuRoC MAV Dataset]{Características de las secuencias de datos del EuRoC MAV Dataset.}
 	\label{fig:tablaDeCaracteristicas}
 \end{figure}
 
@@ -285,7 +280,7 @@ En la figura \ref{fig:vicon} se muestra el segundo ambiente correspondiente a un
 	\centering
 	\includegraphics[scale=0.2]{Euroc/MachineHall1.png}
 	\includegraphics[scale=0.2]{Euroc/MachineHall2.png}
-	\caption{Imágenes de la secuencia de datos correspondiente a la sala de máquinas.}
+	\caption[Imágenes de la secuencia de datos correspondiente a la sala de máquinas]{Imágenes de la secuencia de datos correspondiente a la sala de máquinas.}
 	\label{fig:machineHall}
 \end{figure}
 
@@ -294,7 +289,7 @@ En la figura \ref{fig:vicon} se muestra el segundo ambiente correspondiente a un
 	\centering
 	\includegraphics[scale=0.2]{Euroc/Vicon0.png}
 	\includegraphics[scale=0.2]{Euroc/Vicon1.png}
-	\caption{Imágenes de la secuencia de datos correspondiente a la habitación Vicon.}
+	\caption[Imágenes de la secuencia de datos correspondiente a la habitación Vicon]{Imágenes de la secuencia de datos correspondiente a la habitación Vicon.}
 	\label{fig:vicon}
 \end{figure}
 
@@ -305,7 +300,7 @@ En la figura \ref{fig:vicon} se muestra el segundo ambiente correspondiente a un
 	\includegraphics[scale=0.2]{Euroc/Pointcloud1.png}
 	\includegraphics[scale=0.2]{Euroc/Pointcloud2.png}
 	\includegraphics[scale=0.2]{Euroc/Pointcloud3.png}
-	\caption{Nubes de puntos de la habitación utilizada en el EuRoC MAV Dataset}
+	\caption[Nubes de puntos de la habitación utilizada en el EuRoC MAV Dataset]{Nubes de puntos de la habitación utilizada en el EuRoC MAV Dataset.}
 	\label{fig:pointcloudEuroc}
 \end{figure}
 

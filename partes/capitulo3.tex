@@ -27,7 +27,7 @@ Cabe destacar que el sistema de coordenadas de la imagen tiene como unidad el p�
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.7\textwidth]{coordenadas_imagen}
-	\caption[Coordenadas de la imágen.]{Coordenadas de la imagen.}
+	\caption[Coordenadas de la imagen.]{Coordenadas de la imagen.}
 	\label{imagen:coordenadas_imagen}
 \end{figure}
 
@@ -144,7 +144,7 @@ Sin embargo, este dectector a pesar de no sufrir variaciones ante cambios de tra
 \footnotetext{\url{https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_feature2d/py_sift_intro/py_sift_intro.html}}
 %https://docs.opencv.org/3.0-beta/doc/py_tutorials/py_feature2d/py_sift_intro/py_sift_intro.html
 
-El problema básico a resolver es utilizar ventanas más grandes para detectar esquinas más grande. Debido a esto, en \textit{2004 D. Lowe} crea el detector y descriptor \textit{SIFT} \cite{sift} (del inglés: Scale Invariant Feature Transform), en el que se utiliza una representación de la imagen en espacio y escala, la cual es definida por los parámetros $s$ y $\sigma$. La figura \ref{imagen:piramidal} presenta el esquema piramidal, en la que se tienen diferentes niveles. La base de la pirámide corresponde a la imagen en su resolución original, y a medida que se sube se tienen escalamientos de la imagen en resoluciones inferiores. Al utilizar SIFT, cada nivel es llamado octava, y a la imagen 
+El problema básico a resolver es utilizar ventanas más grandes para detectar esquinas más grande. Debido a esto, en \textit{2004 D. Lowe} crea el detector y descriptor \textit{SIFT} \cite{sift} (del inglés: \textit{Scale Invariant Feature Transform}), en el que se utiliza una representación de la imagen en espacio y escala, la cual es definida por los parámetros $s$ y $\sigma$. La figura \ref{imagen:piramidal} presenta el esquema piramidal, en la que se tienen diferentes niveles. La base de la pirámide corresponde a la imagen en su resolución original, y a medida que se sube se tienen escalamientos de la imagen en resoluciones inferiores. Al utilizar SIFT, cada nivel es llamado octava, y a la imagen 
 
 filtrado espacial en diferentes escalas. En cada escala se emplea un kernel  gaussiano con diferentes valores de varianza. Por ejemplo, un kernel gaussiano con baja varianza de un alto valor para pequeñas esquinas, mientras que para esquinas grandes es mejor utilizar varianzas elevadas. 
 
@@ -152,11 +152,11 @@ filtrado espacial en diferentes escalas. En cada escala se emplea un kernel  gau
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.85\textwidth]{piramidal1}
-	\caption{Pirámide de imágenes con diferentes niveles.}
+	\caption[Pirámide de imágenes con diferentes niveles]{Pirámide de imágenes con diferentes niveles.}
 	\label{imagen:piramidal}
 \end{figure}
 
-Posteriormente se restan las imágenes para distintos pares de escalas con lo que se genera un esquema piramidal DoG (del inglés: Difference of Gaussians). la. Este proceso de detección se puede visualizar en la figura \ref{imagen:sift-escalas}.
+Posteriormente se restan las imágenes para distintos pares de escalas con lo que se genera un esquema piramidal DoG (del inglés: \textit{Difference of Gaussians}). la. Este proceso de detección se puede visualizar en la figura \ref{imagen:sift-escalas}.
 
 Posteriormente se buscan los máximos locales a lo largo del espacio (coordenadas $x$ e $y$) para cada correspondiente escala, lo que genera una lista de valores $(x, y, \sigma)$ donde existe una potencial característica en $(x, y)$ en la escala $\sigma$. Por ejemplo, un pixel en la imagen es comparado con sus 8 vecinos tanto en la escala actual, como en la escala anterior y posterior en la pirámide. Si este píxel es un extremo local en una, es una característica potencial en 
 
@@ -188,7 +188,7 @@ Finalmente para crear el vector descriptor por cada punto clave se crea una matr
 
 En el año 2006, un grupo de tres personas: Bay, H., Tuytelaars, T. and Van Gool, L. desarrollan \textit{SURF} \cite{surf}, el cual es un detector y descriptor de características basado en SIFT, pero con modificaciones que aumentan su velocidad de detección. Estos cambios sacrifican un poco de rendimiento y precisión, pero sin embargo lo hace mas provechoso para aplicaciones embebidas que demanden mayor velocidad de cómputo y menor uso de recursos, como por ejemplo \textit{SLAM}. El proceso para la extracción de características por parte de este algoritmo se compone de los siguientes pasos:
 
-Este algoritmo en lugar de aproximar el laplaciano de Gauss \textit{LoG} (del inglés: Laplacian of Gaussians) con la diferencia de Gaussianas (DoG) como lo hace SIFT, aproxima LoG con cuadrados para promediar la imagen. La ventaja de aplicar filtros con cuadrados es que con la ayuda de imágenes integrales el cálculo computacional se reduce en gran medida.
+Este algoritmo en lugar de aproximar el laplaciano de Gauss \textit{LoG} (del inglés: \textit{Laplacian of Gaussians}) con la diferencia de Gaussianas (DoG) como lo hace SIFT, aproxima LoG con cuadrados para promediar la imagen. La ventaja de aplicar filtros con cuadrados es que con la ayuda de imágenes integrales el cálculo computacional se reduce en gran medida.
 
 \begin{figure}[H]
 	\centering
@@ -199,7 +199,7 @@ Este algoritmo en lugar de aproximar el laplaciano de Gauss \textit{LoG} (del in
 
 En función de identificar la orientación, el algoritmo utiliza la respuesta Wavelet Haar en horizontal y vertical en un vecindario de 6$s$ (donde $s$ es la escala evaluada) píxeles al rededor del punto de interés, Luego estas respuestas son representadas como puntos en el espacio, para luego calcular la orientación dominante con la suma de todos los resultados dentro de una ventana deslizante de apertura 60$^\circ$. En la figura \ref{imagen:surf} se puede visualizar en el lado izquierdo, la derivada de segundo orden del filtro gaussiano, seguida de su aproximación con un filtro cuadrado. Del lado derecho se ilustra el vector de orientación en función a la distribución de puntos estudiados.
 
-El siguiente avance importante en los algoritmos de detección aparece en el año 2011 con \textit{ORB} \cite{orb} (del inglés: Oriented FAST and Rotated BRIEF), este utiliza una combinación del detector FAST (del inglés: Features from Accelerated Segment Test) y del descriptor BRIEF (del inglés: Binary Robust Independent Elementary Features), este nuevo algoritmo se caracteriza por su alta velocidad de procesamiento manteniendo un buen rendimiento, gracias al uso de un descriptor binario. 
+El siguiente avance importante en los algoritmos de detección aparece en el año 2011 con \textit{ORB} \cite{orb} (del inglés: \textit{Oriented FAST and Rotated BRIEF)}, este utiliza una combinación del detector FAST (del inglés: \textit{Features from Accelerated Segment Test}) y del descriptor BRIEF (del inglés: \textit{Binary Robust Independent Elementary Features}), este nuevo algoritmo se caracteriza por su alta velocidad de procesamiento manteniendo un buen rendimiento, gracias al uso de un descriptor binario. 
 
 Como se mencionó utiliza el algoritmo FAST, el cual consiste en encontrar esquinas evaluando los píxeles en un perímetro circular, de esta forma, un punto será detectado como esquina si la cantidad de píxeles de color opuesto al evaluado, supera cierto valor de umbral (ver izquierda en la figura \ref{imagen:orb}), posteriormente con el fin de aumentar la robustez, es aplicado el algoritmo de clasificación de esquinas de $Harris$. También se realiza con una estructura piramidal evaluando varias escalas (al igual que SIFT).
 
@@ -217,7 +217,7 @@ El descriptor utilizado para BRIEF es un descriptor binario y no vectorial. El m
 
 Los algoritmos de detección que se mencionaron hasta este momento tienen una característica en común, y es que cuando trabajan con el esquema piramidal lo hacen bajo el espacio de escala Gaussiano, el cual es una instancia particular de difusión lineal. De esta forma, al utilizar este filtro no se respetan los limites naturales de los objetos y se difumina del mismo nivel toda la región de la imagen cuando se avanza entre niveles de escala.
 
-Enfocándose en esta característica, en el año de \textit{2012} se desarrolla el detector y descriptor llamado KAZE \cite{kaze} por parte de \textit{Alcantarilla P. }. Este novedoso algoritmo opera completamente en un espacio de escala no lineal, y para ello utilizan un esquema de división de operadores aditivos (\textit{AOS}, del inglés: Additive Operator Splitting), que les permite obtener espacios de escala no lineales de forma eficiente. De este modo se puede realizar un difuminado localmente adaptativo, posibilitando que se remueva el ruido en las imágenes, manteniendo información importante sobre los bordes de los objetos al avanzar en el espacio de escala. En la figura \ref{imagen:kaze} se puede observar como afecta en los bordes de los objetos el aplicar un filtro de difusión lineal, y uno que no lo es, bajo el esquema propuesto por este algoritmo.
+Enfocándose en esta característica, en el año de \textit{2012} se desarrolla el detector y descriptor llamado KAZE \cite{kaze} por parte de \textit{Alcantarilla P. }. Este novedoso algoritmo opera completamente en un espacio de escala no lineal, y para ello utilizan un esquema de división de operadores aditivos (\textit{AOS}, del inglés: \texit{Additive Operator Splitting}), que les permite obtener espacios de escala no lineales de forma eficiente. De este modo se puede realizar un difuminado localmente adaptativo, posibilitando que se remueva el ruido en las imágenes, manteniendo información importante sobre los bordes de los objetos al avanzar en el espacio de escala. En la figura \ref{imagen:kaze} se puede observar como afecta en los bordes de los objetos el aplicar un filtro de difusión lineal, y uno que no lo es, bajo el esquema propuesto por este algoritmo.
 
 \begin{figure}[H]
 	\centering
@@ -226,11 +226,11 @@ Enfocándose en esta característica, en el año de \textit{2012} se desarrolla 
 	\label{imagen:kaze}
 \end{figure}
 
-Bajo este mismo esquema de difusión no lineal, el mismo autor en el año \textit{2013} desarrolla la versión acelerada de este algoritmo que recibe el nombre de \textit{A-KAZE} \cite{akaze} (del ingles: Accelerated KAZE). Esta mejora utiliza un esquema basado en difusión explícita rápida \textit{FED} (del ingles: Fast Explicit Difussion) en lugar de \textit{AOS}, el cual es un nuevo esquema piramidal que incrementa en gran medida la velocidad de cómputo para construir el espacio de escala no lineal.
+Bajo este mismo esquema de difusión no lineal, el mismo autor en el año \textit{2013} desarrolla la versión acelerada de este algoritmo que recibe el nombre de \textit{A-KAZE} \cite{akaze} (del ingles: \textit{Accelerated KAZE}). Esta mejora utiliza un esquema basado en difusión explícita rápida \textit{FED} (del ingles: \textit{Fast Explicit Difussion}) en lugar de \textit{AOS}, el cual es un nuevo esquema piramidal que incrementa en gran medida la velocidad de cómputo para construir el espacio de escala no lineal.
 
 Para el cálculo de la orientación el primer algoritmo \textit{KAZE} utiliza un descriptor para la orientación similar al que emplea SURF. Este encuentra la orientación dominante en un área circular de radio 6$s$ ($s$ corresponde con la escala), y para cada muestra del círculo se calcula la derivada de primer orden en las direcciones $x$ e $y$, y se ponderan con una gaussiana centrada en el punto de interés. Luego, las respuestas de estas derivadas son representadas como puntos en un espacio vectorial, donde la orientación dominante se haya sumando las respuestas dentro de un segmento de circulo deslizante con apertura de 60$^\circ$.
 
-Por otro lado, la versión acelerada \textit{A-KAZE} emplea un descriptor basado en una versión modificada del algoritmo de diferencia local binaria \textit{LDB} \cite{ldb} (del ingles: Local Difference Binary), llamado M-LBD (del ingles: Modified Local Difference Binary), el cual aprovecha al máximo la información del espacio de escala no lineal. La modificación consiste en hacer un sub-muestreo de cada región que divide la zona del descriptor, en lugar de calcular el promedio de todos los píxeles de la región, es decir, se tienen muestras de cada subdivisión para distintas escalas.
+Por otro lado, la versión acelerada \textit{A-KAZE} emplea un descriptor basado en una versión modificada del algoritmo de diferencia local binaria \textit{LDB} \cite{ldb} (del ingles: \textit{Local Difference Binary}), llamado M-LBD (del ingles: \textit{Modified Local Difference Binary}), el cual aprovecha al máximo la información del espacio de escala no lineal. La modificación consiste en hacer un sub-muestreo de cada región que divide la zona del descriptor, en lugar de calcular el promedio de todos los píxeles de la región, es decir, se tienen muestras de cada subdivisión para distintas escalas.
 
 
 \section{Emparejadores de puntos característicos}
@@ -260,7 +260,7 @@ Este proceso se repite hasta tener la distancia de cada punto de la imagen $1$ c
 	\item El punto $P_{2}$ presenta la mejor distancia con $P_{1}$ en relación a todos los puntos de la imagen $1$.
 \end{enumerate}
 
-Este proceso es mejor conocido como emparejamiento por fuerza bruta, ya que se compara entre todos los puntos por la mejor pareja posible. Aún cuando se asegura obtener el mejor emparejamiento, siendo viable para trabajar con pocos datos, el hecho de probar todas los casos posibles cuando se tiene una gran cantidad de puntos, incrementa en gran medida el tiempo de cómputo. Para efectuar este proceso de una forma eficiente se desarrollaron algoritmos basados en la búsqueda de vecinos mas cercanos. En este sentido se cuenta con el algoritmo \textit{kd-forest} (abreviado del inglés: k-dimensional forest), el cual es una mejora del algoritmo \textit{kd-tree} (abreviado del inglés: k-dimensional tree) para mejor desempeño al usar vectores multidimensionales, implementado en la librería para la rápida aproximación de vecinos mas cercanos FLANN \cite{flann} (del inglés: Fast Library for Approximate Nearest Neighbors).
+Este proceso es mejor conocido como emparejamiento por fuerza bruta, ya que se compara entre todos los puntos por la mejor pareja posible. Aún cuando se asegura obtener el mejor emparejamiento, siendo viable para trabajar con pocos datos, el hecho de probar todas los casos posibles cuando se tiene una gran cantidad de puntos, incrementa en gran medida el tiempo de cómputo. Para efectuar este proceso de una forma eficiente se desarrollaron algoritmos basados en la búsqueda de vecinos mas cercanos. En este sentido se cuenta con el algoritmo \textit{kd-forest} (abreviado del inglés: \textit{k-dimensional forest}), el cual es una mejora del algoritmo \textit{kd-tree} (abreviado del inglés: \textit{k-dimensional tree}) para mejor desempeño al usar vectores multidimensionales, implementado en la librería para la rápida aproximación de vecinos mas cercanos FLANN \cite{flann} (del inglés: \textit{Fast Library for Approximate Nearest Neighbors}).
 
 %\textit{kd-tree} es una estructura de datos de segmentación de espacios para organizar puntos en un espacio de k dimensiones
 \section{Módulo comparativo}
@@ -416,7 +416,7 @@ La figura \ref{fig:TransformacionesRobot} presenta los sistemas de referencia pr
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{ImuCam}
-	\caption{Sistemas de Referencia del Robot }
+	\caption[Sistemas de Referencia del Robot]{Sistemas de Referencia del Robot.}
 	\label{fig:TransformacionesRobot}
 \end{figure}
 
@@ -529,7 +529,7 @@ Cabe destacar que las unidades de medición inercial más económicas no dispone
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{FiltroKalman}
-	\caption{Diagrama básico del Filtro Kalman}
+	\caption[Diagrama básico del Filtro Kalman]{Diagrama básico del Filtro Kalman.}
 	\label{fig:diagramaFiltroKalman}
 \end{figure}
 
