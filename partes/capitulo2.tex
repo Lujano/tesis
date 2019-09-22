@@ -8,20 +8,20 @@ En este capítulo se presenta una revisión teórica del estado actual de las in
 
 En los últimos años se han presentado diferentes alternativas para estimar de forma efectiva el movimiento que efectúa un robot dentro de un entorno desconocido, lo cual se conoce como odometría.
 
-En general, la odometría se encarga de estimar el movimiento de un agente (vehículo, humano, robot) utilizando sensores que pueden medir los cambios del movimiento del mismo, tales como unidades de medición inercial, láseres, cámaras, etc. El caso más simple de odometría es obtener la trayectoria recorrida por un robot diferencial a través de la lectura de los encoders del robot. Los encoders miden el desplazamiento de cada rueda, con lo que es posible obtener la orientación y el desplazamiento del robot considerando el movimiento en un plano.
+En general, la odometría se encarga de estimar el movimiento de un agente (vehículo, humano, robot) utilizando sensores que pueden medir los cambios del movimiento del mismo, tales como unidades de medición inercial, láseres, cámaras, etc. El caso más simple de odometría es obtener la trayectoria recorrida por un robot diferencial a través de la lectura de los codificadores (\textit{encoders}) del robot. Los \textit{encoders} miden el desplazamiento de cada rueda, con lo que es posible obtener la orientación y el desplazamiento del robot considerando el movimiento en un plano.
 
 Cuando se utiliza un sensor láser, la odometría se obtiene estimando el movimiento del robot mediante el escaneo y seguimiento de las medidas realizadas por el sensor (figura \ref{imagen:Antecedentes/octomaps}).
 
-Cuando el sensor utilizado es una cámara se denomina odometría visual (VO, del inglés Visual Odometry) y en este caso se puede tener la configuración monocular, en la cual se utiliza una cámara, y la configuración estéreo, en la que se emplean dos cámaras para la estimación de movimiento. VO tiene ventajas respecto a la odometría estimada mediante encoders, ya que no es afectada por deslizamientos de la rueda sobre la superficie en la que se desplaza el robot, y en general provee trayectorias mas precisas con errores relativos de posición de 0.1 a 2 \%. Esto hace a la odometría visual un complemento incluso a otros sistemas de navegación como el sistema de posicionamiento global (GPS), y odometría láser.
+Cuando el sensor utilizado es una cámara se denomina odometría visual (VO, del inglés Visual Odometry) y en este caso se puede tener la configuración monocular, en la cual se utiliza una cámara, y la configuración estéreo, en la que se emplean dos cámaras para la estimación de movimiento. VO tiene ventajas respecto a la odometría estimada mediante \textit{encoders}, ya que no es afectada por deslizamientos de la rueda sobre la superficie en la que se desplaza el robot, y en general provee trayectorias mas precisas con errores relativos de posición de 0.1 a 2 \%. Esto hace a la odometría visual un complemento incluso a otros sistemas de navegación como el sistema de posicionamiento global (GPS), y odometría láser.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.4]{EstadoDelArte/Odo/ResultadosOdo.png}
-	\caption[Trayectorías estimadas por métodos de fusión de datos de encoders y una unidad de medición inercial en un vehículo móvil en \cite{odo}]{Trayectorías estimadas por métodos de fusión de datos de encoders y una unidad de medición inercial en un vehículo móvil en \cite{odo}. La trayectoría \textit{physical model} es la obtenida directamente por los encoders del vehiculo. La trayectoria \textit{corrected model} es la que se obtiene a través de la fusión de los datos.}
+	\caption[Trayectorías estimadas por métodos de fusión de datos de \textit{encoders} y una unidad de medición inercial en un vehículo móvil en \cite{odo}]{Trayectorías estimadas por métodos de fusión de datos de \textit{encoders} y una unidad de medición inercial en un vehículo móvil en \cite{odo}. La trayectoría \textit{physical model} es la obtenida directamente por los \textit{encoders} del vehiculo. La trayectoria \textit{corrected model} es la que se obtiene a través de la fusión de los datos.}
 	\label{fig:OdoEstimacion}
 \end{figure}
 
-En el caso de sensores inerciales, la orientación del robot puede obtenerse mediante la fusión de los datos del giroscopio y el acelerómetro y generalmente es utilizada en complemento con otro sensor para obtener los cambios de desplazamiento. También se utiliza fusión de los datos inerciales en conjunto con otro sensor como cámaras o encoders. Este último caso se presenta en la figura \ref{fig:OdoEstimacion} donde la trayectoria recorrida por un vehículo es estimado mediante la integración de los datos de desplazamiento de las ruedas del vehículo en conjunto con los cambios de orientación obtenidos con la IMU.
+En el caso de sensores inerciales, la orientación del robot puede obtenerse mediante la fusión de los datos del giroscopio y el acelerómetro y generalmente es utilizada en complemento con otro sensor para obtener los cambios de desplazamiento. También se utiliza fusión de los datos inerciales en conjunto con otro sensor como cámaras o \textit{encoders}. Este último caso se presenta en la figura \ref{fig:OdoEstimacion} donde la trayectoria recorrida por un vehículo es estimado mediante la integración de los datos de desplazamiento de las ruedas del vehículo en conjunto con los cambios de orientación obtenidos con la IMU.
 
 \section{SLAM}
 
@@ -110,7 +110,35 @@ años están:
 
 \subsubsection{DSO}
 
-En el año 2017 fue desarrollado DSO (\textit{Direct Sparse Odometry) \cite{DSO}, la cual es una implementación enfocada en reconstrucciones dispersas en tiempo real usando CPU, lo cual permite ser empleado en dispositivos como computadoras portátiles.
+En el año 2017 fue desarrollado DSO (\textit{Direct Sparse Odometry}) \cite{DSO}, la cual es una implementación enfocada en reconstrucciones dispersas en tiempo real usando CPU,  lo cual permite ser empleado en dispositivos como computadoras portátiles. 
+	
+DSO utiliza métodos directos que utilizan el error fotométrico definido directamente en las imágenes y optimización no lineal. El sistema de optimización engloba las variables asociadas a la posición de la cámara, parámetros intrínsecos, y parámetros geométricos (estimaciones de profundidad de los puntos).La optimización se realiza de manera local en una ventana que engloba únicamente a un grupo reciente de imágenes clave, y marginaliza posiciones muy antiguas de la cámara y los puntos que ya no están dentro del campo de visión actual de la cámara. 
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{EstadoDelArte/DSO/dso.png}
+	\caption[Resultados obtenidos utilizando DSO \cite{DSO}] {Resultados obtenidos utlizando DSO \cite{DSO}. En la parte superior se presenta el mapa reconstruido alrededor de un edificio utilizando un video de 100 segundos utilizando cámara monocular . El cuadro azul representa la vista de cerca del punto de inicio y final del recorrido, donde se observa el error acumulado en el curso de la trayectoria. En la parte inferior se presentan una selección de imágenes del video en cuestión.}
+	\label{fig:DSOEstimacion}
+\end{figure}
+
+DSO emplea la parametrización de la posición de la cámara mediante el grupo
+de álgebra de Lie, y toma en cuenta las características fotométricas de la cámara, como la atenuación de los lentes, la corrección del gamma y la velocidad de obturación. Esto permite aumentar la precisión y robustez de los resultados.
+
+
+Las imágenes procesadas en DSO se dividen en cuadrículas, donde puntos con
+alta intensidad de gradiente, superiores a un límite adaptable, son seleccionados
+como candidatos para su seguimiento y la estimación de la profundidad. Este
+método de cuadrícula  permite obtener una distribución uniforme de puntos en
+toda la imagen, mejorando el mapa y la trayectoria estimada. El límite que define
+si un punto es considerado de alta intensidad o no, está determinado por el número
+de puntos encontrados en cada cuadrícula, y es modificado para obtener un número
+de puntos relativamente constante durante todo el proceso.
+
+	
+En comparación con ORB-SLAM, este último ofrece un sistema más completo y general, ya que DSO está diseñado para odometría visual, y no ofrece una optimización global del mapa. Sin embargo, si se limitan las características de optimización global y relocalización de ORB-SLAM,  DSO obtiene resultados cercanos en robustez y
+precisión a los de ORB-SLAM. En general, ORB-SLAM presenta mejores resultados cuando las secuencias de datos contienen casos en los que la cámara regresa al mismo lugar donde estaba, lo que permite a ORB-SLAM realizar cierres de lazo que eliminan la deriva (\textit{drift}) acumulada.
+
 
 %Newcombe et al. propusieron un método completamente directo de SLAM vi-
 %sual llamado DTAM [60]. DTAM utiliza la información de todos los pı́xeles de la

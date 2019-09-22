@@ -163,8 +163,7 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 	\label{Tabla/Resultados/MH_01_easy}
 \end{table}
 
-
-\subsubsection{KAZE}
+\paragraph {KAZE}
 
 
 \begin{figure}[H]
@@ -219,7 +218,7 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 %	\label{imagen:Resultados/MH_01_easy/AKAZE/ResidualVelocidad}
 %\end{figure}
 
-\subsubsection{ORB}
+\paragraph {ORB}
 
 
 \begin{figure}[H]
@@ -300,7 +299,7 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 %
 
 
-\subsection{Vicon Room Easy}
+\subsubsection{Vicon Room Easy}
 
 \begin{table}[H]
 	\caption{Parámetros de configuración en secuencia $V1\_01\_easy$.}
@@ -340,7 +339,7 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 \end{table}
 
 
-\subsubsection{KAZE}
+\paragraph {KAZE}
 
 
 \begin{figure}[H]
@@ -396,7 +395,7 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 %	\label{imagen:Resultados/V1_01_easy/AKAZE/ResidualVelocidad}
 %\end{figure}
 
-\subsubsection{ORB}
+\paragraph {ORB}
 
 
 \begin{figure}[H]
@@ -478,7 +477,7 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 
 
 
-\subsection{Vicon Room Medium}
+\subsubsection{Vicon Room Medium}
 
 
 \begin{table}[H]
@@ -547,7 +546,7 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 %
 
 
-\subsubsection{AKAZE}
+\paragraph {AKAZE}
 
 
 \begin{figure}[H]
@@ -574,7 +573,7 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 	\label{imagen:Resultados/V1_02_medium/AKAZE/ResidualVelocidad}
 \end{figure}
 
-\subsubsection{ORB}
+\paragraph {ORB}
 
 
 \begin{figure}[H]
@@ -651,4 +650,142 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 %	\includegraphics[scale=0.6]{Resultados/V1_02_medium/SURF/ResidualVelocidad2}
 %	\caption{Residual de velocidad SURF}
 %	\label{imagen:Resultados/V1_02_medium/SURF/ResidualVelocidad}
+%\end{figure}
+\section{Pruebas en el Dataset local}
+
+En esta sección se presentan los resultados obtenidos con el dataset local.  El conjunto total de gráficas de resultados para cada secuencia del dataset pueden ser visualizadas en la sección de resultados del  \href{https://github.com/Lujano/tesis/tree/master/imagenes/Resultados/}{\underline{repositorio del libro de tesis}}.
+
+\subsection{Secuencia 1}
+
+La secuencia 1 del dataset local posee una duración aproximada de 30 segundos y se basa en la observación de objetos  que se encuentran sobre una superficie plana. La información disponible en la secuencia sigue el mismo formato del EuRoC MAV Dataset, por lo que posee información proveniente de la cámara y de la IMU. Sin embargo, no fue generada a bordo del robot prototipo, por lo que no posee \textit{groundtruth} asociado. En la figura \ref{imagen:Resultados/Dataset_Local/Secuencia1/Imagen} se aprecia una de las imágenes presentes en esta secuencia.
+
+Esta secuencia fue evaluada utilizando ORB-SLAM2 en modo monocular. La figura \ref{imagen:Resultados/Dataset_Local/Secuencia1/KeyframesAndMap} presenta una captura del mapa parcial generado, el cual se muestra con puntos rojos. Los cuadros azules corresponden a los \textit{keyframes} y las líneas verdes entre los \textit{keyframes} representa el grafo global en solución. En la figura \ref{imagen:Resultados/Dataset_Local/Secuencia1/Reconstruccion2} se aprecia el mapa final generado.
+
+ 
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.2]{Resultados/Dataset_Local/Secuencia1/Imagen}
+	\caption[Imagen perteneciente a la secuencia 1 del dataset local]{Imagen perteneciente a la secuencia 1.}
+	\label{imagen:Resultados/Dataset_Local/Secuencia1/Imagen}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.45]{Resultados/Dataset_Local/Secuencia1/KeyframesAndMap}
+	\caption[Mapa parcial generado en la secuencia 1 utilizando ORB-SLAM2]{Mapa parcial generado en la secuencia 1 utilizando ORB-SLAM2.}
+	\label{imagen:Resultados/Dataset_Local/Secuencia1/KeyframesAndMap}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.5]{Resultados/Dataset_Local/Secuencia1/Reconstruccion2}
+	\caption[Mapa generado en la secuencia 1 utilizando ORB-SLAM2]{Mapa generado en la secuencia 1 utilizando ORB-SLAM2.}
+	\label{imagen:Resultados/Dataset_Local/Secuencia1/Reconstruccion2}
+\end{figure}
+
+
+De la misma forma se presentan la posición y la orientación estimada de la cámara con ORB-SLAM2 en las figuras \ref{imagen:Resultados/Dataset_Local/Secuencia3/PosicionORB} y \ref{imagen:Resultados/Dataset_Local/Secuencia1/OrientacionORB}, respectivamente.	
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia1/PosicionORB}
+	\caption{Posición de la cámara utilizando ORB-SLAM2}
+	\label{imagen:Resultados/Dataset_Local/Secuencia3/PosicionORB}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia1/OrientacionORB}
+	\caption[Orientación estimada en Secuencia 1 utilizando ORB-SLAM2]{Orientación estimado en Secuencia 1.}
+	\label{imagen:Resultados/Dataset_Local/Secuencia1/OrientacionORB}
+\end{figure}
+
+\subsection{Secuencia 2}
+
+Esta secuencia fue evaluada utilizando el sistema implementado utilizando el filtro de Madgwick y el método RANSAC con los detectores ORB y KAZE. La secuencia presenta el movimiento en linea recta del robot prototipo. La estimación de movimiento es comparada con la obtenida mediante la odometría del robot. Esta última es extraída a través de los \textit{encoders} del robot y es considera como el \textit{groundtruth} de los datos.
+
+
+
+\paragraph{ORB}
+	
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia2/ORB/Posicion}
+	\caption{Posición de la IMU utilizando método RANSAC}
+	\label{imagen:Resultados/Dataset_Local/Secuencia2/ORB/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia1/OrientacionORB}
+	\caption[Posición de la IMU utilizando método RANSAC]{Orientación de la IMU estimada en Secuencia 2.}
+	\label{imagen:Resultados/Dataset_Local/Secuencia2/ORB/Orientacion}
+\end{figure}
+
+
+\paragraph{KAZE}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia2/ORB/Posicion}
+	\caption{Posición estimada de la IMU utilizando método RANSAC}
+	\label{imagen:Resultados/Dataset_Local/Secuencia2/KAZE/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia1/OrientacionORB}
+	\caption[Error de la orientación estimada  de la IMU en Secuencia 2 utilizando el método RANSAC]{Error de la orientación estimada  de la IMU en Secuencia 2.}
+	\label{imagen:Resultados/Dataset_Local/Secuencia2/KAZE/Orientacion}
+\end{figure}
+
+
+%
+%
+%\paragraph {KAZE}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia2/KAZE/Posicion}
+%	\caption{Posición de la cámara KAZE}
+%	\label{imagen:Resultados/Dataset_Local/Secuencia1/KAZE/Posicion}
+%\end{figure}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia2/KAZE/Orientacion}
+%	\caption[Error de Orientación KAZE]{Error de Orientación KAZE.}
+%	\label{imagen:Resultados/Dataset_Local/Secuencia1/KAZE/Orientacion}
+%\end{figure}
+%
+%
+%\paragraph {ORB}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia1/ORB/Posicion}
+%	\caption{Posición de la cámara ORB}
+%	\label{imagen:Resultados/Dataset_Local/Secuencia1/ORB/Posicion}
+%\end{figure}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia1/ORB/OrientacionReal}
+%	\caption[Orientación estimado en Secuencia 1(Detector ORB )]{Orientación estimado en Secuencia 1.}
+%	\label{imagen:Resultados/Dataset_Local/Secuencia1/ORB/OrientacionReal}
+%\end{figure}
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia1/ORB/Orientacion}
+%	\caption[Error de Orientación ORB]{Error de Orientación ORB.}
+%	\label{imagen:Resultados/Dataset_Local/Secuencia1/ORB/Orientacion}
 %\end{figure}

@@ -4,14 +4,14 @@
 
 
 \section{Introducción}
-El objetivo de este capítulo es explicar la elaboración de un dataset visual inercial, a través de la construcción de un robot prototipo, la adquisición de datos de odometría de los encoders del robot, de la captura de imágenes de la cámara empleada, y de la adquisición de las medidas tomadas por la IMU.
+El objetivo de este capítulo es explicar la elaboración de un dataset visual inercial, a través de la construcción de un robot prototipo, la adquisición de datos de odometría de los codificadores (\textit{encoders}) del robot, de la captura de imágenes de la cámara empleada, y de la adquisición de las medidas tomadas por la IMU.
 
 
 \clearpage
 
 \section{Descripción del prototipo}
 
-El prototipo realizado consiste en un robot diferencial inicialmente diseñado para la categoría Sumo de la VII Competencia Nacional de Robótica CCSBOTS 2018. El prototipo tiene un peso de 2.9 kg y es capaz de soportar pesos de hasta 4kg. Posee una placa de control a bajo nivel de los motores del robot, y una Raspberry Pi 3 que es utilizada para controlar el robot utilizando un mando del tipo joystick a través de la interfaz bluetooth. El robot posee además encoders en sus ruedas que permiten tener datos de odometría. Este prototipo tiene una autonomía aproximada de 1 hora. La figura \ref{imagen:Robot} muestra la configuración final del robot. 
+El prototipo realizado consiste en un robot diferencial inicialmente diseñado para la categoría Sumo de la VII Competencia Nacional de Robótica CCSBOTS 2018. El prototipo tiene un peso de 2.9 kg y es capaz de soportar pesos de hasta 4kg. Posee una placa de control a bajo nivel de los motores del robot, y una Raspberry Pi 3 que es utilizada para controlar el robot utilizando un mando del tipo joystick a través de la interfaz bluetooth. El robot posee además \textit{encoders} en sus ruedas que permiten tener datos de odometría. Este prototipo tiene una autonomía aproximada de 1 hora. La figura \ref{imagen:Robot} muestra la configuración final del robot. 
 
 Más información puede ser encontrada en el \href{https://github.com/Robot-Sumo/}{\underline{repositorio de desarrollo del robot}}.
 
@@ -193,9 +193,9 @@ La configuración utilizada en el robot es similar a la recomendada por el fabri
 Cabe destacar que la protección de sobrecorriente que presenta el driver ($OCP\_ REF$) es cooacada manualmente con un arreglo de resistencias ,al igual que la referencia del PWM ($PWM\_ REF$). En particular, el voltaje de $OCP\_ REF$ debe ser igual al voltaje de la resistencia de sensado cuando el motor presenta su punto de máximo torque, que en este caso es cuando se alcanza la corriente de Stall a 1.6 amperios. En la configuración final se utilizan dos motores en paralelo para cada driver por lo que el ajuste se realizó para 3.2 amperios.
 
 
-\subsection{Encoders}
+\subsection{Codificadores incrementales}
 
-El sistema de encoders también fue diseñado desde cero. La figura \ref{imagen:RuedaEncoders} presenta el modelaje 3D de la rueda del encoder y la disposición final sobre el eje de la rueda del robot. Los encoders diseñados son encoders incrementales circulares utilizando fotointerruptores.
+El sistema de \textit{encoders} también fue diseñado desde cero. La figura \ref{imagen:RuedaEncoders} presenta el modelaje 3D de la rueda del \textit{encoder} y la disposición final sobre el eje de la rueda del robot. Los \textit{encoders} diseñados son \textit{encoders} incrementales circulares utilizando fotointerruptores.
 
 \begin{figure}[H]
 	\centering		\includegraphics[width=0.3\linewidth]{imagenes/prototipo/Ruedaencoder}
@@ -204,15 +204,15 @@ El sistema de encoders también fue diseñado desde cero. La figura \ref{imagen:
 	\label{imagen:RuedaEncoders}
 \end{figure}
 
-El diseño final de la rueda del encoder tiene 40 ranuras. El proceso de calibración del encoder pasó por ajustar las resistencias de los fotoemisores y fotoreceptores del encoder y posteriormente realizar una restricción del mínimo tiempo de interrupción entre dos ranuras basada en la máxima velocidad de la rueda.
+El diseño final de la rueda del \textit{encoder} tiene 40 ranuras. El proceso de calibración del \textit{encoder} pasó por ajustar las resistencias de los fotoemisores y fotoreceptores del \textit{encoder} y posteriormente realizar una restricción del mínimo tiempo de interrupción entre dos ranuras basada en la máxima velocidad de la rueda.
 
-Cabe destacar que los encoders presentan un circuito de adecuación para generar la interrupciones en el microcontrolador de la placa de control a bajo nivel, el cual consiste en un comparador LM311.
+Cabe destacar que los codificadores presentan un circuito de adecuación para generar la interrupciones en el microcontrolador de la placa de control a bajo nivel, el cual consiste en un comparador LM311.
 
 Los resultados finales de calibración fueron bastantes satisfactorios, obteniéndose un error de lectura de 4 ranuras por cada 4000 ranuras, el cual representa un error de 0.1\%.
-Cabe destacar que la correcta lectura de los encoders es de vital importancia para obtener datos confiables de odometría del robot.
+Cabe destacar que la correcta lectura de los \textit{encoders} es de vital importancia para obtener datos confiables de odometría del robot.
 
 \subsection{Placa de control a bajo nivel}
-Los drivers del motor, los circuitos de acondicionamiento de los encoders y el microcontrolador encargado de realizar el control PWM del robot fueron integrados en una PCB, la cual se diseño utilizando Kicad 5.0.2 para Ubuntu. La figura \ref{imagen:PlacaMotores} presenta el esquemático de la placa. El microcontrolador utilizado fue el Arduino Nano 328p.
+Los drivers del motor, los circuitos de acondicionamiento de los \textit{encoders} y el microcontrolador encargado de realizar el control PWM del robot fueron integrados en una PCB, la cual se diseño utilizando Kicad 5.0.2 para Ubuntu. La figura \ref{imagen:PlacaMotores} presenta el esquemático de la placa. El microcontrolador utilizado fue el Arduino Nano 328p.
 
 
 \begin{figure}[H]
@@ -473,7 +473,7 @@ En la tabla \ref{PresupuestoRobot} se presenta el presupuesto total de la genera
 
 \section{Odometría del robot}
 
-Para obtener la trayectoria recorrida por el robot es necesario realizar la lectura a intervalos periódicos de tiempo de los encoders. Esto permite obtener el desplazamiento y la velocidad lineal y angular. 
+Para obtener la trayectoria recorrida por el robot es necesario realizar la lectura a intervalos periódicos de tiempo de los codificadores incrementales. Esto permite obtener el desplazamiento y la velocidad lineal y angular. 
 
 En primer lugar presentaremos el modelo cinemático directo del robot el cual es un resumen de lo expuesto en \cite{cinematicaDirecta}. Para esto se tienen en cuenta las dimensiones del robot: L, que es la longitud entra las ruedas del vehículo; y r que es el radio de las ruedas, como se ve en la figura \ref{imagen:RobotRL}.
 
@@ -530,14 +530,14 @@ Sustituyendo la ecuación \ref{eq:velocidadLineal} y \ref{eq:velocidadAngular} e
 \begin{bmatrix} \dot { x }  \\ \dot { y }  \\ \dot { \theta  }  \end{bmatrix}\quad =\quad \begin{bmatrix} -r.\sin { (\theta )/2\quad  }  & -r.\sin { (\theta )/2\quad  }  \\ r.\cos { (\theta )/2 }  & r.\cos { (\theta )/2 }  \\ -r/L & r/L \end{bmatrix}\quad \times \begin{bmatrix} { \omega  }_{ l } \\ { \omega  }_{ r } \end{bmatrix}
 \end{equation}
 
-Integrando la ecuación anterior con el periodo de muestreo $T$ de los encoders se puede obtener el incremento del vector posición como:
+Integrando la ecuación anterior con el periodo de muestreo $T$ de los \textit{encoders} se puede obtener el incremento del vector posición como:
 
 \begin{equation}
 \label{eq:CineDirectoDelta}
 \begin{bmatrix} \Delta x \\ \Delta y \\ \Delta \theta  \end{bmatrix}\quad =\quad \begin{bmatrix} -r.\sin { ({ \theta  }_{ p })/2\quad  }  & -r.\sin { ({ \theta  }_{ p })/2\quad  }  \\ r.\cos { ({ \theta  }_{ p })/2 }  & r.\cos { ({ \theta  }_{ p })/2 }  \\ -r/L & r/L \end{bmatrix}\quad \times \begin{bmatrix} { 2\pi .\Delta e }_{ l }/N \\ { 2\pi .\Delta e }_{ r }/N \end{bmatrix}
 \end{equation}
 
-Donde ${ \theta  }_{ p }$ representa la ultima posición angular obtenida. N es el número de rejillas del encoder circular por revolución, y $\Delta e$ es el incremento del número de rejillas del encoder de la rueda en un tiempo $T$. De esta forma se puede obtener el vector posición mediante la suma de incrementos, partiendo de una posición inicial dada.
+Donde ${ \theta  }_{ p }$ representa la ultima posición angular obtenida. N es el número de rejillas del \textit{encoder} circular por revolución, y $\Delta e$ es el incremento del número de rejillas del \textit{encoder} de la rueda en un tiempo $T$. De esta forma se puede obtener el vector posición mediante la suma de incrementos, partiendo de una posición inicial dada.
 
 
 \section{Calibración de la cámara}
@@ -608,8 +608,6 @@ Coef =\quad (\quad { k }_{ 1 }\quad { k }_{ 2 }\quad p_{ 1 }\quad p_{ 2 }\quad {
 \end{equation}
 
 	
-
-
 
 
 
