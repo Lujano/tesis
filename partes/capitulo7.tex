@@ -1,3 +1,37 @@
 \chapter{Conclusiones y trabajos futuros}
 \label{capitulo7}
 \lhead{Capítulo 7. \emph{Conclusiones y trabajos futuros}}
+
+En este trabajo se presentó la implementación de un sistema de odometría visual inercial que permitió la estimación en tiempo real de la posición y orientación de robots aéreos y terrestres. Además, se generó un dataset local con componentes de bajo presupuesto, obteniedo resultados de buena calidad con el sistema implementado y
+
+Se utilizó una implementación de SLAM visual para generar mapas  congruentes utilizando el dataset local.
+
+A partir del sistema desarrollado y de los resultados obtenidos se puede concluir lo siguiente:
+
+
+Se realizó una revisión del estado del arte de los métodos de odometría y SLAM tanto visual como visual-inercial, estableciendo una base que permitió la correcta implementación del sistema. En particular, se comparó el método de estimación directo previamente empleado en el GIDM con el método RANSAC basado en puntos característicos y residuales inerciales, exhibiendo las ventajas de estimación y eficiencia computacional de este último.
+
+También se realizaron algunas reconstrucciones de escena satisfactorios, en especial las generadas con ORB-SLAM2, donde los mapas construidos son congruentes con los objetos observados. 
+
+
+En función de los resultados presentados y de los diferentes métodos de SLAM recopilados, se pueden extraer las siguientes conclusiones:
+
+
+
+
+\begin{itemize}
+	\item El algoritmo propuesto puede ser implementado directamente en robots aéreos, terrestres y submarinos, para estimar la posición y orientación de los mismos, siempre que se posea sensores complementarios (como \textit{encoders} en los robots terrestres) que permitan tener a la disposición la escala real de desplazamiento.
+	\item El método de RANSAC utilizado, en conjunto con los filtros inerciales empleados presentaron un mejor desempeño que los trabajos en odometría y SLAM visual previamente implementados en el GIDM, obteniendo resultados bastantes aceptables en amplios rango de movimientos y bajo diferentes condiciones de iluminación y de velocidad, siendo robusto ante movimientos fuertes de traslación y rotación entre imágenes secuenciales.
+	\item La estimación de la altura del robot (eje $z$) sin embargo, no fue tan precisa debido a la acumulación de errores. A pesar de ello, el buen seguimiento de los residuales de velocidad en el eje $z$ en todas las secuencias procesadas, permiten concluir que este error de estimación puede ser corregido mediante la implementación de un algoritmo fusión de los datos del residual de velocidad y de la estimación de la posición en $z$, lo que permitiría tener un sistema más robusto. 
+	\item La versión final del algoritmo implementado difiere del algoritmo propuesto respecto a la propagación de escala entre estimaciones de movimiento sucesivas debido a los errores de triangulación entre \textit{keyframes} que impidieron realizar un seguimiento correcto del mapa, y por tanto, la perdida de la escala. Esto debido esencialmente a que se deben incluir criterios de selección de \textit{keyframes} que tomen en cuenta los métodos de triangulación. Para ello es recomendable basarse en los criterios aplicados en ORB-SLAM 2 para la generación de la nube del mapa inicial y el seguimiento de los \textit{landmarks} de la escena.
+	\item La etapa de preprocesamiento de la imagen es en general costosa computacionalmente, ya que involucra en algunos casos el estiramiento del histograma de la imagen para aumentar el número de puntos característicos detectables en ella. Sin embargo, en los datasets empleados no fue necesario realizar preprocesamiento a las imágenes debido a que se pudo aumentar el número de \textit{features} ajustando los umbrales de los detectores, lo cual condujo a un ahorro de tiempo de procesamiento. No obstante, si el sistema implementado se requiere ser utilizado en los datasets visuales inerciales submarinos, se recomienda aplicar estiramiento de histogramas a las imagenes del dataset en cuestión. Por tanto, se deja a la disposición el repositorio del sistema implementado herramientas de preprocesamiento que pueden ser utilizadas de forma \textit{offline}.
+	
+	
+	
+	\item  Para cada una de las N-n puntos calcular la distancia o error al modelo generado.
+	\item Contar el número $c$ de puntos cuya distancia o error está por debajo de un valor umbral ($\epsilon$). Estos puntos son denominados \textit{inliers} del modelo.
+	\item Repetir este procedimiento k veces.
+\end{itemize}
+
+
+Por último, para continuar fomentando trabajos futuros en el área, la implementación realizada en este trabajo se puede obtener a través de la siguiente página web:  https://github.com/MecatronicaUSB/vi-slam (disponible bajo licencia libre.)

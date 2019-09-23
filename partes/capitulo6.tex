@@ -120,7 +120,7 @@ En cada sección se presentan los parámetros de configuración utilizados para 
 \subsubsection{Secuencia Machine Hall Easy}
 
 
-La tabla \ref{Tabla/Parametros/MH_01_easy} presenta los parámetros de configuración inicial del sistema empleados en esta secuencia. Los umbrales seleccionados fueron seleccionados de forma empírica. En particular, el umbral de los detectores es eligido para generar un aproximado de 100 puntos característicos o features por imagen.
+La tabla \ref{Tabla/Parametros/MH_01_easy} presenta los parámetros de configuración inicial del sistema empleados en esta secuencia. Los umbrales seleccionados fueron seleccionados de forma empírica. En particular, el umbral de los detectores es eligido para generar un aproximado de 100 puntos característicos por imagen.
 
 \begin{table}[H]
 	\caption{Parámetros de configuración en Secuencia $MH\_ 01\_ easy$.}
@@ -138,7 +138,9 @@ La tabla \ref{Tabla/Parametros/MH_01_easy} presenta los parámetros de configura
 \end{table}
 
 
-La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos para la secuencia Machine Hall Easy. Se puede observar que los det
+La tabla \ref{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos para la secuencia Machine Hall Easy. En particular  se puede observar que el número de parejas iniciales  promedio antes de aplicar el filtro de celdas es mayor para los detectores KAZE y SURF. Por el contrario, ORB presenta el menor porcentaje de parejas iniciales generadas respecto al número de puntos característicos. Esto implica que los detectores KAZE y SURF presentan mejor relación de parejas generadas por puntos característicos detectados en esta secuencia. Esto también es reflejado en las estadísticas del número de \textit{inliers} del RANSAC.  Sin embargo, el detector ORB es el más rápido de los detectores al tener 30.5 ms de tiempo promedio de detección.
+
+Es posible observar que el tiempo de estimación del vector de traslación unitario es de aproximadamente 0.3 ms, lo cual comparado con los 0.73 s del método de optimización de Gauss-Newton, es cerca de 2400 veces más rápido. Se puede observar además que el sistema implementado corre en tiempo real en el caso de utilizar el detector ORB, donde el tiempo de procesamiento para todo la secuencia de 105 s de duración es de 79.8 s.
 
 
 \begin{table}[H]
@@ -163,15 +165,21 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 	\label{Tabla/Resultados/MH_01_easy}
 \end{table}
 
-\paragraph {KAZE}
 
 
+\paragraph {KAZE \\ \\}
+
+
+En la figuras \ref{imagen:Resultados/MH_01_easy/KAZE/Posicion} y \ref{imagen:Resultados/MH_01_easy/KAZE/Orientacion} y \ref{imagen:Resultados/MH_01_easy/KAZE/ResidualVelocidad} se presentan los resultados de posición estimada del vehículo áreo. En este caso la escala de desplazamiento es tomada del \textit{groundtruth} debido al fallo de las triangulaciones realizadas por el sistema.
+ 
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.6]{Resultados/MH_01_easy/KAZE/Posicion}
 	\caption{Posición de la cámara KAZE}
 	\label{imagen:Resultados/MH_01_easy/KAZE/Posicion}
 \end{figure}
+
+Es posible observar que la estimación de la posición escalada se realiza de forma efectiva  en $x$ y $y$, mientras que en $z$ se observa un mayor efecto de la acumulación de errores de estimación entre \textit{keyframes} (\textit{drift}).
 
 
 \begin{figure}[H]
@@ -181,6 +189,7 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 	\label{imagen:Resultados/MH_01_easy/KAZE/Orientacion}
 \end{figure}
 
+Por su parte el error de orientación de la orientación estimada se mantiene acotado, y es importante observar que el \textit{drift} en el ángulo de \textit{yaw} es pequeño a pesar de los 120 s de duración aproximada de la secuencia. Además los histogramas del error en \textit{pitch} y \textit{roll} presentan una media de cero. Esto expone el buen funcionamiento del módulo de seguimiento de \textit{bias} en esta secuencia. 
 
 \begin{figure}[H]
 	\centering
@@ -188,7 +197,6 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 	\caption{Residual de velocidad KAZE}
 	\label{imagen:Resultados/MH_01_easy/KAZE/ResidualVelocidad}
 \end{figure}
-
 
 %
 %\subsubsection{AKAZE}
@@ -218,9 +226,10 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 %	\label{imagen:Resultados/MH_01_easy/AKAZE/ResidualVelocidad}
 %\end{figure}
 
-\paragraph {ORB}
+\paragraph {ORB \\ \\}
 
-
+En el caso del detector ORB , los resultados son similares a los obtenidos con el detector KAZE. En la figura \ref{imagen:Resultados/MH_01_easy/ORB/Posicion} se presenta los resultados de la posición estimada.
+	
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.6]{Resultados/MH_01_easy/ORB/Posicion}
@@ -228,6 +237,7 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 	\label{imagen:Resultados/MH_01_easy/ORB/Posicion}
 \end{figure}
 
+De esta forma es posible concluir que el método RANSAC con el detector ORB presentó la mejor relación entre precisión de la estimación y tiempo de procesamiento, logrando la estimación del movimiento del vehículo en tiempo real.
 
 %\begin{figure}[H]
 %	\centering
@@ -301,6 +311,8 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 
 \subsubsection{Vicon Room Easy}
 
+La configuración inicial de los detectores se presenta en la tabla \ref{Tabla/Parametros/V1_01_easy}. En este caso los umbrales de los detectores KAZE, AKAZE y SURF fueron modificados para generar un mayor número de puntos característicos.
+
 \begin{table}[H]
 	\caption{Parámetros de configuración en secuencia $V1\_01\_easy$.}
 	\begin{tabular}{|l|c|c|c|c|c|}
@@ -315,6 +327,10 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 	\end{tabular}
 	\label{Tabla/Parametros/V1_01_easy}
 \end{table}
+
+La tabla \ref{Tabla/Resultados/V1_01_easy}  presenta los resultados estadísticos  obtenidos. Es posible ver que respecto a los resultados obtenidos en la secuencia Machine Hall Easy, al duplicar el número de puntos característicos del detector KAZE, el número de parejas promedio antes del filtrado son también duplicadas. Lo mismo ocurre en la misma proporción en los detectores AKAZE y SURF. 
+
+Por otro lado es posible observar que el número de \textit{keyframes} generados en cada caso es mayor que en la secuencia anterior debido a que Vicon Room Easy presenta mayor movimiento ya que Machine Hall Easy presenta 40 s de movimiento estático inicial. 
 
 \begin{table}[H]
 	\caption{Resultados en secuencia $V1\_ 01\_ easy$.}
@@ -339,8 +355,10 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 \end{table}
 
 
-\paragraph {KAZE}
+En esta secuencia el detector con mejores resultados de estimación fue el detector KAZE. Respecto a desempeño computacional, el detector ORB presentó  el mejor desempeño. A continuación se presentan las gráficas de las estimaciones de movimiento de ambos detectores.
+\paragraph {KAZE \\ \\}
 
+Las figuras \ref{imagen:Resultados/V1_01_easy/KAZE/Posicion}  y \ref{imagen:Resultados/V1_01_easy/KAZE/Orientacion} presentan la posición y el error de orientación estimado utilizando el detector KAZE. En esta caso también se observa un seguimiento correcto de las posición estimada en los $x$ y $y$. En el caso de la altura estimada (eje $z$) podemos ver que existe un seguimiento inicial que es perdido en las estimaciones siguientes. Sin embargo el rango de movimiento en $z$ es mucho menor al presentado en $x$ y $y$.
 
 \begin{figure}[H]
 	\centering
@@ -350,6 +368,8 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 \end{figure}
 
 
+Por su parte, la orientación estimada presenta buenos resultados. Esto se puede evidenciar en las gráficas del error de orientación estimado, donde el mayor error angular alcanza cerca de los 13 grados.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.6]{Resultados/V1_01_easy/KAZE/Orientacion}
@@ -357,6 +377,8 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 	\label{imagen:Resultados/V1_01_easy/KAZE/Orientacion}
 \end{figure}
 
+
+En cuanto a los residuales de velocidad presentados en la figura \ref{imagen:Resultados/V1_01_easy/KAZE/ResidualVelocidad} se tiene que los mejores resultados se obtienen para el eje $z$, lo cual es un caso bastante común debido a que este residual depende unicamente del correcto seguimiento de los ángulos de \textit{roll} y \textit{pitch}, mientras que los residuales en $x$ y $y$ son más sensibles al ángulo de \textit{yaw} y de los sesgos del acelerómetro.
 
 
 \begin{figure}[H]
@@ -395,8 +417,9 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 %	\label{imagen:Resultados/V1_01_easy/AKAZE/ResidualVelocidad}
 %\end{figure}
 
-\paragraph {ORB}
+\paragraph {ORB \\ \\}
 
+En esta secuencia los resultados de estimación de posición con el detector ORB presentan de forma más evidente el \textit{drift}, siendo más evidente en las estimaciones posteriores a los 80 segundos. Sin embargo, las estimación local de las traslaciones se mantiene producto de la correcta estimación de la orientación de la cámara. El detector ORB presenta de nuevo la mejor relación entre la calidad de las estimaciones traslacionales y tiempo computacional.
 
 \begin{figure}[H]
 	\centering
@@ -479,6 +502,11 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 
 \subsubsection{Vicon Room Medium}
 
+La secuencia Vicon Room Medium presenta movimientos más dinámicos respecto a las secuencias Easy. Por tanto, se presentan con mayor frecuencia efectos de distorsión de la imagen como el \textit{blur}, que disminuyen el numero de puntos caracterísiticos que pueden ser detectados en una imagen. Debido a esto, los umbrales de detección presentados en la tabla \ref{Tabla/Parametros/V1_02_medium} son configurados para generar un mayor número de puntos característicos, tal como se muestra en la tabla \ref{Tabla/Resultados/V1_02_medium}.
+
+Como consecuencia del aumento del número de número de puntos característicos promedio, se puede ver que el tiempo de emparejamiento (\textit{match}) a aumentado de 1.8 ms con 100 puntos característicos en la secuencia anterior en el caso de SIFT, a 6.6 ms con 247 puntos característicos en la secuencia actual, por lo que es evidente que el tiempo de emparejamiento no aumenta linealmente con el número de puntos de característicos a emparejar.
+
+% Esto lleva a que en general se tomen estrategias para seleccionar la mejor cantidad de puntos característicos a detectar en función del tipo de modo de visión utilizado. Por ejemplo, en SLAM con visión estéreo son necesarios un número menor de puntos característicos por imagen que en visión monocular, ya que se puede triangular en cada imagen obtenida. Sin embargo, en visión monocular se necesitan más referencias de la escena ya que se debe seleccionar las imágenes más adecuadas para la triangulación.
 
 \begin{table}[H]
 	\caption{Parámetros de configuración  en secuencia $V1\_ 02\_ medium$.}
@@ -495,6 +523,10 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 	\label{Tabla/Parametros/V1_02_medium}
 \end{table}
 
+Una característica a resaltar de los resultados de la tabla \ref{Tabla/Resultados/V1_02_medium} es que la relación entre el número de \textit{keyframes} y el numero de imágenes de la secuencia (procesadas) es mayor en comparación con las secuencias lentas, lo cual es un resultado lógico debido a que al ser una secuencia de movimientos rápidos se tiene mayor disparidad entre imágenes sucesivas, lo que implica que los \textit{keyframes} son insertados de forma más frecuente en las estimaciones de movimiento.
+
+Finalmente, se obtienen resultados similares sobre el desempeño del detector ORB, siendo el detector más eficiente computacionalmente.
+ 
 \begin{table}[H]
 	\caption{Resultados  en secuencia $V1\_02\_medium$.}
 	\begin{tabular}{|l|c|c|c|c|c|}
@@ -504,7 +536,7 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 		Número de parejas iniciales & 142 & 146 & 81 & 150 & 230 \\ \hline
 		Número de parejas del filtro de celdas & 30 & 27 & 15 & 35 & 45 \\ \hline
 		Número de inliers del RANSAC & 96 & 89 & 48 & 100 & 163 \\ \hline
-		Número de imágenes procesadas & \textbf{1625} & 1643 & \textbf{1644} & 1647 & 1647 \\ \hline
+		Número de imágenes procesadas & 1625 & 1643 & 1644 & 1647 & 1647 \\ \hline
 		Número de keyframes & 719 & 647 & 715 & 800 & 768 \\ \hline
 		Tiempo promedio de filtro inercial (ms) & 5.4 & 6.5 & 6.8 & 6.1 & 6.3 \\ \hline
 		Tiempo promedio de detección  (ms) & 699.4 & 192 & 25.8 & 348.5 & 202.6 \\ \hline
@@ -544,11 +576,15 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 %	\label{imagen:Resultados/V1_02_medium/KAZE/ResidualVelocidad}
 %\end{figure}
 %
+A continuación se presentan los resultados de posición, error de orientación y residuales de velocidad del detector con mejor estimación, y la posición estimada por el detector con mejor eficiencia computacional, ORB.
 
+\paragraph {AKAZE \\ \\}
 
-\paragraph {AKAZE}
+En las figuras \ref{imagen:Resultados/V1_02_medium/AKAZE/Posicion}, \ref{imagen:Resultados/V1_02_medium/AKAZE/Orientacion} y \ref{imagen:Resultados/V1_02_medium/AKAZE/ResidualVelocidad} se muestran los resultados de posición de estimada, el error orientación y los residuales de velocidad.
 
-
+Respecto a la posición estimada, los mejores resultados se obtienen para los ejes $x$ y $y$, siendo evidente de nuevo el drift presentado en el eje $z$. En el caso de la orientación estimada, se puede ver que el error en \textit{pitch} y roll presentan media cero, mientras que existe un drift que aumenta con el tiempo en el ángulo de \textit{yaw}. Este incremento en el error del ángulo de \textit{yaw} tiene implicación directa sobre las estimaciones del vector de traslación en los ejes $x$ y $y$, como se puede observar en los errores de estimación de posición en la figura \ref{imagen:Resultados/V1_02_medium/AKAZE/Posicion}. Sin embargo, los residuales de velocidad presentan mejor seguimiento en esta secuencia rápida, incluso en los ejes $x$ y $y$.
+	
+	
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.6]{Resultados/V1_02_medium/AKAZE/Posicion}
@@ -573,8 +609,10 @@ La tabla \label{Tabla/Resultados/MH_01_easy} presenta los resultados obtenidos p
 	\label{imagen:Resultados/V1_02_medium/AKAZE/ResidualVelocidad}
 \end{figure}
 
-\paragraph {ORB}
+\paragraph {ORB \\ \\}
 
+
+La figura \ref{imagen:Resultados/V1_02_medium/ORB/Posicion} presenta los resultados del método RANSAC con el detector ORB. En esta caso existe presencia de drift en todos los ejes, manteniendo las estimaciones locales en los ejes $x$ y $y$. El eje $z$ presenta errores de estimación.
 
 \begin{figure}[H]
 	\centering
@@ -657,7 +695,7 @@ En esta sección se presentan los resultados obtenidos con el dataset local.  El
 
 \subsection{Secuencia 1}
 
-La secuencia 1 del dataset local posee una duración aproximada de 30 segundos y se basa en la observación de objetos  que se encuentran sobre una superficie plana. La información disponible en la secuencia sigue el mismo formato del EuRoC MAV Dataset, por lo que posee información proveniente de la cámara y de la IMU. Sin embargo, no fue generada a bordo del robot prototipo, por lo que no posee \textit{groundtruth} asociado. En la figura \ref{imagen:Resultados/Dataset_Local/Secuencia1/Imagen} se aprecia una de las imágenes presentes en esta secuencia.
+La secuencia 1 del dataset local posee una duración aproximada de 30 segundos y se basa en la observación de objetos  que se encuentran sobre una superficie plana. La información disponible en la secuencia sigue el mismo formato del EuRoC MAV Dataset, por lo que posee información proveniente de la cámara y de la IMU. Sin embargo, no fue generada a bordo del robot prototipo, por lo que no posee \textit{groundtruth} asociado proveniente de los \textit{encoders}. En la figura \ref{imagen:Resultados/Dataset_Local/Secuencia1/Imagen} se aprecia una de las imágenes presentes en esta secuencia.
 
 Esta secuencia fue evaluada utilizando ORB-SLAM2 en modo monocular. La figura \ref{imagen:Resultados/Dataset_Local/Secuencia1/KeyframesAndMap} presenta una captura del mapa parcial generado, el cual se muestra con puntos rojos. Los cuadros azules corresponden a los \textit{keyframes} y las líneas verdes entre los \textit{keyframes} representa el grafo global en solución. En la figura \ref{imagen:Resultados/Dataset_Local/Secuencia1/Reconstruccion2} se aprecia el mapa final generado.
 
@@ -685,7 +723,9 @@ Esta secuencia fue evaluada utilizando ORB-SLAM2 en modo monocular. La figura \r
 \end{figure}
 
 
-De la misma forma se presentan la posición y la orientación estimada de la cámara con ORB-SLAM2 en las figuras \ref{imagen:Resultados/Dataset_Local/Secuencia3/PosicionORB} y \ref{imagen:Resultados/Dataset_Local/Secuencia1/OrientacionORB}, respectivamente.	
+De la misma forma se presentan la posición y la orientación estimada de la cámara con ORB-SLAM2 en las figuras \ref{imagen:Resultados/Dataset_Local/Secuencia3/PosicionORB} y \ref{imagen:Resultados/Dataset_Local/Secuencia1/OrientacionORB}, respectivamente. En este caso, las posición estimada al igual que el mapa construido, se estima excepto por un factor escala. Sin embargo, se pudo confirmar que la posición del primer \textit{keyframe} generado en $x$ y $z$, es cercana a la del último \textit{keyframe} de la secuencia, y esto es reflejado en las gráficas de posición en la figura \ref{imagen:Resultados/Dataset_Local/Secuencia3/PosicionORB}, donde la posición inicial y final en los ejes $x$ y $z$ son próximas.
+
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia1/PosicionORB}
@@ -705,43 +745,46 @@ De la misma forma se presentan la posición y la orientación estimada de la cá
 
 Esta secuencia fue evaluada utilizando el sistema implementado utilizando el filtro de Madgwick y el método RANSAC con los detectores ORB y KAZE. La secuencia presenta el movimiento en linea recta del robot prototipo. La estimación de movimiento es comparada con la obtenida mediante la odometría del robot. Esta última es extraída a través de los \textit{encoders} del robot y es considera como el \textit{groundtruth} de los datos.
 
+\paragraph{ORB \\ \\}
 
+En las figuras \ref{imagen:Resultados/Dataset_Local/Secuencia2/ORB/Posicion} y \ref{imagen:Resultados/Dataset_Local/Secuencia2/ORB/Orientacion} se presenta la posición y el error de orientación estimado utilizando el método RANSAC con el detector ORB. 
 
-\paragraph{ORB}
-	
+En este caso es posible ver que la estimación de posición en el eje de mayor rango de movimiento (eje $y$) presenta los mejores resultados. En el eje $x$, las estimaciones iniciales  difieren del \textit{groundtruth} en algunos milímetros, sin embargo las estimaciones posteriores siguen la forma del movimiento del robot. En el eje $z$, se observa el resultado del \textit{drift}, sin embargo el rango de error máximo es de 4 cm. Cabe destacar que este eje está asociado a la altura de la IMU, que se asume 0 debido a el movimiento del robot en el plano $xy$.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia2/ORB/Posicion}
-	\caption{Posición de la IMU utilizando método RANSAC}
+	\caption{Posición de la IMU utilizando método RANSAC en la Secuencia 2}
 	\label{imagen:Resultados/Dataset_Local/Secuencia2/ORB/Posicion}
 \end{figure}
 
+Por su parte, los resultados de orientación de la figura \ref{imagen:Resultados/Dataset_Local/Secuencia2/ORB/Orientacion} presentan un error máximo de 15 grados en el ángulo de \textit{yaw}, mientras que los angulos de \textit{roll} y \textit{pitch} se estiman con alta precisión, tal como se observa en los histogramas del error de orientación.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia1/OrientacionORB}
-	\caption[Posición de la IMU utilizando método RANSAC]{Orientación de la IMU estimada en Secuencia 2.}
+	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia2/ORB/Orientacion}
+	\caption[Orientación de la IMU estimada en la Secuencia 2]{Orientación de la IMU estimada en Secuencia 2.}
 	\label{imagen:Resultados/Dataset_Local/Secuencia2/ORB/Orientacion}
 \end{figure}
 
 
-\paragraph{KAZE}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia2/ORB/Posicion}
-	\caption{Posición estimada de la IMU utilizando método RANSAC}
-	\label{imagen:Resultados/Dataset_Local/Secuencia2/KAZE/Posicion}
-\end{figure}
-
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia1/OrientacionORB}
-	\caption[Error de la orientación estimada  de la IMU en Secuencia 2 utilizando el método RANSAC]{Error de la orientación estimada  de la IMU en Secuencia 2.}
-	\label{imagen:Resultados/Dataset_Local/Secuencia2/KAZE/Orientacion}
-\end{figure}
+%\paragraph{KAZE}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia2/ORB/Posicion}
+%	\caption{Posición estimada de la IMU utilizando método RANSAC}
+%	\label{imagen:Resultados/Dataset_Local/Secuencia2/KAZE/Posicion}
+%\end{figure}
+%
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia1/OrientacionORB}
+%	\caption[Error de la orientación estimada  de la IMU en Secuencia 2 utilizando el método RANSAC]{Error de la orientación estimada  de la IMU en Secuencia 2.}
+%	\label{imagen:Resultados/Dataset_Local/Secuencia2/KAZE/Orientacion}
+%\end{figure}
 
 
 %
