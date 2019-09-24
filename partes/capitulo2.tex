@@ -346,7 +346,7 @@ En el presente trabajo se propone un sistema de SLAM basado en la fusión visual
 	\label{fig:esquemaGeneral}
 \end{figure}
 
-Este diagrama se encuentra dividido en los módulos del sistema inercial y los módulos del sistema visual, más el algoritmo de optimización fusiona  los datos provistos por estos módulos. Éste último tiene una vertiente basada en métodos directos, implementada previamente por \textit{Morales F.} \cite{fabio}, y una nueva versión, basada en un método de estimación con RANSAC.
+Este diagrama se encuentra dividido en los módulos del sistema inercial y los módulos del sistema visual, más el algoritmo de optimización fusiona  los datos provistos por estos módulos. Éste último tiene una vertiente basada en métodos directos y optimización de Gauss-Newton, implementada previamente por \textit{Morales F.} \cite{fabio}, y en este trabajo se implementa una nueva versión basada en un método de estimación con RANSAC (del inglés: \textit{Random Sample Consensus}).
 
 En el caso del esquema inercial, se tiene un primer filtro de fusión de los datos de la IMU, el cual corresponde al filtro de Madgwick. Este filtro estima la orientación del sistema de la IMU respecto a un sistema fijo, partiendo de la velocidad angular y la aceleración medida. Posteriormente, se utiliza esta orientación para calcular los residuales inerciales. El sistema implementado también deja a disposición la posibilidad de utilizar otro filtro de fusión inercial como el filtro complementario.
 

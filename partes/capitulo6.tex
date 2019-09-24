@@ -2,8 +2,12 @@
 \label{capitulo6}
 \lhead{Capítulo 6. \emph{Resultados y análisis}}
 
+\section{Introducción}
+A continuación se presentan los resultados obtenidos utilizando las secuencias de datos del EuRoC MAV Dataset y en el dataset local utilizada. Las pruebas se realizaron utilizando un equipo de 4 GB de RAM y un procesador Intel ® i3-3120M @ 2.50GHz × 4.
+
 \section{Pruebas en el EuRoC MAV Dataset}
-A continuación se presentan los resultados obtenidos
+
+
 utilizando las secuencias de datos  $MH\_ 01\_ easy$,  $MH\_ 05\_ difficult$,  $V1\_ 01\_ easy$,
 $V1\_ 02\_ medium$ y  $V1\_ 03\_ difficult$, pertenecientes al EuRoC MAV Dataset.
 
@@ -98,7 +102,7 @@ En esta prueba se tuvo un tiempo promedio de 0.739407 s y se puedo observar que 
 
 \subsection{Evaluación del método RANSAC}
 
-En la evaluación del metodo de dos puntos se utilizaron secuencias lentas $MH\_ 01\_ easy$ y $V1\_ 01\_ easy$ y la secuencia rápida $V1\_ 02\_ medium$, para comparar el desempeño de los diferentes detectores ante cambios bruscos de movimiento. 
+En la evaluación del metodo de dos puntos se utilizaron secuencias lentas $MH\_ 01\_ easy$ y $V1\_ 01\_ easy$, y la secuencia rápida $V1\_ 02\_ medium$, para comparar el desempeño de los diferentes detectores ante cambios bruscos de movimiento. 
 
 En este caso se utilizaron los detectores KAZE, AKAZE, ORB, SIFT y SURF en la evaluación. Las siguente secciones presentan los resultados de rendimiento de cada detector.
 
@@ -116,7 +120,12 @@ En cada sección se presentan los parámetros de configuración utilizados para 
  Por su parte, una imagen es considerada como keyframe cuando la disparidad rotacional o traslacional excede su umbral.
  
  En el caso del umbral del detector es el valor de umbral de cada detector en las funciones de Opencv, el cual afecta el número de features detectados. En este caso, este valor umbral es seleccionado de forma tal que el número de features promedio detectados en la secuencia sea similar en todos los detectores. De esta forma, el análisis de datos de los resultados se puede realizar bajo condiciones similares.
-
+ 
+ 
+ También se presentan los tiempos de cómputo más relevantes, como el tiempo de estimación, el tiempo de procesamiento y el tiempo de evaluación. El tiempo de estimación es el tiempo total del procesamiento de todas las medidas de la IMU a través del filtro inercial, más el tiempo transcurrido en las estimaciones realizadas con el método RANSAC. El tiempo de procesamiento es la suma de todos los tiempos asociados al proceso de estimación (tiempo de detección de puntos característicos, tiempo de emparejamiento, tiempo de filtro inercial y tiempo de estimación con RANSAC). El tiempo de evaluación es el tiempo de duración de la secuencia evaluada.
+ 
+ Cabe destacar que en todas las secuencias se utilizó un filtro de celdas de 12x8 y que la traslación se encuentra escalada utilizando el \textit{groundtruth}.
+ 
 \subsubsection{Secuencia Machine Hall Easy}
 
 
@@ -743,7 +752,81 @@ De la misma forma se presentan la posición y la orientación estimada de la cá
 
 \subsection{Secuencia 2}
 
-Esta secuencia fue evaluada utilizando el sistema implementado utilizando el filtro de Madgwick y el método RANSAC con los detectores ORB y KAZE. La secuencia presenta el movimiento en linea recta del robot prototipo. La estimación de movimiento es comparada con la obtenida mediante la odometría del robot. Esta última es extraída a través de los \textit{encoders} del robot y es considera como el \textit{groundtruth} de los datos.
+Esta secuencia fue evaluada utilizando el sistema implementado utilizando el filtro de Madgwick y el método RANSAC con los detectores ORB y KAZE. La secuencia presenta el movimiento en linea recta del robot prototipo. La estimación de movimiento es comparada con la obtenida mediante la odometría del robot. Esta última es extraída a través de los \textit{encoders} del robot y es considera como el \textit{groundtruth} de los datos. La figura \ref{imagen:Resultados/Dataset_Local/Secuencia1/Imagen} presenta imágenes pertenecientes a esta secuencia.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.15]{Resultados/Dataset_Local/Secuencia2/Imagen1}
+	\includegraphics[scale=0.15]{Resultados/Dataset_Local/Secuencia2/Imagen2}
+	\includegraphics[scale=0.15]{Resultados/Dataset_Local/Secuencia2/Imagen3}
+	\caption[Imágenes perteneciente a la secuencia 2 del dataset local]{Imágenes perteneciente a la secuencia 2.}
+	\label{imagen:Resultados/Dataset_Local/Secuencia1/Imagen}
+\end{figure}
+
+
+La tabla \ref{Tabla/Parametros/Secuencia2} presenta los parámetros de configuración con los que se procesó la secuencia 2. Por su parte, la tabla \ref{Tabla/Resultados/Secuencia2} presenta los resultados obtenidos utilizando el detector KAZE y ORB. En particular, se puede observar que el sistema es capaz de procesar las imágenes en tiempo real utilizando el detector ORB, mientras que con el detector KAZE el sistema tarda 40 veces más. 
+
+
+\begin{table}[H]
+	\centering
+	\caption{Parámetros de configuración  en secuencia 2}
+	\begin{tabular}{|l|c|c|}
+		\hline
+		\multicolumn{1}{|c|}{\textbf{Detector}} & \textbf{KAZE} & \textbf{ORB} \\ \hline
+		Umbral del RANSAC & 0.18 & 0.18 \\ \hline
+		Umbral de frames estáticos & 4 & 4 \\ \hline
+		Umbral disparidad euclideana & \textbf{1} & \textbf{1} \\ \hline
+		Umbral disparidad rotacional (°) & 5 & 5 \\ \hline
+		Umbral disparidad traslacional (px) & 15 & 15 \\ \hline
+		Umbral del detector & \multicolumn{1}{r|}{0.001} & 200 \\ \hline
+	\end{tabular}
+	\label{Tabla/Parametros/Secuencia2}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{Resultados en Secuencia 2}
+	\begin{tabular}{|l|c|c|}
+		\hline
+		\multicolumn{1}{|c|}{\textbf{Detector}} & \textbf{KAZE} & \textbf{ORB} \\ \hline
+		Número de features detectados & 190 & 200 \\ \hline
+		Número de parejas iniciales & 113 & 58 \\ \hline
+		Número de parejas del filtro de celdas & 27 & 13 \\ \hline
+		Número de inliers del RANSAC & 113 & 58 \\ \hline
+		Número de imágenes procesadas & 268 & \textbf{267} \\ \hline
+		Número de keyframes & 18 & 20 \\ \hline
+		Tiempo promedio de filtro inercial (ms) & 6.1 & 6.4 \\ \hline
+		Tiempo promedio de detección  (ms) & 1368 & 28.3 \\ \hline
+		Tiempo promedio de match (ms) & 13.9 & 14.8 \\ \hline
+		Tiempo promedio de RANSAC (ms) & 0.5 & 0.3 \\ \hline
+		Tiempo de estimación (s) & 10.7 & 16.2 \\ \hline
+		Tiempo de  procesamiento (s) & 372 & 13.2 \\ \hline
+		Tiempo de evaluación (s) & 13.7 & 13.7 \\ \hline
+	\end{tabular}
+	\label{Tabla/Resultados/Secuencia2}
+\end{table}
+
+A continuación se presentan las gráficas de posición y error de orientación obtenidas para cada detector.
+
+\paragraph{KAZE}
+
+En las figuras \ref{imagen:Resultados/Dataset_Local/Secuencia2/KAZE/Posicion} y \ref{imagen:Resultados/Dataset_Local/Secuencia2/KAZE/Orientacion} se presentan la posición estimada y el error de orientación estimado utilizando el método RANSAC con el detector KAZE.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia2/KAZE/Posicion}
+	\caption{Posición estimada de la IMU utilizando método RANSAC y el detector KAZE}
+	\label{imagen:Resultados/Dataset_Local/Secuencia2/KAZE/Posicion}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia2/KAZE/Orientacion}
+	\caption[Error de la orientación estimada  de la IMU en Secuencia 2 utilizando el método RANSAC y el detector KAZE]{Error de la orientación estimada  de la IMU en Secuencia 2 utilizando el detector KAZE.}
+	\label{imagen:Resultados/Dataset_Local/Secuencia2/KAZE/Orientacion}
+\end{figure}
+
 
 \paragraph{ORB}
 En las figuras \ref{imagen:Resultados/Dataset_Local/Secuencia2/ORB/Posicion} y \ref{imagen:Resultados/Dataset_Local/Secuencia2/ORB/Orientacion} se presenta la posición y el error de orientación estimado utilizando el método RANSAC con el detector ORB. 
@@ -767,25 +850,36 @@ Por su parte, los resultados de orientación de la figura \ref{imagen:Resultados
 \end{figure}
 
 
-%\paragraph{KAZE}
-%
-%
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia2/ORB/Posicion}
-%	\caption{Posición estimada de la IMU utilizando método RANSAC}
-%	\label{imagen:Resultados/Dataset_Local/Secuencia2/KAZE/Posicion}
-%\end{figure}
-%
-%
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[scale=0.6]{Resultados/Dataset_Local/Secuencia1/OrientacionORB}
-%	\caption[Error de la orientación estimada  de la IMU en Secuencia 2 utilizando el método RANSAC]{Error de la orientación estimada  de la IMU en Secuencia 2.}
-%	\label{imagen:Resultados/Dataset_Local/Secuencia2/KAZE/Orientacion}
-%\end{figure}
+\section{Nubes de puntos generadas}
 
+En la figura \ref{imagen:Resultados/Triangulacion/Escena} se muestran dos \textit{keyframes} generados por el sistema implementado entre los que se realiza una triangulación, empleando para ello la función de triangulación estéreo \textit{ triangulatePoints} disponible en OpenCV.
 
+A pesar de que fue posible generar nubes de puntos aceptables  como las que se presentan en la figura \ref{imagen:Resultados/Triangulacion/Bueno}, en general la triangulación entre \textit{keyframes} genera resultados distorsionados como los de la figura \ref{imagen:Resultados/Triangulacion/Distorsion}. Esto ocasionó que la escala no pudiera ser propagada entre los \textit{keyframes},  y a su vez que el mapa generado final no fuera consistente. 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{Resultados/Triangulacion/Escena}
+	\caption[Escena de muestra perteneciente a las secuencias Vicon Room]{Escena de muestra perteneciente a las secuencias Vicon Room. Las imágenes presentadas son \textit{keyframes} generados entre los que se realiza una triangulación. Los puntos rojos y verdes representan los puntos característicos detectados y emparejados entre las imágenes.}
+	\label{imagen:Resultados/Triangulacion/Escena}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.3]{Resultados/Triangulacion/Bueno}
+	\includegraphics[scale=0.3]{Resultados/Triangulacion/Bueno2}
+	\caption[Nubes de puntos generados con keyframes de la secuencia Vicon Room]{
+	Nubes de puntos generados con keyframes de la secuencia Vicon Room}
+	\label{imagen:Resultados/Triangulacion/Bueno}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.3]{Resultados/Triangulacion/Distorsion}
+	\includegraphics[scale=0.3]{Resultados/Triangulacion/Distorsion2}
+	\caption[Nubes de puntos distorsionadas generadas  con keyframes de la secuencia Vicon Room]{
+		Nubes de puntos distorsionadas generadas  con keyframes de la secuencia Vicon Room}
+	\label{imagen:Resultados/Triangulacion/Distorsion}
+\end{figure}
 %
 %
 %\paragraph {KAZE}

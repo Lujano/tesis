@@ -13,36 +13,35 @@ El objetivo de este capítulo es explicar detalladamente los métodos de estimac
 
 \subsection{ Selección de parejas }
 
-Actualmente la selección de parejas posee una esquema de  implementación basado en  CPU (figura 13) y  esquema similar basado en GPU (figura 14). \\
+El módulo de selección de parejas tiene por objetivo generar la mayor cantidad de parejas correctas partiendo de la detección de los puntos característicos entre dos imágenes. Actualmente la selección de parejas posee una esquema de  implementación basado en  CPU (figura \ref{fig:ParejasCPU}) y  esquema similar basado en GPU (figura \ref{fig:ParejasGPU}). 
 
-En ambos módulos se tienen las imágenes i e i+1, las cuales son la entrada del modulo de extracción de características.
-En la salida de este módulo se tienen la ubicación de los puntos característicos en las imágenes y sus descriptores. Este módulo tiene a disposición 5 tipos de detectores en la versión en CPU y 2 tipos de detectores en la versión en GPU.\\
-
-Posteriormente, el módulo de emparejamiento es el encargado de generar las parejas de correspondencias entre los puntos característicos de las dos imágenes, utilizando para ello algoritmos de emparejamiento como FLANN (del inglés: Fast Library for Approximate Nearest Neighbors)
-y fuerza bruta. En la implementación en CPU se dispone de ambos algoritmos, mientras que la versión en GPU sólo implementa fuerza bruta.\\
-
-Por último, el módulo de filtrado se encarga de seleccionar las mejores parejas entre las dos imágenes.  Este módulo es común en ambas versiones y se encuentra implementado en CPU.\\
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.4]{Implementacion/DiagramaCPU2.png}
+	\includegraphics[scale=0.35]{Implementacion/DiagramaCPU2.png}
 	\caption[Esquema general del módulo de extracción de parejas en CPU]{Esquema general del módulo de extracción de parejas en CPU.}
-	\label{fig:my_label}
+	\label{fig:ParejasCPU}
 \end{figure}
 
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.4]{Implementacion/DiagramaGPU2.png}
+	\includegraphics[scale=0.35]{Implementacion/DiagramaGPU2.png}
 	\caption[Esquema general del módulo de extracción de parejas en GPU]{Esquema general del módulo de extracción de parejas en GPU.}
-	\label{fig:my_label}
+	\label{fig:ParejasGPU}
 \end{figure}
+
+En ambos módulos se tienen las imágenes i e i+1, las cuales son la entrada del modulo de extracción de puntos característicos. En la salida de este módulo se tienen la ubicación de los puntos característicos en las imágenes y sus descriptores. Este módulo tiene a disposición 5 tipos de detectores en la versión en CPU y 2 tipos de detectores en la versión en GPU disponibles en la librería de OpenCV.
+
+Posteriormente, el módulo de emparejamiento es el encargado de generar las parejas de correspondencias entre los puntos característicos de las dos imágenes, utilizando para ello algoritmos de emparejamiento como FLANN (del inglés: Fast Library for Approximate Nearest Neighbors) y fuerza bruta. En la implementación en CPU se dispone de ambos algoritmos, mientras que la versión en GPU sólo implementa fuerza bruta.
+
+Por último, el módulo de filtrado se encarga de seleccionar las mejores parejas entre las dos imágenes.  Este módulo es común en ambas versiones y se encuentra implementado en CPU. En la implementación  realizada, la prueba de simetría es prescindible y no es utilizada en las pruebas realizadas en el capítulo 6 para mejorar la eficiencia computacional. Cabe destacar que los resultados generados se obtuvieron utilizando la versión en CPU de la figura \ref{fig:ParejasCPU}.
 
 \subsubsection{Extracción de puntos característicos}
 
-El modulo de extracción de puntos característicos en CPU dispone de detectores como SIFT, SURF, KAZE, AKAZE y ORB, mientras que la versión en GPU sólo posee SURF y ORB.\\
+El modulo de extracción de puntos característicos en CPU dispone de detectores como SIFT, SURF, KAZE, AKAZE y ORB, mientras que la versión en GPU sólo posee SURF y ORB.
 
-En la figura 15 se muestran la detección de puntos característicos  para una imagen perteneciente al EuRoC MAV Dataset. De izquierda a derecha se presenta la extracción de  puntos característicos para SIFT (1666 puntos), SURF (1504 puntos), KAZE (1865 puntos), AKAZE (1653 puntos) y ORB (1500 puntos) sobre la misma imagen. \\
+En la figura \ref{fig:eurocDetectores} se muestran la detección de puntos característicos  para una imagen perteneciente al EuRoC MAV Dataset. De izquierda a derecha se presenta la extracción de  puntos característicos para SIFT (1666 puntos), SURF (1504 puntos), KAZE (1865 puntos), AKAZE (1653 puntos) y ORB (1500 puntos) sobre la misma imagen. 
 \begin{figure}[H]
 	
 	\includegraphics[scale=0.3]{Implementacion/DeteccionCaracteristicas/Imagen1SURF.png}
@@ -51,34 +50,33 @@ En la figura 15 se muestran la detección de puntos característicos  para una i
 	\includegraphics[scale=0.3]{Implementacion/DeteccionCaracteristicas/Imagen1AKAZE.png}
 	\includegraphics[scale=0.3]{Implementacion/DeteccionCaracteristicas/Imagen1ORB.png}
 	\caption[Extracción de características]{Extracción de características.}
-	\label{fig:my_label}
+	\label{fig:eurocDetectores}
 \end{figure}
 
 
 \subsubsection{Filtrado de parejas}
 
+Una vez se han identificado los puntos característicos en la imagen i y la i+1, se calculan los descriptores de las características detectadas y se procede a encontrar las correspondencias entre las dos imágenes. Para esta tarea se utiliza el método de vecinos más cercanos (KNN, del inglés: \textit{K Nearest Neighbors}), el cual puede a su vez puede implementarse con algoritmos del tipo fuerza bruta o FLANN (del inglés: \textit{Fast Library for Approximate Nearest Neighbors}). Este método se encarga de comparar el descriptor de un punto de referencia presente en la imagen i con los descriptores de los puntos de referencia de la imagen i+1 y determinar los k descriptores más cercanos al descriptor de la imagen i . En este caso la métrica de distancia puede corresponder a la distancia euclidiana en el caso de descriptores vectoriales, o a la distancia Hamming en el caso de descriptores binarios.
 
-Una vez se han identificado los puntos característicos en la imagen i y la i+1, se calculan los descriptores de las características detectadas y se procede a encontrar las correspondencias entre las dos imágenes. Para esta tarea se utiliza el método de vecinos más cercanos (KNN, del inglés: \textit{K Nearest Neighbors}), el cual puede a su vez puede implementarse con algoritmos del tipo fuerza bruta o FLANN (del inglés: \textit{Fast Library for Approximate Nearest Neighbors}). Este método se encarga de comparar el descriptor de un punto de referencia presente en la imagen i con los descriptores de los puntos de referencia de la imagen i+1 y determinar los k descriptores más cercanos al descriptor de la imagen i . En este caso la métrica de distancia puede corresponder a la distancia euclidiana en el caso de descriptores vectoriales, o a la distancia Hamming en el caso de descriptores binarios.\\
+En esta implementación se utiliza k = 2, y se considera como una correspondencia aquellos casos donde la distancia entre el descriptor de la característica presente en la imagen i (D1) y su vecino más cercano en la imagen i+1 resulta 0.8 veces menor a la distancia entre D1 y el siguiente vecino de la imagen i+1. El valor de 0.8 se establece en correspondencia con el método de extracción de parejas de alta calidad establecido por David G. Lowe en \cite{Lowe}.
 
-En esta implementación se utiliza k = 2, y se considera como una correspondencia aquellos casos donde la distancia entre el descriptor de la característica presente en la imagen i (D1) y su vecino más cercano en la imagen i+1 resulta 0.8 veces menor a la distancia entre D1 y el siguiente vecino de la imagen i+1. El valor de 0.8 se establece en correspondencia con el método de extracción de parejas de alta calidad establecido por David G. Lowe en \cite{Lowe}.\\
+Posteriormente se realiza una prueba de simetría entre parejas. En esta prueba, si el descriptor D1 de la característica  de la imagen i posee una correspondencia D2 en la imagen i+1, entonces al calcular la correspondencia desde D2 a la imagen i, debe resultar D1. Las parejas que no cumplan este criterio son descartadas.
 
-Posteriormente se realiza una prueba de simetría entre parejas. En esta prueba, si el descriptor D1 de la característica  de la imagen i posee una correspondencia D2 en la imagen i+1, entonces al calcular la correspondencia desde D2 a la imagen i, debe resultar D1. Las parejas que no cumplan este criterio son descartadas.\\
-
-En la figura 16 se presenta un ejemplo del filtrado  utilizando el detector SIFT. En la imagen i se detectaron 1666 puntos (figura 1) característicos, mientras que en la imagen i+1 se detectaron 1826. Luego de aplicar el filtrado de parejas por vecinos más cercanos y la prueba de simetría, la imagen i de la izquierda posee 882 correspondencias con la imagen i+1 presentada a la derecha.\\
+En la figura \ref{fig:filtrado} se presenta un ejemplo del filtrado  utilizando el detector SIFT. En la imagen i se detectaron 1666 puntos característicos, mientras que en la imagen i+1 se detectaron 1826. Luego de aplicar el filtrado de parejas por vecinos más cercanos y la prueba de simetría, la imagen i de la izquierda posee 882 correspondencias con la imagen i+1 presentada a la derecha.
 
 \begin{figure}[H]
 	
 	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1.png}
 	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen2.png}
 	\caption[Salida del modulo de filtrado luego de la prueba de simetría]{Salida del modulo de filtrado luego de la prueba de simetría.}
-	\label{fig:my_label}
+	\label{fig:filtrado}
 \end{figure}
 
 
-Finalmente, se realiza una distribución espacial de las mejores parejas  sobre las imágenes i e i+1 utilizando un filtro de celdas. En este último,la imagen i es dividida en celdas de m x n pixeles. En esta implementación se m y n son el resultado de dividir el ancho y el largo de la imagen, respectivamente, por un mismo número entero k. \\
+Finalmente, se realiza una distribución espacial de las mejores parejas  sobre las imágenes i e i+1 utilizando un filtro de celdas. En este último,la imagen i es dividida en celdas de $m x n$ píxeles. En esta implementación  $m$ y $n$ son el resultado de dividir el ancho y el largo de la imagen, respectivamente, por un mismo número entero k. 
 
-La figura 17 presenta dos imágenes en las que el filtro de celdas es aplicado. La imagen de la izquierda es el resultado de colocar las dimensiones de una imagen de resolución 752x480 píxeles, en celdas unitarias de aproximadamente 62x40 píxeles,
-tomando k = 12,  generando por tanto 144 celdas y teniendo un total de 112 parejas finales luego de aplicado el filtrado. Por su parte, la imagen de la derecha es el resultado de fraccionar en 36 celdas la imagen original, tomando k = 6. En ésta, se tienen 34 parejas finales. \\
+La figura \ref{fig:celdas} presenta dos imágenes en las que el filtro de celdas es aplicado. La imagen de la izquierda es el resultado de colocar las dimensiones de una imagen de resolución 752x480 píxeles, en celdas unitarias de aproximadamente 62x40 píxeles,
+tomando k = 12,  generando por tanto 144 celdas y teniendo un total de 112 parejas finales luego de aplicado el filtrado. Por su parte, la imagen de la derecha es el resultado de fraccionar en 36 celdas la imagen original, tomando k = 6. En ésta, se tienen 34 parejas finales. 
 
 
 \begin{figure}[H]
@@ -86,20 +84,20 @@ tomando k = 12,  generando por tanto 144 celdas y teniendo un total de 112 parej
 	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1Grid12.png}
 	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1Grid6.png}
 	\caption[División de la imagen en celdas]{División de la imagen en celdas.}
-	\label{fig:my_label}
+	\label{fig:celdas}
 \end{figure}
 
 
-El criterio aplicado para seleccionar las mejores parejas y distribuirlas de forma homogénea sobre la imagen  consiste en seleccionar la mejor pareja  dentro de la región de la imagen correspondiente a la celda, y descartar a las demás parejas presentes. Se considera como mejor pareja a aquella que posea la menor distancia entre los descriptores de sus dos puntos característicos.\\
+El criterio aplicado para seleccionar las mejores parejas y distribuirlas de forma homogénea sobre la imagen  consiste en seleccionar la mejor pareja  dentro de la región de la imagen correspondiente a la celda, y descartar a las demás parejas presentes. Se considera como mejor pareja a aquella que posea la menor distancia entre los descriptores de sus dos puntos característicos.
 
-Las figuras 18 y 19 presentan el resultado final del modulo de filtrado de parejas con 36 y 144 celdas, respectivamente. Se puede observar que el filtro de celdas sólo es aplicado en los puntos característicos de la imagen i, ya que debido al movimiento del robot las puntos característicos se encuentran distribuidos de forma diferente en la imagen i+1 (imagen mostrada a la derecha) . \\
+Las figuras \ref{fig:filtrado36} y \ref{fig:filtrado144} presentan el resultado final del modulo de filtrado de parejas con 36 y 144 celdas, respectivamente. Se puede observar que el filtro de celdas sólo es aplicado en los puntos característicos de la imagen i, ya que debido al movimiento del robot las puntos característicos se encuentran distribuidos de forma diferente en la imagen i+1 (imagen mostrada a la derecha) . 
 
 \begin{figure}[H]
 	
 	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1BEST12.png}
 	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen2BEST12.png}
 	\caption[Filtrado de parejas con 144 celdas]{Filtrado de parejas con 144 celdas.}
-	\label{fig:my_label}
+	\label{fig:filtrado144}
 \end{figure}
 
 
@@ -108,16 +106,13 @@ Las figuras 18 y 19 presentan el resultado final del modulo de filtrado de parej
 	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen1BEST6.png}
 	\includegraphics[scale=0.3]{Implementacion/FiltradoCorrespondencias/Imagen2BEST6.png}
 	\caption[Filtrado de parejas con 36 celdas]{Filtrado de parejas con 36 celdas.}
-	\label{fig:my_label}
+	\label{fig:filtrado36}
 \end{figure}
 
-Cabe destacar que siempre que existan suficientes puntos característicos distribuidos en la imagen a la entrada de este módulo, el número de parejas finales será cercano al número de celdas. \\
+Cabe destacar que siempre que existan suficientes puntos característicos distribuidos en la imagen a la entrada de este módulo, el número de parejas finales será cercano al número de celdas. 
 
-Para evaluar el tiempo de cómputo del filtrado espacial se utilizó un equipo Intel ® Core 2 Duo CPU E8400 @ 3.00Ghz, dando como resultado un tiempo aproximado de 400 $\mu$s para 144, 121, 100, 81, 64, 49 y 36 celdas, teniendo como entrada 882 parejas.
-
-
-
-
+Para evaluar el tiempo de cómputo del filtrado espacial se utilizó un equipo
+Intel ® i3-3120M @ 2.50GHz × 4 , dando como resultado un tiempo aproximado de 400 $\mu$s para 144, 121, 100, 81, 64, 49 y 36 celdas, teniendo como entrada 882 parejas.
 
 \section{Estimación de los residuales rotacionales}
 
