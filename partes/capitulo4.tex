@@ -4,22 +4,16 @@
 
 
 \section{Introducción}
-El objetivo de este capítulo es explicar detalladamente la implementación realizada en este trabajo.
-\clearpage
+El objetivo de este capítulo es explicar detalladamente los métodos de estimación de orientación y traslación  implementados en este trabajo, así como los módulos que componen el esquema general del sistema.
 
-
-
-\section{Descripción general}\label{seccion-corte}
-
-La estimación de odometría por medio de la fusión visual inercial fue desarrollada utilizando C++ como lenguaje de programación y ROS para la aplicación de los filtros inerciales y la visualización del movimiento del robot. Este programa utiliza un sólo hilo de ejecución, de forma que la odometría se estima de forma secuencial, pasando primero por estimar la orientación del robot utilizando el filtro inercial, y luego a estimar la traslación a partir de los residuales inerciales y la cámara. El formato de entrada de las imágenes y de los datos de la IMU fueron tomados de acuerdo al formato empleado en el EUROC Mav dataset.
-
-En cuanto al dataset local realizado, también fue implementado utilizando C++ como lenguaje de programación, y utilizando una Raspberry Pi 3 para la adquisición de los datos de la IMU y de la cámara, y utilizando 4 hilos de ejecución.
+%En cuanto al dataset local realizado, también fue implementado utilizando C++ como lenguaje de programación, y utilizando una Raspberry Pi 3 para la adquisición de los datos de la IMU y de la cámara, y utilizando 4 hilos de ejecución.
 
 
 \section{Extracción de residuales fotométricos}
+
 \subsection{ Selección de parejas }
 
-Actualmente la selección de parejas posee una esquema de  implementación basado en  CPU (figura 13) y  esquema similar basado en GPU (figura 14).\\
+Actualmente la selección de parejas posee una esquema de  implementación basado en  CPU (figura 13) y  esquema similar basado en GPU (figura 14). \\
 
 En ambos módulos se tienen las imágenes i e i+1, las cuales son la entrada del modulo de extracción de características.
 En la salida de este módulo se tienen la ubicación de los puntos característicos en las imágenes y sus descriptores. Este módulo tiene a disposición 5 tipos de detectores en la versión en CPU y 2 tipos de detectores en la versión en GPU.\\
@@ -223,7 +217,7 @@ Por tanto, la disparidad traslacional tiene unidades de píxeles.
 \section{Estimación de la traslación}
 
 \subsection{Método de dos puntos}
-El método para estimar la traslación está basado en una modificación del esquema RANSAC de dos puntos implementado en [].
+El método para estimar la traslación está basado en una modificación del esquema RANSAC de dos puntos implementado en \cite{robust}.
 %Robust Real-Time Visual Odometry
 %with a Single Camera and an IMU
  
@@ -279,12 +273,12 @@ La cual implica que los puntos característicos se encuentran al frente de la im
 
 En general, es posible encontrar más de un par de parejas de correspondencias por imagen, por lo que es necesario estimar el vector de traslación unitario que reduzca el error grupal de correspondencias.
 
-Una forma de hacer esto es realizar la triangulación de las correspondecias con el residual de rotación y  el vector unitario de traslación para un par de características del grupo, y calcular el error de reproyección para todas las correspondencias, y el vector de traslación que disminuya el error del grupo se considerará como la mejor estimación. Sin embargo, esto tiene un alto costo computacional debido a que en cada iteración deben ser nuevamente trianguladas los puntos característicos.
+Una forma de hacer esto es realizar la triangulación de las correspondencias con el residual de rotación y  el vector unitario de traslación para un par de características del grupo, y calcular el error de reproyección para todas las correspondencias, y el vector de traslación que disminuya el error del grupo se considerará como la mejor estimación. Sin embargo, esto tiene un alto costo computacional debido a que en cada iteración deben ser nuevamente trianguladas los puntos característicos.
 
 Debido a ello, y para conservar la simplicidad y reducir el costo computacional, se toma como función de error el producto punto entre el vector estimado y los vectores normales a los planos epipolares $\overset { \rightarrow  }{ { n }_{ i } } $ . En teoría, el producto punto entre el vector unitario de traslación y el normal al plano epipolar debe ser $0$, sin embargo debido a la resolución de la imagen, a la precisión de la detección de la característica, y a la profundidad del punto, esto  no ocurre en general.
 
 Una vez definida la función de error existen dos aproximaciones básicas para hallar la mejor estimación.
-En presencia de un número significativo de correspondecias erróneas, se puede optar por métodos como RANSAC, para estimar el vector unitario de traslación que mejor se ajuste a un subconjunto del grupo de características, o en caso de tener una parte previa de filtrado de correspondencias, utilizar métodos iterativos como el de Gauss-Newton para hallar el vector de traslación que reduzca el error grupal.
+En presencia de un número significativo de correspondencias erróneas, se puede optar por métodos como RANSAC, para estimar el vector unitario de traslación que mejor se ajuste a un subconjunto del grupo de características, o en caso de tener una parte previa de filtrado de correspondencias, utilizar métodos iterativos como el de Gauss-Newton para hallar el vector de traslación que reduzca el error grupal.
 
 En este trabajo se eligió emplear RANSAC debido a su simplicidad, costo computacional fijo, y robustez ante correspondencias erróneas.
 

@@ -167,7 +167,7 @@ Es posible observar que el tiempo de estimación del vector de traslación unita
 
 
 
-\paragraph {KAZE \\ \\}
+\paragraph {KAZE}
 
 
 En la figuras \ref{imagen:Resultados/MH_01_easy/KAZE/Posicion} y \ref{imagen:Resultados/MH_01_easy/KAZE/Orientacion} y \ref{imagen:Resultados/MH_01_easy/KAZE/ResidualVelocidad} se presentan los resultados de posición estimada del vehículo áreo. En este caso la escala de desplazamiento es tomada del \textit{groundtruth} debido al fallo de las triangulaciones realizadas por el sistema.
@@ -226,7 +226,7 @@ Por su parte el error de orientación de la orientación estimada se mantiene ac
 %	\label{imagen:Resultados/MH_01_easy/AKAZE/ResidualVelocidad}
 %\end{figure}
 
-\paragraph {ORB \\ \\}
+\paragraph {ORB}
 
 En el caso del detector ORB , los resultados son similares a los obtenidos con el detector KAZE. En la figura \ref{imagen:Resultados/MH_01_easy/ORB/Posicion} se presenta los resultados de la posición estimada.
 	
@@ -356,7 +356,7 @@ Por otro lado es posible observar que el número de \textit{keyframes} generados
 
 
 En esta secuencia el detector con mejores resultados de estimación fue el detector KAZE. Respecto a desempeño computacional, el detector ORB presentó  el mejor desempeño. A continuación se presentan las gráficas de las estimaciones de movimiento de ambos detectores.
-\paragraph {KAZE \\ \\}
+\paragraph {KAZE}
 
 Las figuras \ref{imagen:Resultados/V1_01_easy/KAZE/Posicion}  y \ref{imagen:Resultados/V1_01_easy/KAZE/Orientacion} presentan la posición y el error de orientación estimado utilizando el detector KAZE. En esta caso también se observa un seguimiento correcto de las posición estimada en los $x$ y $y$. En el caso de la altura estimada (eje $z$) podemos ver que existe un seguimiento inicial que es perdido en las estimaciones siguientes. Sin embargo el rango de movimiento en $z$ es mucho menor al presentado en $x$ y $y$.
 
@@ -417,7 +417,7 @@ En cuanto a los residuales de velocidad presentados en la figura \ref{imagen:Res
 %	\label{imagen:Resultados/V1_01_easy/AKAZE/ResidualVelocidad}
 %\end{figure}
 
-\paragraph {ORB \\ \\}
+\paragraph {ORB}
 
 En esta secuencia los resultados de estimación de posición con el detector ORB presentan de forma más evidente el \textit{drift}, siendo más evidente en las estimaciones posteriores a los 80 segundos. Sin embargo, las estimación local de las traslaciones se mantiene producto de la correcta estimación de la orientación de la cámara. El detector ORB presenta de nuevo la mejor relación entre la calidad de las estimaciones traslacionales y tiempo computacional.
 
@@ -578,7 +578,7 @@ Finalmente, se obtienen resultados similares sobre el desempeño del detector OR
 %
 A continuación se presentan los resultados de posición, error de orientación y residuales de velocidad del detector con mejor estimación, y la posición estimada por el detector con mejor eficiencia computacional, ORB.
 
-\paragraph {AKAZE \\ \\}
+\paragraph {AKAZE}
 
 En las figuras \ref{imagen:Resultados/V1_02_medium/AKAZE/Posicion}, \ref{imagen:Resultados/V1_02_medium/AKAZE/Orientacion} y \ref{imagen:Resultados/V1_02_medium/AKAZE/ResidualVelocidad} se muestran los resultados de posición de estimada, el error orientación y los residuales de velocidad.
 
@@ -609,7 +609,7 @@ Respecto a la posición estimada, los mejores resultados se obtienen para los ej
 	\label{imagen:Resultados/V1_02_medium/AKAZE/ResidualVelocidad}
 \end{figure}
 
-\paragraph {ORB \\ \\}
+\paragraph {ORB}
 
 
 La figura \ref{imagen:Resultados/V1_02_medium/ORB/Posicion} presenta los resultados del método RANSAC con el detector ORB. En esta caso existe presencia de drift en todos los ejes, manteniendo las estimaciones locales en los ejes $x$ y $y$. El eje $z$ presenta errores de estimación.
@@ -745,8 +745,7 @@ De la misma forma se presentan la posición y la orientación estimada de la cá
 
 Esta secuencia fue evaluada utilizando el sistema implementado utilizando el filtro de Madgwick y el método RANSAC con los detectores ORB y KAZE. La secuencia presenta el movimiento en linea recta del robot prototipo. La estimación de movimiento es comparada con la obtenida mediante la odometría del robot. Esta última es extraída a través de los \textit{encoders} del robot y es considera como el \textit{groundtruth} de los datos.
 
-\paragraph{ORB \\ \\}
-
+\paragraph{ORB}
 En las figuras \ref{imagen:Resultados/Dataset_Local/Secuencia2/ORB/Posicion} y \ref{imagen:Resultados/Dataset_Local/Secuencia2/ORB/Orientacion} se presenta la posición y el error de orientación estimado utilizando el método RANSAC con el detector ORB. 
 
 En este caso es posible ver que la estimación de posición en el eje de mayor rango de movimiento (eje $y$) presenta los mejores resultados. En el eje $x$, las estimaciones iniciales  difieren del \textit{groundtruth} en algunos milímetros, sin embargo las estimaciones posteriores siguen la forma del movimiento del robot. En el eje $z$, se observa el resultado del \textit{drift}, sin embargo el rango de error máximo es de 4 cm. Cabe destacar que este eje está asociado a la altura de la IMU, que se asume 0 debido a el movimiento del robot en el plano $xy$.

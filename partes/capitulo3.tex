@@ -263,19 +263,19 @@ Este proceso se repite hasta tener la distancia de cada punto de la imagen $1$ c
 Este proceso es mejor conocido como emparejamiento por fuerza bruta, ya que se compara entre todos los puntos por la mejor pareja posible. Aún cuando se asegura obtener el mejor emparejamiento, siendo viable para trabajar con pocos datos, el hecho de probar todas los casos posibles cuando se tiene una gran cantidad de puntos, incrementa en gran medida el tiempo de cómputo. Para efectuar este proceso de una forma eficiente se desarrollaron algoritmos basados en la búsqueda de vecinos mas cercanos. En este sentido se cuenta con el algoritmo \textit{kd-forest} (abreviado del inglés: \textit{k-dimensional forest}), el cual es una mejora del algoritmo \textit{kd-tree} (abreviado del inglés: \textit{k-dimensional tree}) para mejor desempeño al usar vectores multidimensionales, implementado en la librería para la rápida aproximación de vecinos mas cercanos FLANN \cite{flann} (del inglés: \textit{Fast Library for Approximate Nearest Neighbors}).
 
 %\textit{kd-tree} es una estructura de datos de segmentación de espacios para organizar puntos en un espacio de k dimensiones
-\section{Módulo comparativo}
-
-Una vez se conocen los algoritmos que se proponen utilizar, es necesario comparar su rendimiento bajo distintas condiciones, de modo que se pueda seleccionar el indicado para cada tipo de aplicación. En este sentido, se pretende estudiar el rendimiento en base a los siguientes parámetros:
-
-\begin{itemize}
-	\item \textbf{Tiempo de ejecución:} Tiempo en el que se detectan y describen las características en dos imágenes con las mismas dimensiones.
-	
-	\item \textbf{Cantidad de puntos detectados:} Cantidad total de puntos detectados y emparejados en dos imágenes.
-	
-	\item \textbf{Cantidad de puntos emparejados:} Cantidad total de puntos emparejados correctamente luego de descartar parejas erróneas. 
-\end{itemize}
-
-Adicionalmente, se propone aplicar algunos métodos que permiten aumentar el rendimiento de los algoritmos de detección, así como también implementar un proceso que permita reducir o eliminar falsos positivos al emparejar puntos de interés. 
+%\section{Módulo comparativo}
+%
+%Una vez se conocen los algoritmos que se proponen utilizar, es necesario comparar su rendimiento bajo distintas condiciones, de modo que se pueda seleccionar el indicado para cada tipo de aplicación. En este sentido, se pretende estudiar el rendimiento en base a los siguientes parámetros:
+%
+%\begin{itemize}
+%	\item \textbf{Tiempo de ejecución:} Tiempo en el que se detectan y describen las características en dos imágenes con las mismas dimensiones.
+%	
+%	\item \textbf{Cantidad de puntos detectados:} Cantidad total de puntos detectados y emparejados en dos imágenes.
+%	
+%	\item \textbf{Cantidad de puntos emparejados:} Cantidad total de puntos emparejados correctamente luego de descartar parejas erróneas. 
+%\end{itemize}
+%
+%Adicionalmente, se propone aplicar algunos métodos que permiten aumentar el rendimiento de los algoritmos de detección, así como también implementar un proceso que permita reducir o eliminar falsos positivos al emparejar puntos de interés. 
 
 \section{ Orientación de un cuerpo en el espacio}
 
@@ -354,10 +354,11 @@ det(R)\quad =\quad 1
 
 \begin{align}
  \psi \quad =\quad \arctan { (\frac { { r }_{ 21 } }{ { r }_{ 11 } }) } 
- \\ \theta \quad =\quad \arctan { (\frac { -{ r }_{ 31 } }{ \sqrt { { { r }_{ 32 } }^{ 2 }\quad +\quad { { r }_{ 33 } }^{ 2 } }  } ) } \quad 
- \\ \phi \quad =\quad \arctan { (\frac { { r }_{ 32 } }{ { r }_{ 33 } } ) } \quad 
- \label{eq:Matriz2RPY}
- \end{align}
+\\ \theta \quad =\quad \arctan { (\frac { -{ r }_{ 31 } }{ \sqrt { { { r }_{ 32 } }^{ 2 }\quad +\quad { { r }_{ 33 } }^{ 2 } }  } ) } \quad 
+\\ \phi \quad =\quad \arctan { (\frac { { r }_{ 32 } }{ { r }_{ 33 } } ) } \quad 
+\label{eq:Matriz2RPY}
+\end{align}
+
 
 \section{ Transformaciones de cuerpo rígido }
 

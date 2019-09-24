@@ -2,7 +2,7 @@
 \label{capitulo2}
 \lhead{Capítulo 2. \emph{Odometría y SLAM}}
 
-En este capítulo se presenta una revisión teórica del estado actual de las investigaciones que se han realizado en el área de Odometría visual, SLAM visual, y sus vertientes en las que se fusionan los datos inerciales.
+En este capítulo se presenta una revisión teórica del estado actual de las investigaciones que se han realizado en el área de odometría visual, SLAM visual, y sus vertientes en las que se fusionan los datos inerciales.
 
 \section{Odometría}
 
@@ -10,9 +10,9 @@ En los últimos años se han presentado diferentes alternativas para estimar de 
 
 En general, la odometría se encarga de estimar el movimiento de un agente (vehículo, humano, robot) utilizando sensores que pueden medir los cambios del movimiento del mismo, tales como unidades de medición inercial, láseres, cámaras, etc. El caso más simple de odometría es obtener la trayectoria recorrida por un robot diferencial a través de la lectura de los codificadores (\textit{encoders}) del robot. Los \textit{encoders} miden el desplazamiento de cada rueda, con lo que es posible obtener la orientación y el desplazamiento del robot considerando el movimiento en un plano.
 
-Cuando se utiliza un sensor láser, la odometría se obtiene estimando el movimiento del robot mediante el escaneo y seguimiento de las medidas realizadas por el sensor (figura \ref{imagen:Antecedentes/octomaps}).
+Cuando se utiliza un sensor láser, la odometría se obtiene estimando el movimiento del robot mediante el escaneo y seguimiento de las medidas realizadas por el sensor (figura \ref{imagen:Antecedentes/mapa2D}).
 
-Cuando el sensor utilizado es una cámara se denomina odometría visual (VO, del inglés Visual Odometry) y en este caso se puede tener la configuración monocular, en la cual se utiliza una cámara, y la configuración estéreo, en la que se emplean dos cámaras para la estimación de movimiento. VO tiene ventajas respecto a la odometría estimada mediante \textit{encoders}, ya que no es afectada por deslizamientos de la rueda sobre la superficie en la que se desplaza el robot, y en general provee trayectorias mas precisas con errores relativos de posición de 0.1 a 2 \%. Esto hace a la odometría visual un complemento incluso a otros sistemas de navegación como el sistema de posicionamiento global (GPS), y odometría láser.
+Cuando el sensor utilizado es una cámara se denomina odometría visual (VO, del inglés: \textit{Visual Odometry}) y en este caso se puede tener la configuración monocular, en la cual se utiliza una única cámara, y la configuración estéreo, en la que se emplean dos cámaras para la estimación de movimiento. VO tiene ventajas respecto a la odometría estimada mediante \textit{encoders}, ya que no es afectada por deslizamientos de la rueda sobre la superficie en la que se desplaza el robot, y en general provee trayectorias mas precisas con errores relativos de posición de 0.1 a 2 \%. Esto hace a la odometría visual un complemento incluso a otros sistemas de navegación como el sistema de posicionamiento global (GPS), y odometría láser.
 
 \begin{figure}[H]
 	\centering
@@ -34,7 +34,7 @@ Esta relación entre mapa  y localización del robot  fue inicialmente estableci
 
 Durante el periodo 1986-2004, se introdujeron métodos de estimación probabilistas  como los filtros extendidos de Kalman (EKF, del inglés: \textit{Extended Kalman Filter}), filtros de partículas Rao-Blackwell y estimaciones de máxima verosimilitud. Además surgieron vertientes de SLAM ligadas a la inteligencia artificial, toma de decisiones de robots y teoría de control, la cual es conocida como SLAM activo. Algunos trabajos resaltantes son \cite{Feder, Smith, Makarenko, Stachniss}.
 
-El SLAM moderno se compone de dos módulos principales: el módulo de sensores (front end) y el módulo de optimización (back end). El front end se encarga de extraer la información de los sensores y realizar las estimaciones a \textit{priori} del movimiento. El modulo de back-end se encarga de refinar las estimaciones utilizando optimización no lineal para generar una solución mas robusta y consistente entre el mapa y el recorrido. Este último modulo comprende la estimación \textit{posteriori} (MAP, del inglés: \textit{Maximum a Posteriori}). Estos módulos se ilustran en la figura \ref{fig:SLAMStruct}.
+El SLAM moderno se compone de dos módulos principales: el módulo de sensores (front end) y el módulo de optimización (back end). El front end se encarga de extraer la información de los sensores y realizar las estimaciones a \textit{priori} del movimiento. El modulo de back-end se encarga de refinar las estimaciones utilizando optimización no lineal para generar una solución mas robusta y consistente entre el mapa y el recorrido. Este último módulo comprende la estimación \textit{posteriori} (MAP, del inglés: \textit{Maximum a Posteriori}). Estos módulos se ilustran en la figura \ref{fig:SLAMStruct}.
 
 \begin{figure}[H]
 	\centering
@@ -55,7 +55,7 @@ El SLAM moderno se compone de dos módulos principales: el módulo de sensores (
 %la fácil inclusión de las restricciones existentes al problema de optimización.
 
 
-Como se muestra en la figura \ref{fig:SLAMGraph}, el problema de SLAM se puede considerar como un grafo de factores. Los círculos azules representan posiciones estimadas del robot en tiempos consecutivos, los círculos verdes representan las posiciones de los puntos de referencia y los círculos rojos representan las variables secundarias asociadas a la percepción de los puntos de referencia. Los factores están mostrados como cuadrados negros: donde  “u” representan las restricciones correspondientes a odometría, “v” factores correspondientes a las observaciones, “c” cierres de lazo, y “p” factores pasados.
+Como se muestra en la figura \ref{fig:SLAMGraph}, el problema de SLAM se puede considerar como un grafo de factores. Los círculos azules representan posiciones estimadas del robot en tiempos consecutivos, mientras que los círculos verdes representan las posiciones de los puntos de referencia. Los círculos rojos representan las variables secundarias asociadas a la percepción de los puntos de referencia. Los factores están mostrados como cuadrados negros: donde  “u” representan las restricciones correspondientes a odometría, “v” factores correspondientes a las observaciones, “c” cierres de lazo, y “p” factores pasados.
 
 
 %GTSAM [21], g2o [48], Ceres [2], iSAM [44] y SLAM++ [68]
@@ -72,7 +72,7 @@ Como se muestra en la figura \ref{fig:SLAMGraph}, el problema de SLAM se puede c
 
 \section{Odometría  y SLAM visual}
 
-Los métodos de Odometría y SLAM visual, se dividen en los métodos directos e indirectos. A continuación se presentan algunos trabajos en el área.
+Los métodos de odometría y SLAM visual, se dividen en los métodos directos e indirectos. A continuación se presentan algunos trabajos en el área.
 
 \subsection{Métodos indirectos}
 
@@ -165,19 +165,19 @@ precisión a los de ORB-SLAM. En general, ORB-SLAM presenta mejores resultados c
 %resolución de 640 x 480.
 
 \section{Fusión visual-inercial }
-A lo largo de los años se han utilizado diferentes tipos de sensores y sus combinaciones para realizar la localización y mapeo simultáneo (SLAM) de un robot móvil en su entorno. Entre éstos se encuentran láseres de rango, sonares, sistemas de posicionamiento global (GPS), unidades de medición inercial (IMU) y cámaras monoculares, estereoscópicas, y RGB-D.\\
+A lo largo de los años se han utilizado diferentes tipos de sensores y sus combinaciones para realizar la localización y mapeo simultáneo (SLAM) de un robot móvil en su entorno. Entre éstos se encuentran láseres de rango, sonares, sistemas de posicionamiento global (GPS), unidades de medición inercial (IMU) y cámaras monoculares, estereoscópicas, y RGB-D.
 
-Cada tipología en la que son empleados estos sensores tiene sus limitaciones. Por ejemplo, los sistemas en que los se utiliza GPS están restringidos a ser utilizados al aire libre, lo que conlleva a que no puedan ser empleados en vehículos submarinos. Los láseres ofrecen información precisa del entorno pero tienen problemas en superficies reflectivas o absorbentes, además que pueden representar un alto costo,  y  ser lo suficientemente pesados como para ser descartados en aplicaciones con  vehículos aéreos. Por su parte, las medidas de sonares que son aplicados en espacios terrestres pueden tener alta incertidumbre ya que depende de la forma de las superficies y de su orientación relativa al sensor, mientras que las unidades de medición inercial presentan deriva y ruido en sus mediciones. En el caso de las cámaras, la  calidad de sus datos tienen una alta dependencia a las condiciones de iluminación. \\
+Cada tipología en la que son empleados estos sensores tiene sus limitaciones. Por ejemplo, los sistemas en que los se utiliza GPS están restringidos a ser utilizados al aire libre, lo que conlleva a que no puedan ser empleados en vehículos submarinos. Los láseres ofrecen información precisa del entorno pero tienen problemas en superficies reflectivas o absorbentes, además que pueden representar un alto costo,  y  ser lo suficientemente pesados como para ser descartados en aplicaciones con  vehículos aéreos. Por su parte, las medidas de sonares que son aplicados en espacios terrestres pueden tener alta incertidumbre ya que depende de la forma de las superficies y de su orientación relativa al sensor, mientras que las unidades de medición inercial presentan deriva y ruido en sus mediciones. En el caso de las cámaras, la  calidad de sus datos tienen una alta dependencia a las condiciones de iluminación. 
 
-La implementación de estas últimas en sistemas de localización y mapeo simultáneo ha tenido gran atención en los últimos años debido a su capacidad para capturar una gran cantidad de información sobre el entorno. Es por esto que se han desarrollado métodos de SLAM visual basados tanto en cámaras monoculares como estereoscópicas, utilizando para ello métodos directos, a través de la detección y emparejamiento de características en las imágenes; método indirectos, basados en el calculo del error fotométrico entre imágenes; y semi-directos, utilizando una combinación de métodos directos e indirectos.\\
+La implementación de estas últimas en sistemas de localización y mapeo simultáneo ha tenido gran atención en los últimos años debido a su capacidad para capturar una gran cantidad de información sobre el entorno. Es por esto que se han desarrollado métodos de SLAM visual basados tanto en cámaras monoculares como estereoscópicas, utilizando para ello métodos directos, a través de la detección y emparejamiento de características en las imágenes; método indirectos, basados en el calculo del error fotométrico entre imágenes; y semi-directos, utilizando una combinación de métodos directos e indirectos.
 
-Sin embargo, estos sistemas presentan debilidades. Los métodos de SLAM con cámaras monoculares presentan problemas de ambiguedad ante la escala, mientras que  los estereoscópicos están limitados por la relación entre la profundidad de la escena y la distancia entre las cámaras. \\
+Sin embargo, estos sistemas presentan debilidades. Los métodos de SLAM con cámaras monoculares presentan problemas de ambiguedad ante la escala, mientras que  los estereoscópicos están limitados por la relación entre la profundidad de la escena y la distancia entre las cámaras. 
 
-Es por ello que con el objetivo de generar un sistema más robusto en el que se puede complementar la información disponible entre sensores y compensar sus debilidades, se han propuesto esquemas basados en la fusión visual-inercial, en la que se pueden emplear cámaras estéreos o monoculares junto a una unidad de medición inercial, ofreciendo además una buena relación entre costo, peso, espacio ocupado y consumo de energía, que permite que puedan ser empleados en robots terrestres, aéreos y submarinos.\\
+Es por ello que con el objetivo de generar un sistema más robusto en el que se puede complementar la información disponible entre sensores y compensar sus debilidades, se han propuesto esquemas basados en la fusión visual-inercial, en la que se pueden emplear cámaras estéreos o monoculares junto a una unidad de medición inercial, ofreciendo además una buena relación entre costo, peso, espacio ocupado y consumo de energía, que permite que puedan ser empleados en robots terrestres, aéreos y submarinos.
 
-El núcleo de esta fusión se encuentra basado en la complementariedad que tienen estos sensores. Por ejemplo, las cámaras son precisas en movimientos lentos, en los cuales las medidas aceleración y velocidad angular provenientes de la IMU tienen mayor incertidumbre. En el caso de movimientos rápidos, sucede justo lo contrario: la IMU presenta menor incertidumbre en sus medidas mientras que las imágenes captadas por la cámara se distorsionan por efectos como el blur. \\
+El núcleo de esta fusión se encuentra basado en la complementariedad que tienen estos sensores. Por ejemplo, las cámaras son precisas en movimientos lentos, en los cuales las medidas aceleración y velocidad angular provenientes de la IMU tienen mayor incertidumbre. En el caso de movimientos rápidos, sucede justo lo contrario: la IMU presenta menor incertidumbre en sus medidas mientras que las imágenes captadas por la cámara se distorsionan por efectos como el blur. 
 
-Por otro lado,  las frecuencias de muestreo de las cámaras convencionales están el orden de las decenas de Hertz, mientras que las de la IMU pueden alcanzar las centenas de Hertz, con lo que se  obtiene información inercial adicional entre dos imágenes, que al ser integrada permite establecer restricciones de movimiento,  logrando de esta forma alcanzar una mejor estimación del estado del robot frente a su entorno., requiriendo un menor tiempo de cómputo. \\
+Por otro lado,  las frecuencias de muestreo de las cámaras convencionales están el orden de las decenas de Hertz, mientras que las de la IMU pueden alcanzar las centenas de Hertz, con lo que se  obtiene información inercial adicional entre dos imágenes, que al ser integrada permite establecer restricciones de movimiento,  logrando de esta forma alcanzar una mejor estimación del estado del robot frente a su entorno., requiriendo un menor tiempo de cómputo. 
 
 
 
@@ -257,6 +257,7 @@ Este enfoque no requiere una etapa de inicialización, por lo que es posible uti
 
 
 \section{EuRoC MAV Dataset}
+
 El conjunto de datos de prueba empleado en este trabajo corresponde al al EuRoC MAV Dataset \cite{euroc}, el cual es un dataset de referencia que es utilizado para evaluar diferentes algoritmos de SLAM visual-inercial y que dispone de 11 secuencias de datos. \\
 
 
@@ -331,6 +332,29 @@ En la figura \ref{fig:vicon} se muestra el segundo ambiente correspondiente a un
 	\caption[Nubes de puntos de la habitación utilizada en el EuRoC MAV Dataset]{Nubes de puntos de la habitación utilizada en el EuRoC MAV Dataset.}
 	\label{fig:pointcloudEuroc}
 \end{figure}
+
+Cabe destacar que este dataset fue utilizado como referencia para la generación del dataset local del capítulo 5, conservando las mismas convenciones de formato.
+
+\section{Tipología de implementación}
+
+En el presente trabajo se propone un sistema de SLAM basado en la fusión visual-inercial,  capaz de integrar  la estimación de movimiento  proveniente de los métodos visuales semi-directos basados en cámara monocular, y la estimación de movimiento que se puede obtener de una unidad de medición inercial. La figura \ref{fig:esquemaGeneral} presenta el esquema básico propuesto.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.4]{Implementacion/DiagramaSistema.png}
+	\caption[Esquema general del sistema implementado]{Esquema general del sistema implementado}
+	\label{fig:esquemaGeneral}
+\end{figure}
+
+Este diagrama se encuentra dividido en los módulos del sistema inercial y los módulos del sistema visual, más el algoritmo de optimización fusiona  los datos provistos por estos módulos. Éste último tiene una vertiente basada en métodos directos, implementada previamente por \textit{Morales F.} \cite{fabio}, y una nueva versión, basada en un método de estimación con RANSAC.
+
+En el caso del esquema inercial, se tiene un primer filtro de fusión de los datos de la IMU, el cual corresponde al filtro de Madgwick. Este filtro estima la orientación del sistema de la IMU respecto a un sistema fijo, partiendo de la velocidad angular y la aceleración medida. Posteriormente, se utiliza esta orientación para calcular los residuales inerciales. El sistema implementado también deja a disposición la posibilidad de utilizar otro filtro de fusión inercial como el filtro complementario.
+
+En el esquema visual, el módulo de extracción de parejas se encarga de aplicar la detección de características en las imágenes de entrada y su emparejamiento. Estas parejas  son utilizadas para la extracción de los residuales fotométricos.
+
+Finalmente, calculados los residuales inerciales y visuales,  el algoritmo de optimización estima la orientación, posición, velocidad, y un mapa del entorno a través de la triangulación en el espacio de las parejas detectadas.
+
+La estimación de movimiento por medio de la fusión visual inercial fue desarrollada utilizando C++ como lenguaje de programación y ROS para la aplicación de los filtros inerciales y la visualización del movimiento del robot. Este programa utiliza un sólo hilo de ejecución, de forma que la odometría se estima de forma secuencial, pasando primero por estimar la orientación del robot utilizando el filtro inercial, y luego a estimar la traslación a partir de los residuales inerciales y la cámara. El formato de entrada de las imágenes y de los datos de la IMU fueron tomados de acuerdo al formato empleado en el EuRoC MAV dataset.
 
 
 
